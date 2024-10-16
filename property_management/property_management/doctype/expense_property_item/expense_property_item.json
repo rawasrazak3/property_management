@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-16 08:01:51.470415",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "gfa_sqft",
+  "gross_amount",
+  "allocated_expense_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "gfa_sqft",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "GFA sqft"
+  },
+  {
+   "fieldname": "gross_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Gross Amount"
+  },
+  {
+   "fieldname": "allocated_expense_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Allocated Expense Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-10-16 08:14:13.753264",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Expense Property Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

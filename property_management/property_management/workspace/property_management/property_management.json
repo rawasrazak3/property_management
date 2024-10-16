@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"Wrmf3ClSZ_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span>\",\"col\":5}},{\"id\":\"BZ2R71a1Ob\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">\ud83c\udfe0 Property Management \ud83c\udfe0</span>\",\"col\":4}},{\"id\":\"wxQXkv3ll4\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span>\",\"col\":3}},{\"id\":\"o37ZaTumhf\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><i>Your Shortcuts</i></span>\",\"col\":12}},{\"id\":\"ohElR163bC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"ZisZ2CtVja\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Owner\",\"col\":3}},{\"id\":\"ZGm9rBeizM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Manager\",\"col\":3}},{\"id\":\"tBamCfMUbd\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenant\",\"col\":3}},{\"id\":\"Y2wpBXbBJE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Landlord\",\"col\":3}},{\"id\":\"SvrxWvAQCu\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item\",\"col\":3}},{\"id\":\"9RM-rlmW5i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset\",\"col\":3}},{\"id\":\"E2DfWgGhJP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenancy\",\"col\":3}},{\"id\":\"0GxSmEeVjw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Contract\",\"col\":3}},{\"id\":\"QuFUWbfNxA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Mc4uvrgVsi\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><i>Reports &amp; Configurations</i></span>\",\"col\":12}},{\"id\":\"VG7YduQtdu\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuration\",\"col\":3}},{\"id\":\"GBx3PU-y4K\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Details\",\"col\":3}},{\"id\":\"c-kUY90Hpm\",\"type\":\"card\",\"data\":{\"card_name\":\"Tenant Details\",\"col\":3}},{\"id\":\"_V6e1HeSyI\",\"type\":\"card\",\"data\":{\"card_name\":\"Landlord Details\",\"col\":3}},{\"id\":\"0bD2JhxA-K\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Owner Details\",\"col\":3}},{\"id\":\"lyYP4HVx7F\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Manager Details\",\"col\":3}},{\"id\":\"qMoEatToLf\",\"type\":\"card\",\"data\":{\"card_name\":\"Schedules\",\"col\":3}},{\"id\":\"-lYpzMUhe_\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Reports\",\"col\":3}},{\"id\":\"aBdVSf3wmL\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Details\",\"col\":4}},{\"id\":\"-9fP3IQsq_\",\"type\":\"card\",\"data\":{\"card_name\":\"Advance Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"Wrmf3ClSZ_\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span>\",\"col\":5}},{\"id\":\"BZ2R71a1Ob\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">\ud83c\udfe0 Property Management \ud83c\udfe0</span>\",\"col\":4}},{\"id\":\"wxQXkv3ll4\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span>\",\"col\":3}},{\"id\":\"o37ZaTumhf\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><i>Your Shortcuts</i></span>\",\"col\":12}},{\"id\":\"ohElR163bC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"ZisZ2CtVja\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Owner\",\"col\":3}},{\"id\":\"ZGm9rBeizM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Manager\",\"col\":3}},{\"id\":\"tBamCfMUbd\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenant\",\"col\":3}},{\"id\":\"SvrxWvAQCu\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Item\",\"col\":3}},{\"id\":\"9RM-rlmW5i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Asset\",\"col\":3}},{\"id\":\"E2DfWgGhJP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Tenancy\",\"col\":3}},{\"id\":\"Y2wpBXbBJE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Landlord\",\"col\":3}},{\"id\":\"0ECzZAG9xq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Owner Master\",\"col\":3}},{\"id\":\"0GxSmEeVjw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Contract\",\"col\":3}},{\"id\":\"QuFUWbfNxA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Mc4uvrgVsi\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><i>Reports &amp; Configurations</i></span>\",\"col\":12}},{\"id\":\"VG7YduQtdu\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuration\",\"col\":3}},{\"id\":\"GBx3PU-y4K\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Details\",\"col\":3}},{\"id\":\"c-kUY90Hpm\",\"type\":\"card\",\"data\":{\"card_name\":\"Tenant Details\",\"col\":3}},{\"id\":\"_V6e1HeSyI\",\"type\":\"card\",\"data\":{\"card_name\":\"Landlord Details\",\"col\":3}},{\"id\":\"0bD2JhxA-K\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Owner Details\",\"col\":3}},{\"id\":\"lyYP4HVx7F\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Manager Details\",\"col\":3}},{\"id\":\"qMoEatToLf\",\"type\":\"card\",\"data\":{\"card_name\":\"Schedules\",\"col\":3}},{\"id\":\"-lYpzMUhe_\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Reports\",\"col\":3}},{\"id\":\"t8JnK5KMXS\",\"type\":\"card\",\"data\":{\"card_name\":\"Maintenance\",\"col\":4}},{\"id\":\"aBdVSf3wmL\",\"type\":\"card\",\"data\":{\"card_name\":\"Other Details\",\"col\":4}},{\"id\":\"-9fP3IQsq_\",\"type\":\"card\",\"data\":{\"card_name\":\"Advance Reports\",\"col\":4}}]",
  "creation": "2022-10-17 12:24:38.178644",
  "custom_blocks": [],
  "docstatus": 0,
@@ -300,7 +300,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Property Reports",
-   "link_count": 6,
+   "link_count": 8,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -366,8 +366,28 @@
   },
   {
    "hidden": 0,
+   "is_query_report": 1,
+   "label": "Tenant Transactions",
+   "link_count": 0,
+   "link_to": "Tenant Transactions",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Landlord Transactions",
+   "link_count": 0,
+   "link_to": "Landlord Transactions",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
    "is_query_report": 0,
-   "label": "Advance Reports",
+   "label": "Maintenance",
    "link_count": 3,
    "onboard": 0,
    "type": "Card Break"
@@ -375,6 +395,44 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Maintenance Schedule",
+   "link_count": 0,
+   "link_to": "Maintenance Schedule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Visit",
+   "link_count": 0,
+   "link_to": "Maintenance Visit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Maintenance Service Charge",
+   "link_count": 0,
+   "link_to": "Maintenance Service Charge",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Advance Reports",
+   "link_count": 5,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
    "label": "Profit & Loss Analysis",
    "link_count": 0,
    "link_to": "Profit and Loss Statement",
@@ -384,7 +442,7 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
+   "is_query_report": 1,
    "label": "Debt Aging",
    "link_count": 0,
    "link_to": "Accounts Receivable Summary",
@@ -401,9 +459,29 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Sales Partners Commission",
+   "link_count": 0,
+   "link_to": "Sales Partners Commission",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Maintenance Service Charge",
+   "link_count": 0,
+   "link_to": "Maintenance Service Charge",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-09-05 17:10:08.274273",
+ "modified": "2024-10-15 22:28:58.501932",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Property Management",
@@ -413,13 +491,22 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 2.0,
+ "sequence_id": 3.0,
  "shortcuts": [
   {
    "color": "Grey",
    "doc_view": "List",
    "label": "Contract",
    "link_to": "Contract",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} Open",
+   "label": "Property Owner Master",
+   "link_to": "Supplier",
    "stats_filter": "[]",
    "type": "DocType"
   },

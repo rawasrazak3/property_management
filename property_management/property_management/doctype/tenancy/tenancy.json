@@ -17,6 +17,7 @@
   "is_landlord_tenancy",
   "rent_type",
   "ground_rent",
+  "total_gross_rent_amount",
   "column_break_8",
   "advance_deposit",
   "number_of_deposit_booked",
@@ -28,6 +29,10 @@
   "company",
   "start_date",
   "end_date",
+  "asset_owner",
+  "supplier",
+  "commission",
+  "one_time_commission",
   "section_break_4",
   "tenant_schedule",
   "amended_from"
@@ -206,12 +211,48 @@
    "fieldtype": "Currency",
    "label": "Total Rent Amount",
    "read_only": 1
+  },
+  {
+   "fetch_from": "asset.supplier",
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "asset.custom_commission",
+   "fieldname": "commission",
+   "fieldtype": "Float",
+   "label": "Commission %",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "asset.asset_owner",
+   "fieldname": "asset_owner",
+   "fieldtype": "Data",
+   "label": "Asset Owner",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "asset.custom_one_time_commission",
+   "fieldname": "one_time_commission",
+   "fieldtype": "Float",
+   "label": "One Time Commission",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "asset.gross_purchase_amount",
+   "fieldname": "total_gross_rent_amount",
+   "fieldtype": "Currency",
+   "label": "Total Gross Rent Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-08-07 10:53:27.962725",
+ "modified": "2024-10-05 23:13:18.137470",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Tenancy",

@@ -2,7 +2,7 @@ from . import __version__ as app_version
 
 app_name = "property_management"
 app_title = "Property Management"
-app_publisher = "Nihantra C. Patel"
+app_publisher = "Ketan Patel"
 app_description = "Property Management system for Real Estate Vertical"
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
@@ -11,9 +11,16 @@ app_license = "MIT"
 
 # Includes in <head>
 # ------------------
-fixtures = [{
+fixtures = [
+	{
 		"doctype": "Translation"
-		}
+	},
+	{
+    "doctype": "Property Setter",
+        "filters": {
+            "module": ["in", ["Property Management"]]
+            }
+    }
 	]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/property_management/css/property_management.css"
@@ -37,6 +44,7 @@ fixtures = [{
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 doctype_js = {
 			"Asset" : "public/js/asset.js",
+			"Contract" : "public/js/contract.js",
 			"Customer" : "public/js/customer.js",
 			"Event" : "public/js/event.js"
 			}
@@ -225,10 +233,11 @@ user_data_fields = [
 # For example: Role, Gender, etc.
 # translated_search_doctypes = []
 
-fixtures = [{
-    "doctype": "Property Setter",
-        "filters": {
-            "module": ["in", ["Sales Invoice-naming_series-options"]]
-            }
-
-}]
+# fixtures = [
+#     {
+#         "doctype": "Property Setter",
+#         "filters": [
+#             ["doc_type", "=", "Sales Invoice"],
+#         ]
+#     }
+# ]

@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-16 08:17:15.540676",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_kxfc",
+  "amended_from",
+  "property",
+  "section_break_hlxn",
+  "land_property",
+  "section_break_rnkb",
+  "expense_account"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_kxfc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Expense Property",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "section_break_hlxn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "land_property",
+   "fieldtype": "Table",
+   "label": "Land Property",
+   "options": "Expense Property Item"
+  },
+  {
+   "fieldname": "section_break_rnkb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "expense_account",
+   "fieldtype": "Table",
+   "label": "Expense Account",
+   "options": "Expense Property Expense"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-10-16 08:21:01.695013",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Expense Property",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

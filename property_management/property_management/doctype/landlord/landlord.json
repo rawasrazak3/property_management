@@ -10,7 +10,17 @@
   "landlord",
   "landlord_group",
   "territory",
-  "property_list"
+  "property_list",
+  "firm_name",
+  "trade_license_number",
+  "column_break_fscc",
+  "issuing_authority",
+  "partnersparties",
+  "manager",
+  "company_address",
+  "sponsor",
+  "emirates_id_number",
+  "nationality"
  ],
  "fields": [
   {
@@ -44,6 +54,55 @@
    "fieldtype": "Table MultiSelect",
    "label": "Property List",
    "options": "Property List"
+  },
+  {
+   "fieldname": "firm_name",
+   "fieldtype": "Data",
+   "label": "Firm Name"
+  },
+  {
+   "fieldname": "trade_license_number",
+   "fieldtype": "Data",
+   "label": "Trade License Number"
+  },
+  {
+   "fieldname": "column_break_fscc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "issuing_authority",
+   "fieldtype": "Data",
+   "label": "Issuing Authority"
+  },
+  {
+   "fieldname": "partnersparties",
+   "fieldtype": "Data",
+   "label": "Partners/Parties"
+  },
+  {
+   "fieldname": "manager",
+   "fieldtype": "Data",
+   "label": "Manager"
+  },
+  {
+   "fieldname": "company_address",
+   "fieldtype": "Small Text",
+   "label": "Company Address"
+  },
+  {
+   "fieldname": "sponsor",
+   "fieldtype": "Data",
+   "label": "Sponsor"
+  },
+  {
+   "fieldname": "emirates_id_number",
+   "fieldtype": "Data",
+   "label": "Emirates ID Number"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -52,12 +111,18 @@
    "group": "Link Document",
    "link_doctype": "Customer",
    "link_fieldname": "landlord"
+  },
+  {
+   "group": "Link Document",
+   "link_doctype": "Tenancy",
+   "link_fieldname": "landlord"
   }
  ],
- "modified": "2022-10-13 14:12:01.138126",
+ "modified": "2024-09-10 16:00:11.386867",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Landlord",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -74,5 +139,6 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }
