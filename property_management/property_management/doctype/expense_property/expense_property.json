@@ -11,7 +11,8 @@
   "section_break_hlxn",
   "land_property",
   "section_break_rnkb",
-  "expense_account"
+  "expense_account",
+  "total_expense_amount"
  ],
  "fields": [
   {
@@ -53,12 +54,17 @@
    "fieldtype": "Table",
    "label": "Expense Account",
    "options": "Expense Property Expense"
+  },
+  {
+   "fieldname": "total_expense_amount",
+   "fieldtype": "Currency",
+   "label": "Total Expense Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-16 08:21:01.695013",
+ "modified": "2024-10-16 23:07:57.097731",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Expense Property",

@@ -9,105 +9,122 @@ frappe.listview_settings['Asset'] = {
 
 frappe.listview_settings['Asset'] = {
         refresh: function(listview) {
-                listview.page.add_action_item(__("Create Multi Property"), () => {
+            // Add a custom action button for creating multi-property sub-units
+            listview.page.add_action_item(__("Create Multi Property"), () => {
+                // Get the selected assets from the list view
+                let selected_assets = listview.get_checked_items();
+    
+                // Ensure that no more than 2 assets are selected
+                if (selected_assets.length === 0) {
+                    frappe.msgprint(__('Please select at least one asset to create sub-units for.'));
+                    return;
+                }
+                if (selected_assets.length > 1) {
+                    frappe.msgprint(__('You can only select 1 assets at a time.'));
+                    return;
+                }
+    
                 // Open dialog for creating multiple property sub-units
                 let d = new frappe.ui.Dialog({
-                        title: __('Enter Property Details'),
-                        fields: [
+                    title: __('Enter Property Details'),
+                    fields: [
                         {
-                                label: 'Number of Sub Units',
-                                fieldname: 'num_sub_units',
-                                fieldtype: 'Int',
-                                reqd: 1,
-                                default: 1  // Default to 1 sub-unit
+                            label: 'Number of Sub Units',
+                            fieldname: 'num_sub_units',
+                            fieldtype: 'Int',
+                            reqd: 1,
+                            default: 1  // Default to 1 sub-unit
                         },
                         {
-                                label: 'Name Prefix',
-                                fieldname: 'sub_unit_name_prefix',
-                                fieldtype: 'Data',
-                                reqd: 1,
-                                description: 'A prefix for the property names. A number will be appended. (e.g., Tower A 10)'
+                            label: 'Name Prefix',
+                            fieldname: 'sub_unit_name_prefix',
+                            fieldtype: 'Data',
+                            reqd: 1,
+                            description: 'A prefix for the property names. A number will be appended. (e.g., Tower A 10)'
                         },
                         {
-                                label: 'Size (sq ft)',
-                                fieldname: 'gfa_sqft',
-                                fieldtype: 'Float',
-                                reqd: 1
+                            label: 'Size (sq ft)',
+                            fieldname: 'gfa_sqft',
+                            fieldtype: 'Float',
+                            reqd: 1
                         },
                         {
-                                label: 'Gross Rent Amount',
-                                fieldname: 'gross_purchase_amount',
-                                fieldtype: 'Float',
-                                reqd: 1
+                            label: 'Gross Rent Amount',
+                            fieldname: 'gross_purchase_amount',
+                            fieldtype: 'Float',
+                            reqd: 1
                         },
                         {
-                                label: 'Item Code',
-                                fieldname: 'item_code',
-                                fieldtype: 'Link',
-                                options: 'Item',
-                                reqd: 1  // Required to link the item for creating an Asset
+                            label: 'Item Code',
+                            fieldname: 'item_code',
+                            fieldtype: 'Link',
+                            options: 'Item',
+                            reqd: 1  // Required to link the item for creating an Asset
                         },
                         {
-                                label: 'Location',
-                                fieldname: 'location',
-                                fieldtype: 'Link',
-                                options: 'Location',
-                                reqd: 1  // Required field for asset creation
+                            label: 'Location',
+                            fieldname: 'location',
+                            fieldtype: 'Link',
+                            options: 'Location',
+                            reqd: 1  // Required field for asset creation
                         },
                         {
-                                label: 'Available-for-use Date',
-                                fieldname: 'available_for_use_date',
-                                fieldtype: 'Date',
-                                reqd: 1
+                            label: 'Available-for-use Date',
+                            fieldname: 'available_for_use_date',
+                            fieldtype: 'Date',
+                            reqd: 1
                         },
                         {
-                                label: 'Purchase Date',
-                                fieldname: 'purchase_date',
-                                fieldtype: 'Date',
-                                reqd: 1
+                            label: 'Purchase Date',
+                            fieldname: 'purchase_date',
+                            fieldtype: 'Date',
+                            reqd: 1
                         }
-                        ],
-                        primary_action_label: __('Submit'),
-                        primary_action(values) {
+                    ],
+                    primary_action_label: __('Submit'),
+                    primary_action(values) {
                         let created_assets = 0;
-
-                        // Create multiple sub-units based on num_sub_units
-                        for (let i = 1; i <= values.num_sub_units; i++) {
+    
+                        // Loop through the selected assets
+                        selected_assets.forEach(selected_asset => {
+                            // Create multiple sub-units based on num_sub_units
+                            for (let i = 1; i <= values.num_sub_units; i++) {
                                 let asset_name = `${values.sub_unit_name_prefix} ${i}`;  // Append number to sub-unit name
-
+    
                                 frappe.call({
-                                method: 'frappe.client.insert',
-                                args: {
+                                    method: 'frappe.client.insert',
+                                    args: {
                                         doc: {
-                                        doctype: 'Asset',
-                                        asset_name: asset_name,
-                                        gfa_sqft: values.gfa_sqft,
-                                        gross_purchase_amount: values.gross_purchase_amount,
-                                        item_code: values.item_code,
-                                        location: values.location,
-                                        available_for_use_date: values.available_for_use_date,
-                                        purchase_date: values.purchase_date
+                                            doctype: 'Asset',
+                                            asset_name: asset_name,
+                                            gfa_sqft: values.gfa_sqft,
+                                            gross_purchase_amount: values.gross_purchase_amount,
+                                            item_code: values.item_code,
+                                            location: values.location,
+                                            available_for_use_date: values.available_for_use_date,
+                                            purchase_date: values.purchase_date,
+                                            custom_property_type: "Land",
+                                            custom_against_property: selected_asset.name // Assign selected asset ID to custom_against_property
                                         }
-                                },
-                                callback: function(r) {
+                                    },
+                                    callback: function(r) {
                                         if (r.message) {
-                                        created_assets += 1;
-                                        // Check if all assets are created
-                                        if (created_assets === values.num_sub_units) {
+                                            created_assets += 1;
+                                            // Check if all assets are created
+                                            if (created_assets === values.num_sub_units * selected_assets.length) {
                                                 frappe.msgprint(__('Created {0} Property Sub Units successfully!', [created_assets]));
                                                 d.hide();  // Hide dialog after all are created
+                                            }
                                         }
-                                        }
-                                }
+                                    }
                                 });
-                        }
-                        }
+                            }
+                        });
+                    }
                 });
-
+    
                 d.show();
-                });
-}
-};
-
-
+            });
+        }
+    };
     

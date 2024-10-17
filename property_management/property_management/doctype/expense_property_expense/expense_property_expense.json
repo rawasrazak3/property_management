@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "expense_account",
+  "description",
   "amount"
  ],
  "fields": [
@@ -22,12 +23,18 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Amount"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-16 08:16:45.392657",
+ "modified": "2024-10-16 23:07:00.248338",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Expense Property Expense",
