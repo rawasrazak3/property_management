@@ -32,10 +32,10 @@ frappe.ui.form.on('Expense Property', {
                     fields: ['name', 'gfa_sqft', 'gross_purchase_amount']  // Fields to fetch
                 },
                 callback: function(r) {
-                    if (r.message) {
-                        // Clear existing rows in the child table
-                        frm.clear_table('land_property');
+                    // Clear existing rows in the child table
+                    frm.clear_table('land_property');
 
+                    if (r.message && r.message.length > 0) {
                         // Add fetched assets to the child table
                         r.message.forEach(asset => {
                             let child = frm.add_child('land_property');
@@ -43,10 +43,33 @@ frappe.ui.form.on('Expense Property', {
                             child.gfa_sqft = asset.gfa_sqft;
                             child.gross_amount = asset.gross_purchase_amount;
                         });
+                    } else {
+                        // If no data is fetched for custom_against_property, fetch the selected asset's details
+                        frappe.call({
+                            method: 'frappe.client.get',
+                            args: {
+                                doctype: 'Asset',
+                                name: frm.doc.property  // Fetch the selected property asset details
+                            },
+                            callback: function(r) {
+                                if (r && r.message) {
+                                    let asset = r.message;
 
-                        // Refresh the child table to show the changes
-                        frm.refresh_field('land_property');
+                                    // Add the selected asset to the child table
+                                    let child = frm.add_child('land_property');
+                                    child.property = asset.name;
+                                    child.gfa_sqft = asset.gfa_sqft;
+                                    child.gross_amount = asset.gross_purchase_amount;
+
+                                    // Refresh the child table to show the changes
+                                    frm.refresh_field('land_property');
+                                }
+                            }
+                        });
                     }
+
+                    // Refresh the child table to show the changes
+                    frm.refresh_field('land_property');
                 }
             });
         }

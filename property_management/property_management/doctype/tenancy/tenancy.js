@@ -97,6 +97,7 @@ function createInvoice(frm,cdt,cdn) {
             tenant: frm.doc.tenant,
             prt: frm.doc.asset,
             prt_name: frm.doc.asset_name,
+            schedule_date : row.schedule_date,
             amt: row.amount,
             custom_tenancy_id: frm.doc.name
         },
@@ -867,6 +868,7 @@ function createInvoiceForRow(frm, row, callback) {
         method: 'property_management.property_management.doctype.tenancy.tenancy.create_invoice',
         args: {
             tenant: frm.doc.tenant,
+            schedule_date : row.schedule_date,
             prt: frm.doc.asset,
             prt_name: frm.doc.asset_name,
             amt: row.amount,
@@ -1148,25 +1150,26 @@ function createSalesInvoiceWithCommission(frm, cdt, cdn, callback) {
     var one_time_commission_percentage = frm.doc.one_time_commission || 0;  // 5% one-time commission
     var total_gross_rent_amount = frm.doc.total_gross_rent_amount || 0;  // e.g., 300
     var tenant_schedule_amount = row.amount || 0;  // e.g., 100
-    var net_commission = 0;
+    var commission_amount = 0;
+    var one_time_commission_amount = 0;
 
     // Check if start_date equals schedule_date and asset_owner is 'Supplier'
     if (frm.doc.asset_owner === "Supplier" && frm.doc.start_date === row.schedule_date) {
-        // Calculate both 3% of total_gross_rent_amount and 5% of tenant_schedule_amount
-        var commission_amount = (commission_percentage / 100) * tenant_schedule_amount;  // e.g., 3% of 300
-        var one_time_commission_amount = (one_time_commission_percentage / 100) * total_gross_rent_amount;  // e.g., 5% of 100
-        net_commission = commission_amount + one_time_commission_amount;
+        // Calculate both 3% of tenant_schedule_amount and 5% of total_gross_rent_amount
+        commission_amount = (commission_percentage / 100) * tenant_schedule_amount;
+        one_time_commission_amount = (one_time_commission_percentage / 100) * total_gross_rent_amount;
     } else if (frm.doc.asset_owner === "Supplier") {
         // If dates don't match, only calculate 5% of tenant_schedule_amount
-        net_commission = (commission_percentage / 100) * tenant_schedule_amount;
+        commission_amount = (commission_percentage / 100) * tenant_schedule_amount;
     }
 
-    // Create Sales Invoice with "Commission" as the item
+    // Create Sales Invoice with Commission and One Time Commission (if applicable)
     frappe.call({
         method: 'property_management.property_management.doctype.tenancy.tenancy.create_sales_invoice',
         args: {
-            customer: frm.doc.tenant,
-            commission: net_commission,  // Use the calculated commission amount
+            customer: frm.doc.property_owner,
+            commission: commission_amount,  // Use the calculated commission amount
+            one_time_commission: one_time_commission_amount,  // Pass one-time commission amount
             tenancy_id: frm.doc.name,
             child_row_name: row.name  // Pass the child row name for tracking
         },
@@ -1200,7 +1203,7 @@ function createPaymentEntryForCommission(frm, row, invoice_id, callback) {
                 frappe.call({
                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry', 
                     args: {
-                        party: frm.doc.tenant,
+                        party: frm.doc.property_owner,
                         payment_amount: row.amount, // Assuming row.amount is the invoice amount
                         paid_amount: row.amount,
                         reference_no: invoice_id,

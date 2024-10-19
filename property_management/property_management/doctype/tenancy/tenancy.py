@@ -28,7 +28,7 @@ def tenant_schedule(doc, event):
                 new_event.save()
 
 @frappe.whitelist()
-def create_invoice(tenant, prt, prt_name, amt, custom_tenancy_id):
+def create_invoice(tenant, schedule_date, prt, prt_name, amt, custom_tenancy_id):
     items = [
         {"item_code": "Sujlam", "qty": 1, "rate": 100},
         
@@ -36,6 +36,8 @@ def create_invoice(tenant, prt, prt_name, amt, custom_tenancy_id):
     ass_item = frappe.db.get_value('Item', {'asset': prt}, ['item_code'])
     doc = frappe.new_doc("Sales Invoice")
     doc.customer = tenant
+    doc.set_posting_time = 1,
+    doc.posting_date = schedule_date
     doc.property = prt  
     doc.property_name = prt_name
     doc.custom_tenancy_id = custom_tenancy_id
@@ -251,19 +253,34 @@ def create_partial_paymententry(doc, invoice_name, party, posting_date, payment_
     return payment_entry.name
 
 @frappe.whitelist()
-def create_sales_invoice(customer, commission, tenancy_id, child_row_name):
+def create_sales_invoice(customer, commission, one_time_commission, tenancy_id, child_row_name):
+    # Ensure commission and one_time_commission are numeric
+    commission = float(commission) if commission else 0
+    one_time_commission = float(one_time_commission) if one_time_commission else 0
+
     # Create a new Sales Invoice document
     invoice = frappe.get_doc({
         'doctype': 'Sales Invoice',
         'customer': customer,
         'tenancy_reference': tenancy_id,  # Custom field in Sales Invoice for tenancy reference
-        'items': [{
-            'item_code': 'Commission',  # The fixed item name
-            'qty': 1,
-            'rate': commission,  # Apply the commission amount
-            'description': f'Commission for schedule {child_row_name}'
-        }]
+        'items': [
+            {
+                'item_code': 'Commission',  # The first item for commission
+                'qty': 1,
+                'rate': commission,  # Apply the commission amount
+                'description': f'Commission for schedule {child_row_name}'
+            }
+        ]
     })
+
+    # If one_time_commission exists, add a second item for it
+    if one_time_commission > 0:
+        invoice.append('items', {
+            'item_code': 'One Time Commission',  # The second item for one-time commission
+            'qty': 1,
+            'rate': one_time_commission,  # Apply the one-time commission amount
+            'description': f'One Time Commission for schedule {child_row_name}'
+        })
 
     # Add a tax row to the taxes table with required values
     invoice.append('taxes', {
@@ -279,6 +296,7 @@ def create_sales_invoice(customer, commission, tenancy_id, child_row_name):
     frappe.db.commit()
 
     return invoice.name
+
 
 
 @frappe.whitelist()

@@ -29,6 +29,7 @@
   "company",
   "start_date",
   "end_date",
+  "property_owner",
   "asset_owner",
   "supplier",
   "commission",
@@ -247,12 +248,19 @@
    "fieldtype": "Currency",
    "label": "Total Gross Rent Amount",
    "read_only": 1
+  },
+  {
+   "fetch_from": "asset.custom_property_owner",
+   "fieldname": "property_owner",
+   "fieldtype": "Link",
+   "label": "Property Owner",
+   "options": "Customer"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-10-05 23:13:18.137470",
+ "modified": "2024-10-18 18:31:12.391330",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Tenancy",
