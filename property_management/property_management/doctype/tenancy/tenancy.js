@@ -913,7 +913,7 @@ function createPaymentEntriesForAllRows(frm) {
             }
 
             // Check if a payment entry is already created and invoice exists
-            if (!row.payment_entry && row.invoice) {
+            if (!row.payment_entry && row.invoice && !row.payment_entry_1) {
                 // Create a payment entry if none exists for the row
                 createPaymentEntryForRow(frm, row, function() {
                     // After processing this row, save and move to the next row
@@ -1025,49 +1025,73 @@ frappe.ui.form.on('Tenant Schedule', {
             return;
         }
 
-        // Check for existing payment entries and assign accordingly
-        if (!row.payment_entry_1) {
-            // First partial payment
-            create_partial_paymententry(frm, cdt, cdn, 'payment_entry_1', 'paid_amount_1', 'outstanding_1', partial_paid_amount, function() {
-                // Save the document after updating payment_entry_1
-                frm.save('Update');
-            });
+        // Check if the payment_entry field has a value (existing draft payment entry)
+        if (row.payment_entry) {
+            var payment_entry_name = row.payment_entry; // Capture the Payment Entry ID
 
-            if (frm.doc.asset_owner == "Supplier") {
-                console.log("Asset owner is Supplier, proceeding with payment and purchase creation...");
-                
-                // After submitting, create purchase invoice and purchase payment entry
-                create_sales_payment_and_purchase(frm, cdt, cdn, function() {
-                    // Optionally save again if additional changes are made
-                    // frm.save();
+            // First, clear the payment_entry field
+            frappe.model.set_value(cdt, cdn, 'payment_entry', null);
+            frm.save('Update').then(function() {
+                // After saving, delete the existing draft payment entry, ignoring permissions
+                frappe.call({
+                    method: 'frappe.client.delete',
+                    args: {
+                        doctype: 'Payment Entry',
+                        name: payment_entry_name, // Provide the Payment Entry ID
+                        ignore_permissions: true // Ignore permissions
+                    },
+                    callback: function(r) {
+                        if (!r.exc) {
+                            // Proceed with partial payments after deletion
+                            handle_partial_payment(frm, cdt, cdn, partial_paid_amount);
+                        }
+                    }
                 });
-            }
-
-        } else if (!row.payment_entry_2) {
-            // Second partial payment
-            create_partial_paymententry(frm, cdt, cdn, 'payment_entry_2', 'paid_amount_2', 'outstanding_2', partial_paid_amount, function() {
-                frm.save();
-            });
-        } else if (!row.payment_entry_3) {
-            // Third partial payment
-            create_partial_paymententry(frm, cdt, cdn, 'payment_entry_3', 'paid_amount_3', 'outstanding_3', partial_paid_amount, function() {
-                frm.save();
-            });
-        } else if (!row.payment_entry_4) {
-            // Fourth partial payment
-            create_partial_paymententry(frm, cdt, cdn, 'payment_entry_4', 'paid_amount_4', 'outstanding_4', partial_paid_amount, function() {
-                frm.save();
             });
         } else {
-            frappe.msgprint(__('All four partial payments have already been made.'));
+            // Proceed directly if there's no existing payment entry
+            handle_partial_payment(frm, cdt, cdn, partial_paid_amount);
         }
     }
 });
 
-// Create partial payment entry and update fields
-function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_amount_field, outstanding_field, partial_paid_amount) {
+// Function to handle partial payments
+function handle_partial_payment(frm, cdt, cdn, partial_paid_amount) {
     var row = locals[cdt][cdn];
-    var invoice_name = row.invoice;
+
+    if (!row.payment_entry_1) {
+        // First partial payment
+        create_partial_paymententry(frm, cdt, cdn, 'payment_entry_1', 'paid_amount_1', 'outstanding_1', partial_paid_amount, function() {
+            frm.save('Update');
+            if (frm.doc.asset_owner == "Supplier") {
+                create_sales_payment_and_purchase(frm, cdt, cdn);
+            }
+        });
+    } else if (!row.payment_entry_2) {
+        // Second partial payment
+        create_partial_paymententry(frm, cdt, cdn, 'payment_entry_2', 'paid_amount_2', 'outstanding_2', partial_paid_amount, function() {
+            frm.save('Update');
+        });
+    } else if (!row.payment_entry_3) {
+        // Third partial payment
+        create_partial_paymententry(frm, cdt, cdn, 'payment_entry_3', 'paid_amount_3', 'outstanding_3', partial_paid_amount, function() {
+            frm.save('Update');
+        });
+    } else if (!row.payment_entry_4) {
+        // Fourth partial payment
+        create_partial_paymententry(frm, cdt, cdn, 'payment_entry_4', 'paid_amount_4', 'outstanding_4', partial_paid_amount, function() {
+            frm.save('Update');
+        });
+    } else {
+        frappe.msgprint(__('All four partial payments have already been made.'));
+    }
+}
+
+
+// Create partial payment entry and update fields
+function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_amount_field, outstanding_field, partial_paid_amount, callback) {
+    var row = locals[cdt][cdn];
+    var invoice_name = row.invoice; 
     var schedule_date = row.schedule_date;
 
     // Fetch default bank account (paid_to)
@@ -1112,8 +1136,9 @@ function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_am
                             var new_outstanding = previous_outstanding - partial_paid_amount;
 
                             frappe.model.set_value(cdt, cdn, outstanding_field, new_outstanding);
-                            frm.save('Update');
-                            console.log(`Partial payment entry created: ${response.message}`);
+                            
+                            // Call the callback function after the payment entry is created and fields are updated
+                            if (callback) callback();
                         } else {
                             frappe.msgprint('Failed to create partial payment entry.');
                         }
@@ -1125,6 +1150,7 @@ function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_am
         }
     });
 }
+
 
 ///////////////////////////////////////////////
 

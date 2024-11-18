@@ -24,6 +24,7 @@ def create_tenant_customer(doc, event):
 		new_tenant = frappe.get_doc(dict(
 			doctype = 'Customer',
 			customer_name = doc.name,
+			customer_type = "Company",
 			is_tenant= 1,
 			is_customer = 0,
 			tenant = doc.name,

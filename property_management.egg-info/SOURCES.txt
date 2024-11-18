@@ -34,6 +34,8 @@ property_management/property_management/custom/sales_invoice.json
 property_management/property_management/custom/sales_invoice_item.json
 property_management/property_management/custom/tenancy.json
 property_management/property_management/custom/tenant.json
+property_management/property_management/custom_script/asset.py
+property_management/property_management/custom_script/sales_invoice.py
 property_management/property_management/doctype/__init__.py
 property_management/property_management/doctype/documents/__init__.py
 property_management/property_management/doctype/documents/documents.json
@@ -110,6 +112,9 @@ property_management/property_management/doctype/property_owner_group/test_proper
 property_management/property_management/doctype/safety_certificate/__init__.py
 property_management/property_management/doctype/safety_certificate/safety_certificate.json
 property_management/property_management/doctype/safety_certificate/safety_certificate.py
+property_management/property_management/doctype/shareholder_property/__init__.py
+property_management/property_management/doctype/shareholder_property/shareholder_property.json
+property_management/property_management/doctype/shareholder_property/shareholder_property.py
 property_management/property_management/doctype/tenancy/__init__.py
 property_management/property_management/doctype/tenancy/tenancy.js
 property_management/property_management/doctype/tenancy/tenancy.json

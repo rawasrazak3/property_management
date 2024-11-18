@@ -1,0 +1,114 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-06 09:06:31.080982",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_imtn",
+  "amended_from",
+  "property",
+  "shareholder",
+  "shareholder_name",
+  "contribution",
+  "amount",
+  "column_break_pngs",
+  "gross_purchase_amount",
+  "asset_quantity",
+  "actual_property_amount",
+  "total_expenses"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_imtn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Property Shareholder Log",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "shareholder",
+   "fieldtype": "Link",
+   "label": "Shareholder",
+   "options": "Shareholder"
+  },
+  {
+   "fieldname": "shareholder_name",
+   "fieldtype": "Data",
+   "label": "Shareholder Name"
+  },
+  {
+   "fieldname": "contribution",
+   "fieldtype": "Percent",
+   "label": "Contribution %"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
+  },
+  {
+   "fieldname": "column_break_pngs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gross_purchase_amount",
+   "fieldtype": "Currency",
+   "label": "Gross Amount"
+  },
+  {
+   "fieldname": "asset_quantity",
+   "fieldtype": "Float",
+   "label": "Qty"
+  },
+  {
+   "fieldname": "actual_property_amount",
+   "fieldtype": "Currency",
+   "label": "Actual Property Amount"
+  },
+  {
+   "fieldname": "total_expenses",
+   "fieldtype": "Currency",
+   "label": "Total Expenses"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-06 10:07:46.222901",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Property Shareholder Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

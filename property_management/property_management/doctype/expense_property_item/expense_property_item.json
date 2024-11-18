@@ -20,18 +20,20 @@
    "options": "Asset"
   },
   {
-   "fetch_from": "property.gfa_sqft",
+   "fetch_from": "property.asset_quantity",
    "fieldname": "gfa_sqft",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "GFA sqft"
+   "label": "GFA sqft",
+   "read_only": 1
   },
   {
    "fetch_from": "property.gross_purchase_amount",
    "fieldname": "gross_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Gross Amount"
+   "label": "Gross Amount",
+   "read_only": 1
   },
   {
    "fieldname": "allocated_expense_amount",
@@ -43,7 +45,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-19 08:21:28.028243",
+ "modified": "2024-11-01 10:27:14.697203",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Expense Property Item",

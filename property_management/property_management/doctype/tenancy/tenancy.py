@@ -340,3 +340,38 @@ def get_default_account(mode_of_payment):
     # Fetch the default account linked to the mode of payment
     account = frappe.db.get_value('Mode of Payment Account', {'parent': mode_of_payment}, 'default_account')
     return account
+
+import frappe
+
+def before_cancel(doc, method):
+    tenancy_id = doc.name
+
+    # Cancel all linked sales invoices where custom_tenancy_id == tenancy_id
+    linked_sales_invoices = frappe.get_all('Sales Invoice', filters={'custom_tenancy_id': tenancy_id, 'docstatus': 1})
+    for invoice in linked_sales_invoices:
+        try:
+            # Fetch the Sales Invoice with ignore_permissions
+            sales_invoice = frappe.get_doc('Sales Invoice', invoice.name)
+            sales_invoice.flags.ignore_permissions = True  # Ignore permissions to allow canceling
+            sales_invoice.flags.ignore_links = True  # Ignore linked document validation
+            # Cancel the sales invoice
+            if sales_invoice.docstatus == 1:
+                sales_invoice.cancel()
+                frappe.msgprint(f"Sales Invoice {sales_invoice.name} canceled successfully.")
+        except Exception as e:
+            frappe.throw(f"Error canceling Sales Invoice {sales_invoice.name}: {str(e)}")
+
+    # Cancel all linked purchase invoices where custom_tenancy_id == tenancy_id
+    linked_purchase_invoices = frappe.get_all('Purchase Invoice', filters={'custom_tenancy_id': tenancy_id, 'docstatus': 1})
+    for invoice in linked_purchase_invoices:
+        try:
+            # Fetch the Purchase Invoice with ignore_permissions
+            purchase_invoice = frappe.get_doc('Purchase Invoice', invoice.name)
+            purchase_invoice.flags.ignore_permissions = True  # Ignore permissions to allow canceling
+            purchase_invoice.flags.ignore_links = True  # Ignore linked document validation
+            # Cancel the purchase invoice
+            if purchase_invoice.docstatus == 1:
+                purchase_invoice.cancel()
+                frappe.msgprint(f"Purchase Invoice {purchase_invoice.name} canceled successfully.")
+        except Exception as e:
+            frappe.throw(f"Error canceling Purchase Invoice {purchase_invoice.name}: {str(e)}")

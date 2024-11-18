@@ -46,7 +46,8 @@ doctype_js = {
 			"Asset" : "public/js/asset.js",
 			"Contract" : "public/js/contract.js",
 			"Customer" : "public/js/customer.js",
-			"Event" : "public/js/event.js"
+			"Event" : "public/js/event.js",
+            "Journal Entry": "public/js/journal_entry.js"
 			}
 doctype_list_js = {
 			"Asset" : "public/js/asset_list.js"
@@ -145,6 +146,15 @@ doc_events = {
 
 	"Landlord": {
 		"on_change": "property_management.property_management.doctype.landlord.landlord.create_landlord_customer"
+	},
+    "Sales Invoice": {
+		"on_submit": "property_management.property_management.custom_script.sales_invoice.create_payment_entry_from_sales_invoice"
+	},
+    "Journal Entry": {
+		"on_submit": [
+			"property_management.property_management.custom_script.journal_entry.update_shareholder_expenses",
+			"property_management.property_management.custom_script.journal_entry.update_shareholder_exit"
+		]
 	}
 
 }
