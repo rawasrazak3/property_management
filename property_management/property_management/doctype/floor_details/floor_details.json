@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-20 22:19:44.037367",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "floor_no",
+  "total_resident_unit",
+  "total_commercial_unit"
+ ],
+ "fields": [
+  {
+   "fieldname": "floor_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Floor No"
+  },
+  {
+   "fieldname": "total_resident_unit",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Resident Unit"
+  },
+  {
+   "fieldname": "total_commercial_unit",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Commercial Unit"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-20 22:21:19.484216",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Floor Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

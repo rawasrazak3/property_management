@@ -155,6 +155,7 @@ frappe.listview_settings['Asset'] = {
                                         available_for_use_date: values.available_for_use_date,
                                         purchase_date: values.purchase_date,
                                         custom_property_type: "Land",
+                                        is_existing_asset: 1,
                                         custom_against_property: selected_asset.name // Assign selected asset ID to custom_against_property
                                     }
                                 },

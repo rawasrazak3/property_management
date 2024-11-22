@@ -74,20 +74,6 @@ frappe.ui.form.on('Tenant Schedule', {
 
 });
 
-// frappe.ui.form.on('Tenant Schedule', {
-// 	is_paid: function(frm,cdt,cdn) {
-// 		var e = locals[cdt][cdn];
-// 		if (frm.doc.is_tenant_tenancy == 1){
-// 			if(e.is_paid == 1){
-// 				create_paymententry(frm,cdt,cdn);
-// 			}
-// 		} else if(frm.doc.is_landlord_tenancy == 1){
-// 			if(e.is_paid == 1){
-// 				create_paymententry_landlord(frm,cdt,cdn);
-// 			}
-// 		}
-// 	}
-// });
 
 function createInvoice(frm,cdt,cdn) {
 	var row = locals[cdt][cdn];
@@ -112,58 +98,7 @@ function createInvoice(frm,cdt,cdn) {
         }
     });
 }
-// frappe.ui.form.on('Tenancy', {
-//     refresh: function(frm) {
-//         // Add a custom button called "Create Invoice"
-//         frm.add_custom_button(__('Create Invoice'), function() {
-//             // Disable the button to prevent multiple submissions
-//             frm.disable_save();
 
-//             let promises = [];
-
-//             // Iterate over the tenant_schedule child table rows
-//             frm.doc.tenant_schedule.forEach(function(row) {
-//                 if (!row.is_invoice) { // Only process rows without an invoice
-//                     promises.push(new Promise((resolve, reject) => {
-//                         frappe.call({
-//                             method: 'property_management.property_management.doctype.tenancy.tenancy.create_invoice',
-//                             args: {
-//                                 tenant: frm.doc.tenant,
-//                                 prt: frm.doc.asset,
-//                                 prt_name: frm.doc.asset_name,
-//                                 amt: row.amount,
-//                                 custom_tenancy_id: frm.doc.name
-//                             },
-//                             callback: function(response) {
-//                                 if (response.message) {
-//                                     // Set the invoice number in the row
-//                                     frappe.model.set_value(row.doctype, row.name, 'invoice', response.message);
-//                                     frappe.model.set_value(row.doctype, row.name, 'is_invoice', 1);
-//                                     resolve();
-//                                 } else {
-//                                     reject('Failed to create invoice');
-//                                 }
-//                             }
-//                         });
-//                     }));
-//                 }
-//             });
-
-//             // Wait for all invoices to be created
-//             Promise.all(promises).then(() => {
-//                 // Refresh the field to reflect changes
-//                 frm.refresh_field('tenant_schedule');
-//                 // Save the form after making the changes
-//                 frm.save_or_update();
-//             }).catch((error) => {
-//                 frappe.msgprint(error);
-//             }).finally(() => {
-//                 // Re-enable the save button
-//                 frm.enable_save();
-//             });
-//         });
-//     }
-// });
 
 
 function createInvoicelandlord(frm,cdt,cdn) {
@@ -189,123 +124,6 @@ function createInvoicelandlord(frm,cdt,cdn) {
     });
 }
 
-// function create_paymententry(frm,cdt,cdn) {
-// 	var row = locals[cdt][cdn];
-// 	invoice_name = row.invoice
-// 	payment_amount = row.invoice_amount
-// 	schedule_date = row.schedule_date
-// 	console.log(":::::::::::::::::::::::::::::::::::::::::",row)
-//     frappe.call({
-//         method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry',
-//         args: {
-//             party: frm.doc.tenant,
-//             payment_amount: row.invoice_amount,
-//             paid_amount: row.invoice_amount,
-//             received_amount: row.invoice_amount,
-//             paid_to: row.paid_to,
-//             invoice_name: row.invoice,
-//             doc: frm.doc.name,
-//             schedule_date: schedule_date,
-//             invoice_ref: row.invoice
-//         },
-//         callback: function(response) {
-//             if (response.message) {
-//                 // frappe.msgprint(`${response.message} Payment Entry created successfully!`);
-//                 frappe.model.set_value(cdt,cdn,'payment_entry', response.message);
-//                 frm.save('Update');
-//             } else {
-//                 frappe.msgprint('Failed to create payment entry');
-//             }
-//         }
-//     });
-// }
-
-// function create_paymententry(frm, cdt, cdn) {
-//     var row = locals[cdt][cdn];
-//     var invoice_name = row.invoice;
-//     var payment_amount = row.invoice_amount;
-//     var schedule_date = row.schedule_date;
-
-//     console.log(":::::::::::::::::::::::::::::::::::::::::", row.invoice);
-
-//     // Fetch default bank account
-//     frappe.call({
-//         method: 'frappe.client.get_value',
-//         args: {
-//             doctype: 'Company',
-//             fieldname: 'default_cash_account',
-//             filters: {
-//                 name: frm.doc.company // assuming you have the company in the form
-//             }
-//         },
-//         callback: function(r) {
-//             if (r && r.message) {
-//                 var default_cash_account = r.message.default_cash_account;
-
-//                 // Proceed with creating the payment entry using the default bank account
-//                 frappe.call({
-//                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry',
-//                     args: {
-//                         party: frm.doc.tenant,
-//                         payment_amount: row.invoice_amount,
-//                         paid_amount: row.invoice_amount,
-//                         reference_no: row.reference_no,
-//                         received_amount: row.invoice_amount,
-//                         paid_to: default_cash_account, // set default bank account here
-//                         invoice_name: row.invoice,
-//                         doc: frm.doc.name,
-//                         schedule_date: schedule_date,
-//                         posting_date: schedule_date,
-//                         invoice_ref: row.invoice
-//                     },
-//                     callback: function(response) {
-//                         if (response.message) {
-//                             frappe.model.set_value(cdt, cdn, 'payment_entry', response.message);
-//                             frm.save('Update');
-//                         } else {
-//                             frappe.msgprint('Failed to create payment entry');
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 frappe.msgprint('Failed to fetch default bank account');
-//             }
-//         }
-//     });
-// }
-
-
-
-// function create_paymententry_landlord(frm,cdt,cdn) {
-// 	var row = locals[cdt][cdn];
-// 	invoice_name = row.invoice
-// 	payment_amount = row.invoice_amount
-// 	schedule_date = row.schedule_date
-// 	console.log(":::::::::::::::::::::::::::::::::::::::::",row.paid_to)
-//     frappe.call({
-//         method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry_landlord',
-//         args: {
-//             party: frm.doc.landlord,
-//             payment_amount: row.invoice_amount,
-//             paid_amount: row.invoice_amount,
-//             received_amount: row.invoice_amount,
-//             paid_to: row.paid_to,
-//             invoice_name: row.invoice,
-//             doc: frm.doc.name,
-//             schedule_date: schedule_date,
-//             invoice_ref: row.invoice
-//         },
-//         callback: function(response) {
-//             if (response.message) {
-//                 // frappe.msgprint(`${response.message} Payment Entry created successfully!`);
-//                 frappe.model.set_value(cdt,cdn,'payment_entry', response.message);
-//                 frm.save('Update');
-//             } else {
-//                 frappe.msgprint('Failed to create payment entry');
-//             }
-//         }
-//     });
-// }
 
 function create_paymententry_landlord(frm, cdt, cdn) {
     var row = locals[cdt][cdn];
@@ -415,19 +233,6 @@ frappe.ui.form.on("Tenancy", "refresh", function(frm) {
     });
 });
 
-// frappe.ui.form.on('Tenancy', {
-//     refresh: function(frm) {
-//         // Add a custom button called "Create Invoice"
-//         frm.add_custom_button(__('Create Invoice'), function() {
-//             // Iterate over the tenant_schedule child table rows
-//             frm.doc.tenant_schedule.forEach(function(row) {
-//                 // Set the 'is_invoice' checkbox to 1 (checked) for each row
-//                 frappe.model.set_value(row.doctype, row.name, 'is_invoice', 1);
-//             });
-
-//         });
-//     }
-// });
 
 frappe.ui.form.on('Tenant Schedule', {
     is_purchase: function(frm, cdt, cdn) {
@@ -448,192 +253,6 @@ frappe.ui.form.on('Tenant Schedule', {
     }
 });
 
-// function createPurchaseInvoice(frm, cdt, cdn) {
-//     var row = locals[cdt][cdn];
-//     var commission = frm.doc.commission || 0; // Default commission to 0 if not defined
-//     var commission_amount = (commission / 100) * row.invoice_amount;
-//     var net_amount = row.invoice_amount - commission_amount;
-
-//     frappe.call({
-//         method: 'property_management.property_management.doctype.tenancy.tenancy.create_purchase_invoice',
-//         args: {
-//             supplier: frm.doc.supplier,
-//             prt: frm.doc.asset,
-//             prt_name: frm.doc.asset_name,
-//             net_amount: net_amount,
-//             custom_tenancy_id: frm.doc.name
-//         },
-//         callback: function(response) {
-//             if (response.message) {
-//                 frappe.model.set_value(cdt, cdn, 'purchase_invoice', response.message);
-//                 frm.save('Update');
-//             } else {
-//                 frappe.msgprint('Failed to create purchase invoice');
-//             }
-//         }
-//     });
-// }
-
-// function createPurchasePaymentEntry(frm, cdt, cdn) {
-//     var row = locals[cdt][cdn];
-//     var schedule_date = row.schedule_date;
-
-//     frappe.call({
-//         method: 'frappe.client.get_value',
-//         args: {
-//             doctype: 'Company',
-//             fieldname: 'default_cash_account',
-//             filters: {
-//                 name: frm.doc.company
-//             }
-//         },
-//         callback: function(r) {
-//             if (r && r.message) {
-//                 var default_cash_account = r.message.default_cash_account;
-
-//                 // Create the payment entry for purchase invoice
-//                 frappe.call({
-//                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_purchase_payment_entry',
-//                     args: {
-//                         supplier: frm.doc.supplier,
-//                         payment_amount: row.invoice_amount,
-//                         paid_from: default_cash_account, // Added paid_to for purchase invoice
-//                         purchase_invoice: row.purchase_invoice,
-//                         posting_date : schedule_date,
-//                         schedule_date: schedule_date,
-//                         reference_no: row.reference_no,
-//                         invoice_ref: row.purchase_invoice,
-//                         doc: frm.doc.name
-//                     },
-//                     callback: function(response) {
-//                         if (response.message) {
-//                             frappe.model.set_value(cdt, cdn, 'payment_entry_purchase', response.message);
-//                             frm.save('Update');
-//                         } else {
-//                             frappe.msgprint('Failed to create payment entry');
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 frappe.msgprint('Failed to fetch default bank account');
-//             }
-//         }
-//     });
-// }
-
-//////////////////////////////
-
-// frappe.ui.form.on('Tenant Schedule', {
-//     is_paid: function(frm, cdt, cdn) {
-//         var e = locals[cdt][cdn];
-
-//         // Check if reference_no is empty
-//         if (!e.reference_no) {
-//             frappe.msgprint(__('Please add a reference number before marking as paid.'));
-//             frappe.model.set_value(cdt, cdn, 'is_paid', 0);  // Uncheck the 'is_paid' checkbox
-//             return;  // Stop further execution
-//         }
-
-//         // Check if is_paid is 1 and the asset owner is Supplier
-//         if (e.is_paid == 1) {
-//             if (frm.doc.asset_owner == "Supplier") {
-//                 console.log("Asset owner is Supplier, proceeding with payment and purchase creation...");
-//                 // Trigger the 3 actions: sales invoice payment, purchase invoice creation, and purchase payment entry creation
-//                 create_sales_payment_and_purchase(frm, cdt, cdn);
-//             } else {
-//                 // Asset owner is not Supplier, just create sales payment entry
-//                 console.log("Asset owner is not Supplier, only creating sales payment entry.");
-//                 create_paymententry(frm, cdt, cdn);
-//             }
-//         } else {
-//             console.log("is_paid is not checked, skipping payment creation.");
-//         }
-//     }
-// });
-
-
-// function create_sales_payment_and_purchase(frm, cdt, cdn) {
-//     var row = locals[cdt][cdn];
-
-//     // Step 1: Create Payment Entry for Sales Invoice
-//     console.log("Creating payment entry for sales invoice...");
-//     create_paymententry(frm, cdt, cdn, function() {
-//         console.log("Payment entry for sales invoice created. Proceeding with purchase invoice creation...");
-
-//         // Step 2: Check is_purchase checkbox and create Purchase Invoice
-//         // frappe.model.set_value(cdt, cdn, 'is_purchase', 1); // Check the is_purchase checkbox
-//         frm.save();  // Save form after checking is_purchase
-
-//         createPurchaseInvoice(frm, cdt, cdn, function(purchase_invoice_id) {
-//             // Set purchase invoice ID
-//             console.log("Purchase invoice created with ID:", purchase_invoice_id);
-//             frappe.model.set_value(cdt, cdn, 'purchase_invoice', purchase_invoice_id);
-//             frm.save('Update');
-
-//             // Step 3: Check is_purchase_payment checkbox and create Payment Entry for Purchase Invoice
-//             // frappe.model.set_value(cdt, cdn, 'is_purchase_payment', 1); // Check the is_purchase_payment checkbox
-//             frm.save();  // Save form after checking is_purchase_payment
-
-//             console.log("Creating payment entry for purchase invoice...");
-//             createPurchasePaymentEntry(frm, cdt, cdn, purchase_invoice_id);
-//         });
-//     });
-// }
-
-// function create_paymententry(frm, cdt, cdn, callback) {
-//     var row = locals[cdt][cdn];
-//     var invoice_name = row.invoice;
-//     var payment_amount = row.invoice_amount;
-//     var schedule_date = row.schedule_date;
-
-//     // Fetch default bank account (paid_to)
-//     frappe.call({
-//         method: 'frappe.client.get_value',
-//         args: {
-//             doctype: 'Company',
-//             fieldname: 'default_cash_account',
-//             filters: {
-//                 name: frm.doc.company
-//             }
-//         },
-//         callback: function(r) {
-//             if (r && r.message) {
-//                 var default_cash_account = r.message.default_cash_account;
-
-//                 // Create the payment entry
-//                 frappe.call({
-//                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry',
-//                     args: {
-//                         party: frm.doc.tenant,
-//                         payment_amount: row.invoice_amount,
-//                         paid_amount: row.invoice_amount,
-//                         reference_no: row.reference_no,
-//                         received_amount: row.invoice_amount,
-//                         paid_to: default_cash_account,
-//                         invoice_name: row.invoice,
-//                         doc: frm.doc.name,
-//                         schedule_date: schedule_date,
-//                         posting_date: schedule_date,
-//                         invoice_ref: row.invoice
-//                     },
-//                     callback: function(response) {
-//                         if (response.message) {
-//                             frappe.model.set_value(cdt, cdn, 'payment_entry', response.message);
-//                             frm.save('Update');
-//                             console.log("Payment entry for sales invoice created:", response.message);
-
-//                             if (callback) callback(); // Call the next step
-//                         } else {
-//                             frappe.msgprint('Failed to create payment entry for sales invoice');
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 frappe.msgprint('Failed to fetch default cash account');
-//             }
-//         }
-//     });
-// }
 
 frappe.ui.form.on('Tenant Schedule', {
     is_paid: function(frm, cdt, cdn) {
@@ -1158,13 +777,10 @@ frappe.ui.form.on('Tenant Schedule', {
     is_sales_commission: function(frm, cdt, cdn) {
         var row = locals[cdt][cdn];
 
-        // Check if the is_sales_commission checkbox is ticked
         if (row.is_sales_commission) {
             createSalesInvoiceWithCommission(frm, cdt, cdn, function(invoice_id) {
-                // After creating the sales invoice, create the payment entry
-                // Update the child table fields
                 frappe.model.set_value(cdt, cdn, 'sales_invoice_commission', invoice_id);
-                frm.save('Update'); // Save the form after setting the values
+                frm.save('Update'); 
             });
         }
     }
@@ -1172,36 +788,32 @@ frappe.ui.form.on('Tenant Schedule', {
 
 function createSalesInvoiceWithCommission(frm, cdt, cdn, callback) {
     var row = locals[cdt][cdn];
-    var commission_percentage = frm.doc.commission || 0;  // 3% commission
-    var one_time_commission_percentage = frm.doc.one_time_commission || 0;  // 5% one-time commission
-    var total_gross_rent_amount = frm.doc.total_gross_rent_amount || 0;  // e.g., 300
-    var tenant_schedule_amount = row.amount || 0;  // e.g., 100
+    var commission_percentage = frm.doc.commission || 0; 
+    var one_time_commission_percentage = frm.doc.one_time_commission || 0;  
+    var total_gross_rent_amount = frm.doc.total_gross_rent_amount || 0;  
+    var tenant_schedule_amount = row.amount || 0;  
     var commission_amount = 0;
     var one_time_commission_amount = 0;
 
-    // Check if start_date equals schedule_date and asset_owner is 'Supplier'
     if (frm.doc.asset_owner === "Supplier" && frm.doc.start_date === row.schedule_date) {
-        // Calculate both 3% of tenant_schedule_amount and 5% of total_gross_rent_amount
         commission_amount = (commission_percentage / 100) * tenant_schedule_amount;
         one_time_commission_amount = (one_time_commission_percentage / 100) * total_gross_rent_amount;
     } else if (frm.doc.asset_owner === "Supplier") {
-        // If dates don't match, only calculate 5% of tenant_schedule_amount
         commission_amount = (commission_percentage / 100) * tenant_schedule_amount;
     }
 
-    // Create Sales Invoice with Commission and One Time Commission (if applicable)
     frappe.call({
         method: 'property_management.property_management.doctype.tenancy.tenancy.create_sales_invoice',
         args: {
             customer: frm.doc.property_owner,
-            commission: commission_amount,  // Use the calculated commission amount
-            one_time_commission: one_time_commission_amount,  // Pass one-time commission amount
+            commission: commission_amount, 
+            one_time_commission: one_time_commission_amount, 
             tenancy_id: frm.doc.name,
-            child_row_name: row.name  // Pass the child row name for tracking
+            child_row_name: row.name  
         },
         callback: function(response) {
             if (response.message) {
-                if (callback) callback(response.message);  // Pass the sales invoice ID to callback
+                if (callback) callback(response.message); 
             } else {
                 frappe.msgprint('Failed to create sales invoice for commission');
             }
@@ -1211,7 +823,6 @@ function createSalesInvoiceWithCommission(frm, cdt, cdn, callback) {
 
 
 function createPaymentEntryForCommission(frm, row, invoice_id, callback) {
-    // Fetch default bank account (paid_to)
     frappe.call({
         method: 'frappe.client.get_value',
         args: {
@@ -1225,12 +836,11 @@ function createPaymentEntryForCommission(frm, row, invoice_id, callback) {
             if (r && r.message) {
                 var default_cash_account = r.message.default_cash_account;
 
-                // Create the payment entry
                 frappe.call({
                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry', 
                     args: {
                         party: frm.doc.property_owner,
-                        payment_amount: row.amount, // Assuming row.amount is the invoice amount
+                        payment_amount: row.amount,
                         paid_amount: row.amount,
                         reference_no: invoice_id,
                         received_amount: row.amount,
@@ -1243,181 +853,17 @@ function createPaymentEntryForCommission(frm, row, invoice_id, callback) {
                     },
                     callback: function(response) {
                         if (response.message) {
-                            // Set the payment entry ID in the row and execute the callback
-                            callback(response.message); // Pass payment entry ID to callback
+                            callback(response.message);
                         } else {
                             frappe.msgprint('Failed to create payment entry');
-                            callback(); // Continue processing the next row even if payment entry creation fails
+                            callback();
                         }
                     }
                 });
             } else {
                 frappe.msgprint('Failed to fetch default cash account');
-                callback(); // Continue processing if cash account fetch fails
+                callback();
             }
         }
     });
 }
-
-
-
-
-// frappe.ui.form.on('Tenant Schedule', {
-//     is_paid: function(frm, cdt, cdn) {
-//         var e = locals[cdt][cdn];
-
-//         if (e.is_paid == 1) {
-//             if (frm.doc.asset_owner == "Supplier") {
-//                 // Trigger the 3 actions: sales invoice payment, purchase invoice creation, and purchase payment entry creation
-//                 create_sales_payment_and_purchase(frm, cdt, cdn);
-//             } else {
-//                 // If asset owner is not Supplier, just create payment entry for sales invoice
-//                 create_paymententry(frm, cdt, cdn);
-//             }
-//         }
-//     }
-// });
-
-// function create_sales_payment_and_purchase(frm, cdt, cdn) {
-//     var row = locals[cdt][cdn];
-
-//     // Step 1: Create Payment Entry for Sales Invoice
-//     create_paymententry(frm, cdt, cdn, function() {
-//         // Step 2: Create Purchase Invoice
-//         createPurchaseInvoice(frm, cdt, cdn, function(purchase_invoice_id) {
-//             // Set purchase invoice ID
-//             frappe.model.set_value(cdt, cdn, 'purchase_invoice', purchase_invoice_id);
-//             frm.save('Update');
-
-//             // Step 3: Create Payment Entry for Purchase Invoice
-//             createPurchasePaymentEntry(frm, cdt, cdn, purchase_invoice_id);
-//         });
-//     });
-// }
-
-// function create_paymententry(frm, cdt, cdn, callback) {
-//     var row = locals[cdt][cdn];
-//     var invoice_name = row.invoice;
-//     var payment_amount = row.invoice_amount;
-//     var schedule_date = row.schedule_date;
-
-//     // Fetch default bank account (paid_to)
-//     frappe.call({
-//         method: 'frappe.client.get_value',
-//         args: {
-//             doctype: 'Company',
-//             fieldname: 'default_cash_account',
-//             filters: {
-//                 name: frm.doc.company
-//             }
-//         },
-//         callback: function(r) {
-//             if (r && r.message) {
-//                 var default_cash_account = r.message.default_cash_account;
-
-//                 // Create the payment entry
-//                 frappe.call({
-//                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_paymententry',
-//                     args: {
-//                         party: frm.doc.tenant,
-//                         payment_amount: row.invoice_amount,
-//                         paid_amount: row.invoice_amount,
-//                         reference_no: row.reference_no,
-//                         received_amount: row.invoice_amount,
-//                         paid_to: default_cash_account,
-//                         invoice_name: row.invoice,
-//                         doc: frm.doc.name,
-//                         schedule_date: schedule_date,
-//                         posting_date: schedule_date,
-//                         invoice_ref: row.invoice
-//                     },
-//                     callback: function(response) {
-//                         if (response.message) {
-//                             frappe.model.set_value(cdt, cdn, 'payment_entry', response.message);
-//                             frm.save('Update');
-//                             if (callback) callback();
-//                         } else {
-//                             frappe.msgprint('Failed to create payment entry');
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 frappe.msgprint('Failed to fetch default cash account');
-//             }
-//         }
-//     });
-// }
-
-// function createPurchaseInvoice(frm, cdt, cdn, callback) {
-//     var row = locals[cdt][cdn];
-//     var commission = frm.doc.commission || 0; // Default commission to 0 if not defined
-//     var commission_amount = (commission / 100) * row.invoice_amount;
-//     var net_amount = row.invoice_amount - commission_amount;
-
-//     frappe.call({
-//         method: 'property_management.property_management.doctype.tenancy.tenancy.create_purchase_invoice',
-//         args: {
-//             supplier: frm.doc.supplier,
-//             prt: frm.doc.asset,
-//             prt_name: frm.doc.asset_name,
-//             net_amount: net_amount,
-//             custom_tenancy_id: frm.doc.name
-//         },
-//         callback: function(response) {
-//             if (response.message) {
-//                 frappe.msgprint('Purchase invoice created successfully: ' + response.message);
-//                 if (callback) callback(response.message); // Pass the Purchase Invoice ID to callback
-//             } else {
-//                 frappe.msgprint('Failed to create purchase invoice');
-//             }
-//         }
-//     });
-// }
-
-// function createPurchasePaymentEntry(frm, cdt, cdn, purchase_invoice) {
-//     var row = locals[cdt][cdn];
-//     var schedule_date = row.schedule_date;
-
-//     // Fetch default cash account (paid_from)
-//     frappe.call({
-//         method: 'frappe.client.get_value',
-//         args: {
-//             doctype: 'Company',
-//             fieldname: 'default_cash_account',
-//             filters: {
-//                 name: frm.doc.company
-//             }
-//         },
-//         callback: function(r) {
-//             if (r && r.message) {
-//                 var default_cash_account = r.message.default_cash_account;
-
-//                 // Create payment entry for purchase invoice
-//                 frappe.call({
-//                     method: 'property_management.property_management.doctype.tenancy.tenancy.create_purchase_payment_entry',
-//                     args: {
-//                         supplier: frm.doc.supplier,
-//                         payment_amount: row.invoice_amount,
-//                         paid_from: default_cash_account, // Paid from for Purchase Invoice
-//                         purchase_invoice: purchase_invoice,
-//                         posting_date: schedule_date,
-//                         schedule_date: schedule_date,
-//                         reference_no: row.reference_no,
-//                         invoice_ref: purchase_invoice,
-//                         doc: frm.doc.name
-//                     },
-//                     callback: function(response) {
-//                         if (response.message) {
-//                             frappe.model.set_value(cdt, cdn, 'payment_entry_purchase', response.message);
-//                             frm.save('Update');
-//                         } else {
-//                             frappe.msgprint('Failed to create payment entry for purchase invoice');
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 frappe.msgprint('Failed to fetch default cash account');
-//             }
-//         }
-//     });
-// }

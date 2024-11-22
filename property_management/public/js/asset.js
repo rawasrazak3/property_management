@@ -567,6 +567,23 @@ function open_bulk_asset_split_dialog(frm) {
     dialog.show();
 }
 
+frappe.ui.form.on('Asset', {
+    refresh: function (frm) {
+        frm.add_custom_button(__('Multi Property'), function () {
+            // Redirect to the Multi Property doctype with pre-filled data
+            frappe.new_doc('Multi Property', {
+                property: frm.doc.name,  // Pass the current Asset's name
+                item_code: frm.doc.item_code,
+                item_name: frm.doc.item_name,
+                qty: frm.doc.gfa_sqft,
+                gross_amount: frm.doc.gross_purchase_amount,
+                available_for_use: frm.doc.available_for_use_date,
+                purchase_date: frm.doc.purchase_date
+            });
+        }, __('Create'));
+    }
+});
+
 //////////////////////////////////
 frappe.ui.form.on('Asset', {
     refresh: function(frm) {

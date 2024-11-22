@@ -1,0 +1,190 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-18 11:27:12.483492",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_lewm",
+  "amended_from",
+  "section_break_tcbt",
+  "property",
+  "item_code",
+  "item_name",
+  "name_prefix",
+  "no_of_floors",
+  "rooms_in_floor",
+  "column_break_fksq",
+  "date",
+  "qty",
+  "gross_amount",
+  "split_quantity",
+  "unit_price",
+  "available_for_use",
+  "purchase_date",
+  "section_break_kpwp",
+  "floor_details",
+  "section_break_glwi",
+  "split_property",
+  "multi_property_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_lewm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Multi Property",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_tcbt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Asset",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fksq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "property.asset_quantity",
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Qty"
+  },
+  {
+   "fieldname": "name_prefix",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name Prefix",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "property.gross_purchase_amount",
+   "fieldname": "gross_amount",
+   "fieldtype": "Currency",
+   "label": "Gross Amount"
+  },
+  {
+   "fieldname": "split_quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Split Quantity",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_glwi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "multi_property_table",
+   "fieldtype": "Table",
+   "label": "Multi Property Table",
+   "options": "Multi Property Table"
+  },
+  {
+   "fetch_from": "property.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Property Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "no_of_floors",
+   "fieldtype": "Float",
+   "label": "No of Floors",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rooms_in_floor",
+   "fieldtype": "Float",
+   "label": "No of rooms in a floor",
+   "reqd": 1
+  },
+  {
+   "fieldname": "split_property",
+   "fieldtype": "Button",
+   "label": "Split Property"
+  },
+  {
+   "fieldname": "unit_price",
+   "fieldtype": "Currency",
+   "label": "Unit Price"
+  },
+  {
+   "fetch_from": "property.item_code",
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Property Item",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "available_for_use",
+   "fieldtype": "Date",
+   "label": "Available for use"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date"
+  },
+  {
+   "fieldname": "section_break_kpwp",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "floor_details",
+   "fieldtype": "Table",
+   "label": "Floor Details",
+   "options": "Floor Details"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-11-20 22:22:54.336272",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Multi Property",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
