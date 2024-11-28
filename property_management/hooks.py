@@ -20,7 +20,26 @@ fixtures = [
         "filters": {
             "module": ["in", ["Property Management"]]
             }
-    }
+    },
+    {
+        "doctype":"Custom Field",
+		"filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Asset-custom_advance_payment_details",
+                    "Asset-custom_advance_amount",
+                    "Asset-custom_journal_entry_id",
+                    "Asset-custom_column_break_cwiwt",
+                    "Asset-custom_tenant",
+                    "Asset-custom_column_break_pr7vi",
+                    "Asset-custom_mode_of_payment",
+                    "Tenancy-custom_contract"
+				]
+			]
+		]
+	}
 	]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/property_management/css/property_management.css"
@@ -125,11 +144,15 @@ doctype_list_js = {
 
 doc_events = {
 	"Tenancy": {
-		"on_submit": "property_management.property_management.doctype.tenancy.tenancy.tenant_schedule"
+		"on_submit": "property_management.property_management.doctype.tenancy.tenancy.tenant_schedule",
+        "before_save": "property_management.property_management.doctype.tenancy.tenancy.create_contract_on_tenancy_save"	
 	},
 
 	"Asset": {
-		"on_submit": "property_management.api.crud_event.rent_item"
+		"on_submit": [
+            "property_management.api.crud_event.rent_item",
+        	"property_management.property_management.custom_script.asset.submit_asset_with_advance"
+        ]
 	},
 
 	"Property Owner": {
@@ -155,7 +178,14 @@ doc_events = {
 			"property_management.property_management.custom_script.journal_entry.update_shareholder_expenses",
 			"property_management.property_management.custom_script.journal_entry.update_shareholder_exit"
 		]
-	}
+	},
+    "Tenancy Termination":{
+        "before_submit" : [
+            "property_management.property_management.doctype.tenancy_termination.tenancy_termination.create_journal_entry",
+            "property_management.property_management.doctype.tenancy_termination.tenancy_termination.manage_property_on_termination",
+            "property_management.property_management.doctype.tenancy_termination.tenancy_termination.create_invoice_on_tenency_exit",
+		]
+	} 
 
 }
 

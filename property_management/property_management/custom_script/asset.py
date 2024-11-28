@@ -172,3 +172,58 @@ def create_journal_entry(asset_id, mode_of_payment):
     frappe.db.commit()
     
     return journal_entry.name
+
+@frappe.whitelist()
+def submit_asset_with_advance(self, method=None):
+    # Check if there's an advance amount added
+    if self.custom_advance_amount and self.custom_advance_amount > 0:
+        # Ensure that mode of payment and tenant are filled
+        if not self.custom_mode_of_payment or not self.custom_tenant:
+            frappe.throw("Please enter the Mode of Payment and Tenant before submitting.")
+        
+        # Fetch the default account for the selected Mode of Payment
+        mode_of_payment_account = frappe.db.get_value(
+            "Mode of Payment Account",
+            {"parent": self.custom_mode_of_payment,"company":self.company},
+            "default_account"
+        )
+        
+        if not mode_of_payment_account:
+            frappe.throw(f"No default account found for Mode of Payment: {self.custom_mode_of_payment}")
+        
+        # Prepare the Journal Entry
+        journal_entry = frappe.new_doc('Journal Entry')
+        journal_entry.voucher_type = 'Journal Entry'
+        journal_entry.posting_date = frappe.utils.nowdate()
+        journal_entry.company = self.company
+        journal_entry.user_remark = f'Advance Payment for Asset: {self.name}'
+
+        # Add Credit Entry (Mode of Payment Account)
+        journal_entry.append('accounts', {
+            'account': mode_of_payment_account,
+            'debit_in_account_currency': self.custom_advance_amount,
+            'debit': self.custom_advance_amount,
+            'reference_type': 'Asset',
+            'reference_name': self.name
+        })
+
+        # Add Debit Entry (Tenant/Customer Account or Default "Debtors" Account)
+        tenant_account = frappe.get_value('Company', self.company, 'default_receivable_account') or "Debtors"
+
+        journal_entry.append('accounts', {
+            'account': tenant_account,
+            'credit_in_account_currency': self.custom_advance_amount,
+            'credit': self.custom_advance_amount,
+            'party_type': 'Customer',
+            'party': self.custom_tenant,
+            'reference_type': 'Asset',
+            'reference_name': self.name
+        })
+
+        # Save and insert the Journal Entry
+        journal_entry.insert()
+        journal_entry.submit()
+        frappe.db.commit()
+
+        # Update the journal_entry_id field in the Asset document
+        self.db_set('custom_journal_entry_id', journal_entry.name)

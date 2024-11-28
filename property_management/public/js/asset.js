@@ -756,3 +756,26 @@ function create_journal_entry(frm, mode_of_payment) {
         }
     });
 }
+frappe.ui.form.on('Asset', {
+	custom_property_type:function(frm) {
+	    if(frm.doc.custom_property_type === "Rent"){
+	        frm.set_value('is_existing_asset',1);
+	    }
+	    else{
+            frm.set_value('is_existing_asset',0);
+        }   
+	    
+		// your code here
+	}
+});
+frappe.ui.form.on('Asset', {
+    onload: function(frm) {
+        frm.set_query('custom_tenant', function() {
+            return {
+                filters: {
+                    'is_tenant': 1  
+                }
+            };
+        });
+    }
+});
