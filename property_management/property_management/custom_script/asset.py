@@ -172,3 +172,52 @@ def create_journal_entry(asset_id, mode_of_payment):
     frappe.db.commit()
     
     return journal_entry.name
+
+@frappe.whitelist()
+def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, shareholder, shareholder_account, amount):
+    # Validate mode_of_payment
+    if not mode_of_payment:
+        frappe.throw("Mode of Payment is required.")
+
+    # Validate amount
+    if not amount or float(amount) <= 0:
+        frappe.throw("Amount must be greater than zero.")
+
+    # Check if mode_of_payment account exists for the given company
+    mode_of_payment_account = frappe.db.get_value(
+        "Mode of Payment Account",
+        {"parent": mode_of_payment, "company": company},
+        "default_account"
+    )
+
+    if not mode_of_payment_account:
+        frappe.throw("No matching account found for the Mode of Payment in the specified company.")
+
+    # Create Journal Entry
+    journal_entry = frappe.get_doc({
+        "doctype": "Journal Entry",
+        "voucher_type": "Journal Entry",
+        "company": company,
+        "posting_date": nowdate(),
+        "accounts": [
+            {
+                "account": mode_of_payment_account,
+                "debit_in_account_currency": float(amount),
+                "reference_type": "Asset",
+                "reference_name": asset_name
+            },
+            {
+                "account": shareholder_account,
+                "credit_in_account_currency": float(amount),
+                "party_type": "Shareholder",
+                "party": shareholder,
+                "reference_type": "Asset",
+                "reference_name": asset_name
+            }
+        ],
+        "user_remark": "Shareholder initial deposit"
+    })
+    journal_entry.insert()
+    journal_entry.submit()
+
+    return journal_entry.name

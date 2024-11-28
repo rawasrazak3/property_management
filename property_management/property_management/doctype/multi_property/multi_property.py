@@ -24,11 +24,12 @@ class MultiProperty(Document):
                 "doctype": "Item",
                 "item_code": row.item_code,
                 "item_name": row.item_name,
-                "item_group": "Flat",
+                "item_group": row.property_group,
                 "is_stock_item": 0,
                 "is_fixed_asset": 1,
-                "asset_category": "Residential and Commercial",
-                "stock_uom": "Square Meter"
+                "asset_category": row.property_category,
+                "stock_uom": "Square Meter",
+                "custom_multi_property_against": self.name
             })
             item_doc.insert(ignore_permissions=True)
 
@@ -38,12 +39,17 @@ class MultiProperty(Document):
                 "gfa_sqft": row.size,
                 "gross_purchase_amount": row.gross_amount,
                 "item_code": row.item_code,
-                "location": self.property,
-                "available_for_use_date": self.available_for_use,
+                "custom_wilayat": self.wilayat,
+                "location": self.property_governorates,
+                "available_for_use_date": row.available_for_use_date,
                 "purchase_date": self.purchase_date,
-                "custom_property_type": "Land",
+                "custom_property_type": "Rent",
+                "property_manager": row.property_manager,
+                "rent_type": row.rent_type,
                 "is_existing_asset": 1,
-                "custom_against_property": self.property
+                "property_status": row.property_status,
+                "custom_against_property": self.property,
+                "custom_multi_property_against": self.name
             })
             asset_doc.insert(ignore_permissions=True)
 
