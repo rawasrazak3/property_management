@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2024-11-18 11:27:12.483492",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -14,7 +15,10 @@
   "name_prefix",
   "no_of_floors",
   "rooms_in_floor",
+  "property_governorates",
+  "wilayat",
   "column_break_fksq",
+  "naming_series",
   "date",
   "qty",
   "gross_amount",
@@ -22,6 +26,7 @@
   "unit_price",
   "available_for_use",
   "purchase_date",
+  "property_manager",
   "section_break_kpwp",
   "floor_details",
   "section_break_glwi",
@@ -76,9 +81,8 @@
   {
    "fieldname": "name_prefix",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Name Prefix",
-   "reqd": 1
+   "hidden": 1,
+   "label": "Name Prefix"
   },
   {
    "fetch_from": "property.gross_purchase_amount",
@@ -119,8 +123,8 @@
   {
    "fieldname": "rooms_in_floor",
    "fieldtype": "Float",
-   "label": "No of rooms in a floor",
-   "reqd": 1
+   "hidden": 1,
+   "label": "No of rooms in a floor"
   },
   {
    "fieldname": "split_property",
@@ -159,15 +163,55 @@
    "fieldtype": "Table",
    "label": "Floor Details",
    "options": "Floor Details"
+  },
+  {
+   "fetch_from": "property.location",
+   "fieldname": "property_governorates",
+   "fieldtype": "Link",
+   "label": "Property Governorates",
+   "options": "Location",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "property.custom_wilayat",
+   "fieldname": "wilayat",
+   "fieldtype": "Link",
+   "label": "Wilayat",
+   "options": "Location"
+  },
+  {
+   "fetch_from": "property.property_manager",
+   "fieldname": "property_manager",
+   "fieldtype": "Link",
+   "label": "Property Manager",
+   "options": "Property Manager"
+  },
+  {
+   "default": "MP-.YY.-.#####.",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "MP-.YY.-.#####."
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2024-11-20 22:22:54.336272",
+ "links": [
+  {
+   "link_doctype": "Asset",
+   "link_fieldname": "custom_multi_property_against"
+  },
+  {
+   "link_doctype": "Item",
+   "link_fieldname": "custom_multi_property_against"
+  }
+ ],
+ "modified": "2024-11-28 10:12:25.742329",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Multi Property",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {

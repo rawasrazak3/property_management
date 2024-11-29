@@ -9,16 +9,22 @@
   "name_prefix",
   "item_code",
   "item_name",
+  "property_group",
   "column_break_evtt",
   "size",
+  "property_category",
+  "rent_type",
+  "property_manager",
   "column_break_euyv",
-  "gross_amount"
+  "gross_amount",
+  "property_status",
+  "available_for_use_date"
  ],
  "fields": [
   {
    "fieldname": "name_prefix",
    "fieldtype": "Data",
-   "in_list_view": 1,
+   "hidden": 1,
    "label": "Name Prefix"
   },
   {
@@ -45,20 +51,58 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Property Item",
-   "options": "Item"
+   "label": "Property Item"
   },
   {
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Property Name"
+  },
+  {
+   "default": "Flat",
+   "fieldname": "property_group",
+   "fieldtype": "Link",
+   "label": "Property Group",
+   "options": "Item Group"
+  },
+  {
+   "default": "Residential",
+   "fieldname": "property_category",
+   "fieldtype": "Link",
+   "label": "Property Category",
+   "options": "Asset Category"
+  },
+  {
+   "default": "Monthly",
+   "fieldname": "rent_type",
+   "fieldtype": "Select",
+   "label": "Rent Type",
+   "options": "\nMonthly\nQuarterly\nHalf-yearly\nYearly"
+  },
+  {
+   "fieldname": "property_manager",
+   "fieldtype": "Link",
+   "label": "Property Manager",
+   "options": "Property Manager"
+  },
+  {
+   "default": "Available",
+   "fieldname": "property_status",
+   "fieldtype": "Select",
+   "label": "Property Status",
+   "options": "\nRent/Lease\nBooked\nAvailable\nClosed"
+  },
+  {
+   "fieldname": "available_for_use_date",
+   "fieldtype": "Date",
+   "label": "Available-for-use Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-19 09:41:21.932241",
+ "modified": "2024-11-24 02:40:10.138750",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Multi Property Table",

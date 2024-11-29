@@ -756,6 +756,50 @@ function create_journal_entry(frm, mode_of_payment) {
         }
     });
 }
+
+frappe.ui.form.on('Shareholder Property', {
+    create_journal_entry_1: function (frm, cdt, cdn) {
+        const row = locals[cdt][cdn];
+
+        // Validate fields
+        if (!row.mode_of_payment) {
+            frappe.msgprint(__('Please set the Mode of Payment before creating the Journal Entry.'));
+            return;
+        }
+
+        if (row.journal_entry) {
+            frappe.msgprint(__('A Journal Entry has already been created for this Shareholder.'));
+            return;
+        }
+
+        if (!row.amount || row.amount <= 0) {
+            frappe.msgprint(__('Amount must be greater than zero.'));
+            return;
+        }
+
+        // Call the server-side function
+        frappe.call({
+            method: 'property_management.property_management.custom_script.asset.create_shareholder_journal_entry_1',
+            args: {
+                asset_name: frm.doc.name,
+                company: frm.doc.company,
+                mode_of_payment: row.mode_of_payment,
+                shareholder: row.shareholder,
+                shareholder_account: row.shareholder_account,
+                amount: row.amount
+            },
+            callback: function (response) {
+                if (response.message) {
+                    // Update the child table with the Journal Entry ID
+                    frappe.model.set_value(cdt, cdn, 'journal_entry', response.message);
+                    frappe.msgprint(__('Journal Entry {0} created and submitted successfully.', [response.message]));
+                    frm.refresh_field('custom_shareholder_table');
+                }
+            }
+        });
+    }
+});
+
 frappe.ui.form.on('Asset', {
 	custom_property_type:function(frm) {
 	    if(frm.doc.custom_property_type === "Rent"){
