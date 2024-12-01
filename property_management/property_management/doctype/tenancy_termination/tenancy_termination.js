@@ -26,6 +26,7 @@ frappe.ui.form.on('Tenancy Termination', {
     // },
     
     calculate_outstanding_rent: function (frm) {
+        calculate_amounts(frm);
         // Check if the form is not saved locally and has a tenant
         if (frm.doc.tenant && !frm.doc.docstatus==1) {
             frappe.call({
@@ -99,14 +100,41 @@ frappe.ui.form.on('Tenancy Termination', {
                     }
                 
                     
+                    // if (frm.doc.amount_receivable>0){
+                    //     // Calculate tax amount based on the amount without tax
+                    //     const amount_without_tax = frm.doc.amount_receivable || 0; // Assuming 'amount' is the base amount field
+                    //     const tax_amount = (frm.doc.tax_rate / 100) * amount_without_tax;
+
+                    //     // Set the tax amount and amount without tax fields
+                    //     frm.set_value('tax_amount', tax_amount);
+                    //     frm.set_value('amount_exc_tax', amount_without_tax);
+
+                    //     // Calculate and update receivable or payable amount
+                    //     const total_amount = amount_without_tax + tax_amount;
+                    //     frm.set_value('amount_receivable', total_amount); // Update receivable amount
+                    //     frm.set_value('amount_payable', 0); // Ensure payable is set to 0
+                    // }
+                    // else {
+                    //     const amount_without_tax = frm.doc.amount_payable || 0; // Assuming 'amount' is the base amount field
+                    //     const tax_amount = (frm.doc.tax_rate / 100) * amount_without_tax;
+
+                    //     // Set the tax amount and amount without tax fields
+                    //     frm.set_value('tax_amount', tax_amount);
+                    //     frm.set_value('amount_exc_tax', amount_without_tax);
+
+                    //     // Calculate and update receivable or payable amount
+                    //     const total_amount = amount_without_tax + tax_amount;
+                    //     frm.set_value('amount_receivable',0 ); // Update receivable amount
+                    //     frm.set_value('amount_payable', total_amount); 
+                    // }
                     if (frm.doc.amount_receivable>0){
                         // Calculate tax amount based on the amount without tax
                         const amount_without_tax = frm.doc.amount_receivable || 0; // Assuming 'amount' is the base amount field
-                        const tax_amount = (frm.doc.tax_rate / 100) * amount_without_tax;
+                        const tax_amount = (frm.doc.tax_rate / 100) * frm.doc.amount;
 
                         // Set the tax amount and amount without tax fields
                         frm.set_value('tax_amount', tax_amount);
-                        frm.set_value('amount_exc_tax', amount_without_tax);
+                        // frm.set_value('amount_exc_tax', amount_without_tax);
 
                         // Calculate and update receivable or payable amount
                         const total_amount = amount_without_tax + tax_amount;
@@ -115,16 +143,22 @@ frappe.ui.form.on('Tenancy Termination', {
                     }
                     else {
                         const amount_without_tax = frm.doc.amount_payable || 0; // Assuming 'amount' is the base amount field
-                        const tax_amount = (frm.doc.tax_rate / 100) * amount_without_tax;
+                        const tax_amount = (frm.doc.tax_rate / 100) * frm.doc.amount;
 
                         // Set the tax amount and amount without tax fields
                         frm.set_value('tax_amount', tax_amount);
-                        frm.set_value('amount_exc_tax', amount_without_tax);
+                        // frm.set_value('amount_exc_tax', amount_without_tax);
 
                         // Calculate and update receivable or payable amount
-                        const total_amount = amount_without_tax + tax_amount;
-                        frm.set_value('amount_receivable',0 ); // Update receivable amount
-                        frm.set_value('amount_payable', total_amount); 
+                        const total_amount = amount_without_tax - tax_amount;
+                        if (total_amount>0){
+                            frm.set_value('amount_receivable',0 ); // Update receivable amount
+                            frm.set_value('amount_payable', total_amount);
+                        }
+                        else{
+                            frm.set_value('amount_receivable',Math.abs(total_amount) ); // Update receivable amount
+                            frm.set_value('amount_payable', 0);
+                        } 
                     }
                 }
             });
@@ -134,6 +168,20 @@ frappe.ui.form.on('Tenancy Termination', {
             frm.set_value('amount_without_tax', 0);
             frm.set_value('amount_receivable', 0);
             frm.set_value('amount_payable', 0);
+        }
+    }
+});
+frappe.ui.form.on('Tenancy Termination', {
+    refresh: function(frm) {
+        if (frappe.route_options) {
+            console.log("Received Route Options:", frappe.route_options);
+
+            // Explicitly set values for each field
+            frm.set_value('schedule_end_date', frappe.route_options.schedule_end_date || '');
+            frm.set_value('advance_amounts', frappe.route_options.advance_amounts || 0);
+
+            // Clear route options after setting values to avoid issues on reload
+            frappe.route_options = null;
         }
     }
 });

@@ -823,3 +823,43 @@ frappe.ui.form.on('Asset', {
         });
     }
 });
+frappe.ui.form.on('Asset', {
+    custom_property_type: function(frm) {
+        if (frm.doc.custom_property_type === "Rent") {
+            // Filter for Property Unit
+            frm.set_query('custom_property_unit', function() {
+                return {
+                    filters: {
+                        parent_item_group: "PROPERTY RENTAL MASTER"
+                    }
+                };
+            });
+
+            // Filter for Property Sub Unit
+            frm.set_query('custom_property_subunit', function() {
+                return {
+                    filters: {
+                        parent_item_group: "PROPERTY RENTAL MASTER"
+                    }
+                };
+            });
+        } else {
+            // Clear filters for other property types
+            frm.set_query('custom_property_unit', function() {
+                return {};
+            });
+
+            frm.set_query('custom_property_subunit', function() {
+                return {};
+            });
+        }
+    }
+});
+frappe.ui.form.on('Asset', {
+    custom_property_owner: function(frm) {
+        // Update property_owner when supplier changes, if asset_owner is "Supplier"
+        if (frm.doc.asset_owner === "Supplier") {
+            frm.set_value('supplier', frm.doc.custom_property_owner);
+        }
+    }
+});

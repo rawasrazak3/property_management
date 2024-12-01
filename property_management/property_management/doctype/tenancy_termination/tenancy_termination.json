@@ -21,22 +21,20 @@
   "advance_amounts",
   "apply_charge_to_tenant",
   "amount",
-  "sales_invoice_id",
-  "rent_section",
-  "outstanding_rent",
-  "calculate_outstanding_rent",
-  "what_to_do_with_rent",
-  "date",
-  "mode_of_payment",
-  "section_break_gkfg",
-  "amount_payable",
-  "amount_receivable",
-  "tax_details_section",
   "vat",
   "tax_template",
   "tax_rate",
   "tax_amount",
   "amount_exc_tax",
+  "sales_invoice_id",
+  "rent_section",
+  "outstanding_rent",
+  "calculate_outstanding_rent",
+  "what_to_do_with_rent",
+  "mode_of_payment",
+  "section_break_gkfg",
+  "amount_payable",
+  "amount_receivable",
   "property_re_marketing_section",
   "property_status",
   "notescomments_section",
@@ -76,6 +74,7 @@
    "label": "Termination Details"
   },
   {
+   "fetch_from": "tenancy.end_date",
    "fieldname": "schedule_end_date",
    "fieldtype": "Date",
    "label": "Schedule End Date"
@@ -120,15 +119,11 @@
    "label": "Outstanding Rent"
   },
   {
+   "depends_on": "eval: !!doc.outstanding_rent",
    "fieldname": "what_to_do_with_rent",
    "fieldtype": "Select",
    "label": "What to do with Rent",
    "options": "Collect Now\nCollect Later\nWrite Off"
-  },
-  {
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "label": "Date"
   },
   {
    "fieldname": "section_break_gkfg",
@@ -183,17 +178,20 @@
    "options": "Tenancy"
   },
   {
+   "fetch_from": "property.custom_advance_amount",
    "fieldname": "advance_amounts",
    "fieldtype": "Currency",
-   "label": "Advance Amount"
+   "label": "Security Deposit"
   },
   {
    "default": "0",
+   "depends_on": "eval: doc.apply_charge_to_tenant==1",
    "fieldname": "vat",
    "fieldtype": "Check",
    "label": "VAT"
   },
   {
+   "depends_on": "eval: !!doc.outstanding_rent",
    "fieldname": "mode_of_payment",
    "fieldtype": "Link",
    "label": "Mode of Payment",
@@ -217,6 +215,7 @@
    "depends_on": "eval: doc.vat==1",
    "fieldname": "amount_exc_tax",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Amount Exc Tax",
    "read_only": 1
   },
@@ -228,14 +227,9 @@
    "read_only": 1
   },
   {
-   "fieldname": "tax_details_section",
-   "fieldtype": "Section Break",
-   "label": "Tax Details"
-  },
-  {
    "fieldname": "calculate_outstanding_rent",
    "fieldtype": "Button",
-   "label": "Calculate Outstanding Rent",
+   "label": "Calculate Amount",
    "set_only_once": 1
   },
   {
@@ -263,7 +257,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-28 15:34:20.301339",
+ "modified": "2024-12-01 22:58:31.588130",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Tenancy Termination",

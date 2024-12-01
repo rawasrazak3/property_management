@@ -126,6 +126,10 @@ def manage_property_on_termination(doc, method):
         "custom_property_unit": property_doc.custom_property_unit,
         "custom_property_subunit": property_doc.custom_property_subunit,
         "asset_owner": property_doc.asset_owner,
+        "custom_property_owner": property_doc.custom_property_owner,
+        "supplier": property_doc.supplier,
+        "custom_commission": property_doc.custom_commission,
+        "custom_one_time_commission": property_doc.custom_one_time_commission,
         "custodian": property_doc.custodian,
         "department": property_doc.department,
         "purchase_date": property_doc.purchase_date,
@@ -135,6 +139,7 @@ def manage_property_on_termination(doc, method):
         "parking": property_doc.parking,
         "facing": property_doc.facing,
         "rent_type": property_doc.rent_type,
+        # "calculate_depreciation": property_doc.calculate_depreciation,
         
         # Add more fields as necessary from the original Property DocType
     })
@@ -167,12 +172,13 @@ def create_invoice_on_tenency_exit(doc, method):
             'rate': doc.amount,  # Apply the charge amount
             'description': f"Invoice for Charge in Tenancy Termination {doc.name}"
         })
-        invoice.append('taxes', {
-        'charge_type': 'On Net Total',
-        'account_head': 'Vat 5% - ABR',
-        'rate': 5.0,  # Assuming VAT is 5%
-        'description': 'VAT 5%'
-        })
+        if doc.vat:
+            invoice.append('taxes', {
+            'charge_type': 'On Net Total',
+            'account_head': 'Vat 5% - ABR',
+            'rate': 5.0,  # Assuming VAT is 5%
+            'description': 'VAT 5%'
+            })
 
         invoice.insert(ignore_permissions=True)
         invoice.submit()
