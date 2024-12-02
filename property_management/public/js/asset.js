@@ -799,3 +799,101 @@ frappe.ui.form.on('Shareholder Property', {
         });
     }
 });
+
+frappe.ui.form.on('Asset', {
+	custom_property_type:function(frm) {
+	    if(frm.doc.custom_property_type === "Rent"){
+	        frm.set_value('is_existing_asset',1);
+	    }
+	    else{
+            frm.set_value('is_existing_asset',0);
+        }   
+	    
+		// your code here
+	}
+});
+frappe.ui.form.on('Asset', {
+    onload: function(frm) {
+        frm.set_query('custom_tenant', function() {
+            return {
+                filters: {
+                    'is_tenant': 1  
+                }
+            };
+        });
+    }
+});
+frappe.ui.form.on('Asset', {
+    custom_property_type: function(frm) {
+        if (frm.doc.custom_property_type === "Rent") {
+            // Filter for Property Unit
+            frm.set_query('custom_property_unit', function() {
+                return {
+                    filters: {
+                        parent_item_group: "PROPERTY RENTAL MASTER"
+                    }
+                };
+            });
+
+            // Filter for Property Sub Unit
+            frm.set_query('custom_property_subunit', function() {
+                return {
+                    filters: {
+                        parent_item_group: "PROPERTY RENTAL MASTER"
+                    }
+                };
+            });
+            // Add a filter to property_item_code based on parent item group
+            frm.set_query('item_code', function() {
+                return {
+                    filters: {
+                        item_group: ['in', get_property_rental_item_groups()]
+                    }
+                };
+            });
+        } else {
+            // Clear filters for other property types
+            frm.set_query('custom_property_unit', function() {
+                return {};
+            });
+
+            frm.set_query('custom_property_subunit', function() {
+                return {};
+            });
+
+            frm.set_query('item_code', function() {
+                return {};
+            });
+        }
+    }
+});
+frappe.ui.form.on('Asset', {
+    custom_property_owner: function(frm) {
+        // Update property_owner when supplier changes, if asset_owner is "Supplier"
+        if (frm.doc.asset_owner === "Supplier") {
+            frm.set_value('supplier', frm.doc.custom_property_owner);
+        }
+    }
+});
+
+// Helper function to fetch item groups under "PROPERTY RENTAL MASTER"
+function get_property_rental_item_groups() {
+    let rental_item_groups = [];
+    frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Item Group",
+            fields: ["name"],
+            filters: {
+                parent_item_group: "PROPERTY RENTAL MASTER"
+            }
+        },
+        async: false,
+        callback: function(response) {
+            if (response.message) {
+                rental_item_groups = response.message.map(group => group.name);
+            }
+        }
+    });
+    return rental_item_groups;
+}

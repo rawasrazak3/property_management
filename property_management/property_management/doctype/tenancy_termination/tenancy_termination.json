@@ -1,0 +1,286 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format: TT-{YY}-{####}",
+ "creation": "2024-11-25 14:43:58.741269",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_d6k8",
+  "company_name",
+  "tenant",
+  "journal_entry_id",
+  "column_break_fzex",
+  "property",
+  "tenancy",
+  "new_property",
+  "termination_details_section",
+  "schedule_end_date",
+  "reason",
+  "tenancy_end_date",
+  "deposit_section",
+  "advance_amounts",
+  "apply_charge_to_tenant",
+  "amount",
+  "vat",
+  "tax_template",
+  "tax_rate",
+  "tax_amount",
+  "amount_exc_tax",
+  "sales_invoice_id",
+  "rent_section",
+  "outstanding_rent",
+  "calculate_outstanding_rent",
+  "what_to_do_with_rent",
+  "mode_of_payment",
+  "section_break_gkfg",
+  "amount_payable",
+  "amount_receivable",
+  "property_re_marketing_section",
+  "property_status",
+  "notescomments_section",
+  "text_editor_nyfk",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_d6k8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Link",
+   "label": "Company Name",
+   "options": "Company"
+  },
+  {
+   "fieldname": "tenant",
+   "fieldtype": "Link",
+   "label": "Tenant",
+   "options": "Tenant"
+  },
+  {
+   "fieldname": "column_break_fzex",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "termination_details_section",
+   "fieldtype": "Section Break",
+   "label": "Termination Details"
+  },
+  {
+   "fetch_from": "tenancy.end_date",
+   "fetch_if_empty": 1,
+   "fieldname": "schedule_end_date",
+   "fieldtype": "Date",
+   "label": "Schedule End Date"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Select",
+   "label": "Reasons",
+   "options": "New Contract\nLost to another agent\nTenancy Surrendered\nEnd of Tenancy\nTenancy Breach\nBreak Clause Activation"
+  },
+  {
+   "default": "Today",
+   "fieldname": "tenancy_end_date",
+   "fieldtype": "Date",
+   "label": "Tenancy End Date"
+  },
+  {
+   "fieldname": "deposit_section",
+   "fieldtype": "Section Break",
+   "label": "Deposit"
+  },
+  {
+   "default": "0",
+   "fieldname": "apply_charge_to_tenant",
+   "fieldtype": "Check",
+   "label": "Apply Charge to Tenant"
+  },
+  {
+   "depends_on": "eval: doc.apply_charge_to_tenant==1",
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
+  },
+  {
+   "fieldname": "rent_section",
+   "fieldtype": "Section Break",
+   "label": "Rent"
+  },
+  {
+   "fieldname": "outstanding_rent",
+   "fieldtype": "Data",
+   "label": "Outstanding Rent"
+  },
+  {
+   "depends_on": "eval: !!doc.outstanding_rent",
+   "fieldname": "what_to_do_with_rent",
+   "fieldtype": "Select",
+   "label": "What to do with Rent",
+   "options": "Collect Now\nCollect Later\nWrite Off"
+  },
+  {
+   "fieldname": "section_break_gkfg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amount_payable",
+   "fieldtype": "Currency",
+   "label": "Amount Payable",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amount_receivable",
+   "fieldtype": "Currency",
+   "label": "Amount Receivable",
+   "read_only": 1
+  },
+  {
+   "fieldname": "property_re_marketing_section",
+   "fieldtype": "Section Break",
+   "label": "Property Re marketing"
+  },
+  {
+   "fieldname": "property_status",
+   "fieldtype": "Select",
+   "label": "Property Status",
+   "options": "\nRent/Lease\nBooked\nAvailable\nClosed"
+  },
+  {
+   "fieldname": "notescomments_section",
+   "fieldtype": "Section Break",
+   "label": "Notes/Comments"
+  },
+  {
+   "fieldname": "text_editor_nyfk",
+   "fieldtype": "Text Editor"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Tenancy Termination",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "tenancy",
+   "fieldtype": "Link",
+   "label": "Tenancy",
+   "options": "Tenancy"
+  },
+  {
+   "fetch_from": "property.custom_advance_amount",
+   "fieldname": "advance_amounts",
+   "fieldtype": "Currency",
+   "label": "Security Deposit"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.apply_charge_to_tenant==1",
+   "fieldname": "vat",
+   "fieldtype": "Check",
+   "label": "VAT"
+  },
+  {
+   "depends_on": "eval: !!doc.outstanding_rent",
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode of Payment",
+   "options": "Mode of Payment"
+  },
+  {
+   "depends_on": "eval: doc.vat==1",
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "options": "Item Tax Template"
+  },
+  {
+   "depends_on": "eval: doc.vat==1",
+   "fieldname": "tax_amount",
+   "fieldtype": "Currency",
+   "label": "Tax Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.vat==1",
+   "fieldname": "amount_exc_tax",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "Amount Exc Tax",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.vat==1",
+   "fieldname": "tax_rate",
+   "fieldtype": "Float",
+   "label": "Tax Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "calculate_outstanding_rent",
+   "fieldtype": "Button",
+   "label": "Calculate Amount",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "journal_entry_id",
+   "fieldtype": "Link",
+   "label": "Journal Entry ID",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "new_property",
+   "fieldtype": "Link",
+   "label": "New Property",
+   "options": "Asset",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sales_invoice_id",
+   "fieldtype": "Link",
+   "label": "Sales Invoice ID",
+   "options": "Sales Invoice",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-12-02 09:17:05.271120",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Tenancy Termination",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

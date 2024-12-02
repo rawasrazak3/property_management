@@ -867,3 +867,73 @@ function createPaymentEntryForCommission(frm, row, invoice_id, callback) {
         }
     });
 }
+
+frappe.ui.form.on('Tenancy', {
+    on_submit: function(frm) {
+        // Fetch the associated Asset document using the 'asset' field
+        frappe.call({
+            method: 'frappe.client.get',
+            args: {
+                doctype: 'Asset',
+                name: frm.doc.asset
+            },
+            callback: function(r) {
+                if (r.message) {
+                    var asset = r.message;
+
+                    // Set the 'property_status' of the Asset to 'Booked'
+                    asset.property_status = 'Booked';  // Ensure "Booked" is a valid option
+                    
+                    // Update the Asset document
+                    frappe.call({
+                        method: 'frappe.client.save',
+                        args: {
+                            doc: asset
+                        },
+                        callback: function() {
+                            // Optionally refresh the form if needed
+                            frm.refresh_field('property_status');
+                        }
+                    });
+                }
+            }
+        });
+    }
+});
+
+frappe.ui.form.on('Tenancy', {
+    refresh: function(frm) {
+        // Show the "End Tenancy" button only if the document is submitted
+        if (frm.doc.docstatus === 1) {
+            frm.add_custom_button(__('End Tenancy'), function() {
+                // Fetch the advance amount from the Property DocType
+                frappe.call({
+                    method: 'frappe.client.get_value',
+                    args: {
+                        'doctype': 'Asset',
+                        'filters': { 'name': frm.doc.asset },
+                        'fieldname': 'custom_advance_amount'
+                    },
+                    callback: function(response) {
+                        console.log(response.message);
+                        const advance_amount = response.message ? response.message.custom_advance_amount : 0;
+                        console.log("Advance Amount:", advance_amount);
+                        console.log("Schedule End Date:", frm.doc.end_date);
+
+                        // Redirect to the Tenancy Termination DocType and pass necessary details
+                        frappe.route_options = {
+                            'company': frm.doc.company,
+                            'tenant': frm.doc.tenant,
+                            'tenancy':frm.doc.name,
+                            'property': frm.doc.asset,
+                            'schedule_end_date': frm.doc.end_date,
+                            'tenancy_end_date': frappe.datetime.now_date(),
+                            'advance_amounts': advance_amount
+                        };
+                        frappe.new_doc('Tenancy Termination');
+                    }
+                });
+            }, __("Actions"));
+        }
+    }
+});

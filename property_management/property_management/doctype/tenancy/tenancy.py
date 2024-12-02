@@ -6,7 +6,6 @@ from frappe.utils import flt
 
 class Tenancy(Document):
 	pass
-
 def tenant_schedule(doc, event):
     for d in doc.get('tenant_schedule'):
         if d.schedule_date:
@@ -375,3 +374,29 @@ def before_cancel(doc, method):
                 frappe.msgprint(f"Purchase Invoice {purchase_invoice.name} canceled successfully.")
         except Exception as e:
             frappe.throw(f"Error canceling Purchase Invoice {purchase_invoice.name}: {str(e)}")
+
+@frappe.whitelist()
+def create_contract_on_tenancy_save(self, method=None):
+    # Check if the custom_contract field is empty
+    if not self.custom_contract:
+        # Create a new Contract
+        contract = frappe.new_doc('Contract')
+        contract.party_type = 'Customer'
+        contract.party_name = self.tenant  # Assuming custom_tenant is the field holding the party name
+        contract.custom_property_name = self.asset  # Assuming the field holding the property name is 'property'
+        contract.start_date = self.start_date  # Replace with the correct field name for tenancy start date
+        contract.end_date = self.end_date  # Replace with the correct field name for tenancy end date
+        property_name = self.asset  # Adjust if your field for property is named differently
+        start_date = frappe.utils.formatdate(self.start_date)
+        end_date = frappe.utils.formatdate(self.end_date)
+        
+        # Create a contract term description
+        contract.contract_terms = f"Contract for {property_name} from {start_date} to {end_date}."
+        
+        # Save the Contract
+        contract.insert()
+        contract.submit()
+        frappe.db.commit()
+
+        # Update the custom_contract field in Tenancy with the created Contract ID
+        self.db_set('custom_contract', contract.name)
