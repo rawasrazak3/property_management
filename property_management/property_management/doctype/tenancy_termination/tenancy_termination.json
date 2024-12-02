@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format: TT-{YY}-{####}",
  "creation": "2024-11-25 14:43:58.741269",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -75,6 +76,7 @@
   },
   {
    "fetch_from": "tenancy.end_date",
+   "fetch_if_empty": 1,
    "fieldname": "schedule_end_date",
    "fieldtype": "Date",
    "label": "Schedule End Date"
@@ -257,10 +259,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-12-01 22:58:31.588130",
+ "modified": "2024-12-02 09:17:05.271120",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Tenancy Termination",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -63,12 +63,14 @@ function calculate_amounts(frm) {
     const advance = frm.doc.advance_amounts || 0;
     const charge = frm.doc.amount || 0;
 
-    const net_amount = outstanding - advance + charge;
+    net_amount = outstanding - advance + charge;
 
     if (net_amount > 0) {
+        net_amount+=frm.doc.tax_amount;
         frm.set_value('amount_receivable', net_amount);
         frm.set_value('amount_payable', 0);
     } else {
+        net_amount-=frm.doc.tax_amount;
         frm.set_value('amount_payable', Math.abs(net_amount));
         frm.set_value('amount_receivable', 0);
     }

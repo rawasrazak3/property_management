@@ -104,6 +104,7 @@ def manage_property_on_termination(doc, method):
         "item_name": property_doc.item_name,
         "location": property_doc.location,
         "custom_property_type": property_doc.custom_property_type,
+        "custom_against_property":property_doc.custom_against_property,
         "ground_rent": property_doc.ground_rent,
         "latitude": property_doc.latitude,
         "longitude": property_doc.longitude,
