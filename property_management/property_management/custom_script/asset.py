@@ -306,7 +306,7 @@ def create_maintenance_journal_entry(self, method=None):
             }).insert().name
 
         # Fetch the tenant's default receivable account or fallback to 'Debtors'
-        tenant_account = frappe.get_value('Company', self.company, 'default_receivable_account') or "Debtors"
+        tenant_account = frappe.get_value('Company', self.company, 'default_receivable_account') or "Debtors - " + company_abbr
 
         # Create Journal Entry
         journal_entry = frappe.get_doc({
