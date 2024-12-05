@@ -130,7 +130,6 @@ def manage_property_on_termination(doc, method):
         "custom_property_owner": property_doc.custom_property_owner,
         "supplier": property_doc.supplier,
         "custom_commission": property_doc.custom_commission,
-        "custom_one_time_commission": property_doc.custom_one_time_commission,
         "custodian": property_doc.custodian,
         "department": property_doc.department,
         "purchase_date": property_doc.purchase_date,

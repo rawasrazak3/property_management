@@ -45,8 +45,8 @@ frappe.ui.form.on("Asset", {
 
 frappe.ui.form.on("Asset", {
     before_save: function(frm) {
-        frm.set_value('gfa_m', frm.doc.gfa_sqft * 0.092903);
-        frm.set_value('total_price', frm.doc.gfa_sqft * frm.doc.unit_price);
+        // frm.set_value('gfa_m', frm.doc.gfa_sqft * 0.092903);
+        frm.set_value('total_price', frm.doc.gfa_m * frm.doc.unit_price);
     }
 });
 
@@ -314,7 +314,7 @@ frappe.ui.form.on('Asset', {
             }
         },__("Property Status"));
 
-        if (frm.doc.docstatus == 1) {
+        if (frm.doc.docstatus == 1&&frm.doc.custom_property_type==="Rent") {
             frm.page.set_inner_btn_group_as_primary(__("Create"));
             frm.add_custom_button(__("Tenancy"), function() {
                     frappe.route_options = {
@@ -569,18 +569,21 @@ function open_bulk_asset_split_dialog(frm) {
 
 frappe.ui.form.on('Asset', {
     refresh: function (frm) {
-        frm.add_custom_button(__('Multi Property'), function () {
-            // Redirect to the Multi Property doctype with pre-filled data
-            frappe.new_doc('Multi Property', {
-                property: frm.doc.name,  // Pass the current Asset's name
-                item_code: frm.doc.item_code,
-                item_name: frm.doc.item_name,
-                qty: frm.doc.gfa_sqft,
-                gross_amount: frm.doc.gross_purchase_amount,
-                available_for_use: frm.doc.available_for_use_date,
-                purchase_date: frm.doc.purchase_date
-            });
-        }, __('Create'));
+        if(frm.doc.docstatus=1&&frm.doc.custom_property_type==="Rent"){
+            frm.add_custom_button(__('Multi Property'), function () {
+                // Redirect to the Multi Property doctype with pre-filled data
+                frappe.new_doc('Multi Property', {
+                    property: frm.doc.name,  // Pass the current Asset's name
+                    item_code: frm.doc.item_code,
+                    item_name: frm.doc.item_name,
+                    qty: frm.doc.gfa_m,
+                    gross_amount: frm.doc.gross_purchase_amount,
+                    available_for_use: frm.doc.available_for_use_date,
+                    purchase_date: frm.doc.purchase_date
+                });
+            }, __('Create'));
+        }
+        
     }
 });
 
@@ -862,7 +865,11 @@ frappe.ui.form.on('Asset', {
             });
 
             frm.set_query('item_code', function() {
-                return {};
+                return {
+                    filters: {
+                        item_group:"Land for Sale"
+                    }
+                };
             });
         }
     }

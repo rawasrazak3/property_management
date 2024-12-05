@@ -35,7 +35,7 @@ fixtures = [
                     "Asset-custom_tenant",
                     "Asset-custom_column_break_pr7vi",
                     "Asset-custom_mode_of_payment",
-                    "Tenancy-custom_contract"
+                    "Tenancy-custom_contract",
 				]
 			]
 		]
