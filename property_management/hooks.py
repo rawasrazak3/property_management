@@ -35,7 +35,14 @@ fixtures = [
                     "Asset-custom_tenant",
                     "Asset-custom_column_break_pr7vi",
                     "Asset-custom_mode_of_payment",
-                    "Tenancy-custom_contract"
+                    "Tenancy-custom_contract",
+                    "Asset-custom_maintenance_details",
+                    "Asset-custom_amount",
+                    "Asset-custom_column_break_08wxk",
+                    "Asset-custom_column_break_fqxir",
+                    "Asset-custom_tenants",
+                    "Asset-custom_ref_journal_entry_id",
+                    
 				]
 			]
 		]
@@ -152,7 +159,9 @@ doc_events = {
 		"on_submit": [
             "property_management.api.crud_event.rent_item",
         	"property_management.property_management.custom_script.asset.submit_asset_with_advance"
-        ]
+        ],
+        "on_update_after_submit":"property_management.property_management.custom_script.asset.create_maintenance_journal_entry"
+        
 	},
 
 	"Property Owner": {

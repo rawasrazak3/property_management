@@ -275,3 +275,65 @@ def submit_asset_with_advance(self, method=None):
 
         # Update the journal_entry_id field in the Asset document
         self.db_set('custom_journal_entry_id', journal_entry.name)
+
+@frappe.whitelist()
+def create_maintenance_journal_entry(self, method=None):
+    # Check if there's a custom amount added
+    if self.custom_amount > 0:
+        # Ensure that mode of payment and tenant are filled
+        if not self.custom_amount or not self.custom_tenants:
+            frappe.throw("Please enter the Amount and Tenant before submitting.")
+
+        # Fetch property details
+        main_property = self.custom_against_property or self.name
+        company_abbr = frappe.db.get_value("Company", self.company, "abbr")
+        maintenance_account_name = f"{main_property}-Maintenance-{company_abbr}"
+
+        # Check if a maintenance account already exists
+        maintenance_account = frappe.db.get_value(
+            "Account",
+            {"account_name": f"{main_property}-Maintenance", "company": self.company}
+        )
+
+        # If no account exists, create a new one
+        if not maintenance_account:
+            maintenance_account = frappe.get_doc({
+                "doctype": "Account",
+                "account_name": f"{main_property}-Maintenance",
+                "parent_account": "Property Expense - " + company_abbr,
+                "company": self.company,
+                "is_group": 0
+            }).insert().name
+
+        # Fetch the tenant's default receivable account or fallback to 'Debtors'
+        tenant_account = frappe.get_value('Company', self.company, 'default_receivable_account') or "Debtors - " + company_abbr
+
+        # Create Journal Entry
+        journal_entry = frappe.get_doc({
+            "doctype": "Journal Entry",
+            "posting_date": nowdate(),
+            "company": self.company,
+            "accounts": [
+                {
+                    "account": tenant_account,
+                    "credit_in_account_currency": self.custom_amount,
+                    'party_type': 'Customer',
+                    'party': self.custom_tenants,
+                    'reference_type': 'Asset',
+                    'reference_name': self.name
+                },
+                {
+                    "account": maintenance_account,
+                    "debit_in_account_currency": self.custom_amount,
+                    'reference_type': 'Asset',
+                    'reference_name': self.name
+                }
+            ],
+            "user_remark": _("Maintenance Charge for Property {0}").format(self.name)
+        })
+        journal_entry.insert()
+        journal_entry.submit()
+
+        # Update the journal_entry_id field in the Asset document
+        self.db_set('custom_ref_journal_entry_id', journal_entry.name)
+
