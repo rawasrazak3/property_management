@@ -903,8 +903,8 @@ frappe.ui.form.on('Tenancy', {
 
 frappe.ui.form.on('Tenancy', {
     refresh: function(frm) {
-        // Show the "End Tenancy" button only if the document is submitted
-        if (frm.doc.docstatus === 1) {
+        // Show the "End Tenancy" button only if the document is submitted and status is Active
+        if (frm.doc.docstatus === 1 && frm.doc.custom_status === "Active") {
             frm.add_custom_button(__('End Tenancy'), function() {
                 // Fetch the advance amount from the Property DocType
                 frappe.call({
@@ -915,25 +915,38 @@ frappe.ui.form.on('Tenancy', {
                         'fieldname': 'custom_advance_amount'
                     },
                     callback: function(response) {
-                        console.log(response.message);
                         const advance_amount = response.message ? response.message.custom_advance_amount : 0;
-                        console.log("Advance Amount:", advance_amount);
-                        console.log("Schedule End Date:", frm.doc.end_date);
 
                         // Redirect to the Tenancy Termination DocType and pass necessary details
                         frappe.route_options = {
                             'company': frm.doc.company,
                             'tenant': frm.doc.tenant,
-                            'tenancy':frm.doc.name,
+                            'tenancy': frm.doc.name,
                             'property': frm.doc.asset,
                             'schedule_end_date': frm.doc.end_date,
                             'tenancy_end_date': frappe.datetime.now_date(),
-                            'advance_amounts': advance_amount
+                            'advance_amount': advance_amount
                         };
                         frappe.new_doc('Tenancy Termination');
+
+                        // Update the status to Closed after ending tenancy
+                        frappe.db.set_value('Tenancy', frm.doc.name, 'custom_status', 'Closed')
+                            // .then(() => {
+                            //     frappe.show_alert({
+                            //         message: __('Tenancy has been ended successfully.'),
+                            //         indicator: 'green'
+                            //     });
+                            // });
                     }
                 });
             }, __("Actions"));
         }
+    },
+    before_submit: function(frm) {
+        // Set status to Active when creating the tenancy
+        if (!frm.doc.custom_status) {
+            frm.set_value('custom_status', 'Active');
+        }
     }
 });
+

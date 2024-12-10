@@ -42,6 +42,8 @@ fixtures = [
                     "Asset-custom_column_break_fqxir",
                     "Asset-custom_tenants",
                     "Asset-custom_ref_journal_entry_id",
+                    "Asset-custom_mode_of_payments",
+                    "Tenancy-custom_status"
                     
 				]
 			]
@@ -193,6 +195,7 @@ doc_events = {
             "property_management.property_management.doctype.tenancy_termination.tenancy_termination.create_journal_entry",
             "property_management.property_management.doctype.tenancy_termination.tenancy_termination.manage_property_on_termination",
             "property_management.property_management.doctype.tenancy_termination.tenancy_termination.create_invoice_on_tenency_exit",
+            "property_management.property_management.doctype.tenancy_termination.tenancy_termination.cancel_and_delete_after_termination"
 		]
 	} 
 

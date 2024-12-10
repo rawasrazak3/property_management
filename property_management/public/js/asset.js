@@ -314,7 +314,7 @@ frappe.ui.form.on('Asset', {
             }
         },__("Property Status"));
 
-        if (frm.doc.docstatus == 1&&frm.doc.custom_property_type==="Rent") {
+        if (frm.doc.docstatus == 1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status==="Available") {
             frm.page.set_inner_btn_group_as_primary(__("Create"));
             frm.add_custom_button(__("Tenancy"), function() {
                     frappe.route_options = {
@@ -569,7 +569,7 @@ function open_bulk_asset_split_dialog(frm) {
 
 frappe.ui.form.on('Asset', {
     refresh: function (frm) {
-        if(frm.doc.docstatus=1&&frm.doc.custom_property_type==="Rent"){
+        if(frm.doc.docstatus=1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status==="Available"){
             frm.add_custom_button(__('Multi Property'), function () {
                 // Redirect to the Multi Property doctype with pre-filled data
                 frappe.new_doc('Multi Property', {
