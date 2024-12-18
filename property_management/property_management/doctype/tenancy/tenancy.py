@@ -264,10 +264,10 @@ def create_sales_invoice(customer, commission, one_time_commission, tenancy_id, 
         'tenancy_reference': tenancy_id,  # Custom field in Sales Invoice for tenancy reference
         'items': [
             {
-                'item_code': 'Commission',  # The first item for commission
+                'item_code': 'Management Fees',  # The first item for commission
                 'qty': 1,
                 'rate': commission,  # Apply the commission amount
-                'description': f'Commission for schedule {child_row_name}'
+                'description': f'Management Fees for schedule {child_row_name}'
             }
         ]
     })
@@ -275,10 +275,10 @@ def create_sales_invoice(customer, commission, one_time_commission, tenancy_id, 
     # If one_time_commission exists, add a second item for it
     if one_time_commission > 0:
         invoice.append('items', {
-            'item_code': 'One Time Commission',  # The second item for one-time commission
+            'item_code': 'Renting Fees',  # The second item for one-time commission
             'qty': 1,
             'rate': one_time_commission,  # Apply the one-time commission amount
-            'description': f'One Time Commission for schedule {child_row_name}'
+            'description': f'Renting Fees for schedule {child_row_name}'
         })
 
     # Add a tax row to the taxes table with required values
