@@ -37,7 +37,7 @@ def create_journal_entry(doc, method):
             "default_account"
         )
         
-    if not mode_of_payment_account:
+    if doc.mode_of_payment and not mode_of_payment_account:
         frappe.throw(f"No default account found for Mode of Payment: {doc.mode_of_payment}")
 
     #create journal entry
@@ -184,3 +184,51 @@ def create_invoice_on_tenency_exit(doc, method):
         invoice.submit()
         frappe.db.commit()
         doc.sales_invoice_id = invoice.name
+
+@frappe.whitelist()
+def cancel_and_delete_after_termination(doc, method):
+    try:
+        tenancy = frappe.get_doc("Tenancy", doc.tenancy)
+        tenancy_end_date = datetime.strptime(doc.tenancy_end_date, "%Y-%m-%d").date()
+
+        # Step 1: Identify sales invoices and payment entries to cancel/delete
+        invoices_to_cancel = []
+        payment_entries_to_delete = []
+
+        for schedule in tenancy.tenant_schedule:
+            if schedule.invoice and schedule.schedule_date > tenancy_end_date:
+                invoices_to_cancel.append(schedule.invoice)
+
+                # Find payment entries referencing the sales invoice
+                payment_entries = frappe.get_all(
+                    "Payment Entry",
+                    filters={"custom_invoice_ref": schedule.invoice},
+                    fields=["name"]
+                )
+                payment_entries_to_delete.extend(pe["name"] for pe in payment_entries)
+
+                # Remove the link to the sales invoice in the schedule
+                schedule.invoice = None
+                schedule.payment_entry = None
+                schedule.db_update()
+
+        # Step 2: Cancel sales invoices
+        for invoice_name in invoices_to_cancel:
+            invoice = frappe.get_doc("Sales Invoice", invoice_name)
+            if invoice.docstatus == 1:
+                invoice.cancel()
+
+        # Step 3: Cancel and delete payment entries
+        for payment_entry_name in payment_entries_to_delete:
+            payment_entry = frappe.get_doc("Payment Entry", payment_entry_name)
+            if payment_entry.docstatus == 1:
+                payment_entry.db_set("tenancy", None)
+                payment_entry.cancel()
+            payment_entry.delete()
+
+        frappe.db.commit()
+        return {"message": "Sales invoices canceled and payment entries deleted successfully."}
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Tenancy Termination Error")
+        return {"error": str(e)}

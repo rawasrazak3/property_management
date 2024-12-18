@@ -254,9 +254,9 @@ def submit_asset_with_advance(self, method=None):
             'reference_type': 'Asset',
             'reference_name': self.name
         })
-
+        company_abbr = frappe.db.get_value("Company", self.company, "abbr")
         # Add Debit Entry (Tenant/Customer Account or Default "Debtors" Account)
-        tenant_account = frappe.get_value('Company', self.company, 'default_receivable_account') or "Debtors"
+        tenant_account = frappe.get_value('Company', self.company, 'default_advance_received_account') or "Security Deposit - " + company_abbr
 
         journal_entry.append('accounts', {
             'account': tenant_account,
@@ -279,7 +279,7 @@ def submit_asset_with_advance(self, method=None):
 @frappe.whitelist()
 def create_maintenance_journal_entry(self, method=None):
     # Check if there's a custom amount added
-    if self.custom_amount > 0:
+    if self.custom_amount > 0 and not self.custom_ref_journal_entry_id:
         # Ensure that mode of payment and tenant are filled
         if not self.custom_amount or not self.custom_tenants:
             frappe.throw("Please enter the Amount and Tenant before submitting.")
@@ -288,6 +288,15 @@ def create_maintenance_journal_entry(self, method=None):
         main_property = self.custom_against_property or self.name
         company_abbr = frappe.db.get_value("Company", self.company, "abbr")
         maintenance_account_name = f"{main_property}-Maintenance-{company_abbr}"
+
+        mode_of_payment_account = frappe.db.get_value(
+            "Mode of Payment Account",
+            {"parent": self.custom_mode_of_payments,"company":self.company},
+            "default_account"
+        )
+        
+        if not mode_of_payment_account:
+            frappe.throw(f"No default account found for Mode of Payment: {self.custom_mode_of_payments}")
 
         # Check if a maintenance account already exists
         maintenance_account = frappe.db.get_value(
@@ -315,18 +324,18 @@ def create_maintenance_journal_entry(self, method=None):
             "company": self.company,
             "accounts": [
                 {
-                    "account": tenant_account,
-                    "credit_in_account_currency": self.custom_amount,
-                    'party_type': 'Customer',
-                    'party': self.custom_tenants,
+                    "account": mode_of_payment_account,
+                    "debit_in_account_currency": self.custom_amount,
                     'reference_type': 'Asset',
                     'reference_name': self.name
                 },
                 {
                     "account": maintenance_account,
-                    "debit_in_account_currency": self.custom_amount,
+                    "credit_in_account_currency": self.custom_amount,
                     'reference_type': 'Asset',
-                    'reference_name': self.name
+                    'reference_name': self.name,
+                    'party_type': 'Customer',
+                    'party': self.custom_tenants,
                 }
             ],
             "user_remark": _("Maintenance Charge for Property {0}").format(self.name)
