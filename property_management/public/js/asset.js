@@ -329,7 +329,7 @@ frappe.ui.form.on('Asset', {
 frappe.ui.form.on('Asset', {
     refresh: function(frm) {
         // Ensure that the buttons are only added on form view (refresh trigger)
-        if (!frm.is_new()) {
+        if (!frm.is_new() && frm.doc.custom_property_type=='Land') {
             // Create a button group named 'Property'
             frm.add_custom_button(__('Property'), null, 'Actions');
 
@@ -579,7 +579,9 @@ frappe.ui.form.on('Asset', {
                     qty: frm.doc.gfa_m,
                     gross_amount: frm.doc.gross_purchase_amount,
                     available_for_use: frm.doc.available_for_use_date,
-                    purchase_date: frm.doc.purchase_date
+                    purchase_date: frm.doc.purchase_date,
+                    property_manager: frm.property_manager
+
                 });
             }, __('Create'));
         }
