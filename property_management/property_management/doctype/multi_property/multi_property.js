@@ -26,6 +26,11 @@ frappe.ui.form.on('Multi Property', {
                         frm.set_value('property_governorates', asset.location);
                         frm.set_value('property_manager', asset.property_manager);
                         frm.set_value('wilayat', asset.custom_wilayat || "");
+                        frm.set_value('property_owner',asset.property_owner);
+                        frm.set_value('size',asset.gfa_sqft);
+                        frm.set_value('rent_type',asset.rent_type);
+                        frm.set_value('property_group',asset.property_group);
+                        frm.set_value('property_status',asset.property_status);
                     }
                 }
             });
@@ -67,12 +72,18 @@ frappe.ui.form.on('Multi Property', {
 
                 let child_row = frm.add_child('multi_property_table');
                 // child_row.name_prefix = `${prefix}-${String(row_number).padStart(3, '0')}`;
-                child_row.size = size_per_unit;
+                child_row.size = frm.doc.size;
                 child_row.gross_amount = frm.doc.unit_price;
                 child_row.item_code = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-R${floorNo}${String(i).padStart(1)}`;
                 child_row.item_name = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-R${floorNo}${String(i).padStart(1)}`;
                 child_row.floor_no = floor.floor_no;
                 child_row.unit_type = 'Resident';
+                child_row.property_category = 'Residential';
+                child_row.property_manager = frm.doc.property_manager;
+                child_row.rent_type = frm.doc.rent_type;
+                child_row.property_group = frm.doc.property_group;
+                child_row.property_status = frm.doc.property_status;
+                child_row.available_for_use_date = frm.doc.available_for_use_date;
 
                 row_number++;
             }
@@ -83,12 +94,16 @@ frappe.ui.form.on('Multi Property', {
 
                 let child_row = frm.add_child('multi_property_table');
                 // child_row.name_prefix = `${prefix}-${String(row_number).padStart(3, '0')}`;
-                child_row.size = size_per_unit;
+                child_row.size = frm.doc.size;
                 child_row.gross_amount = frm.doc.unit_price;
                 child_row.item_code = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-C${floorNo}${String(i).padStart(1)}`;
                 child_row.item_name = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-C${floorNo}${String(i).padStart(1)}`;
                 child_row.floor_no = floor.floor_no;
                 child_row.unit_type = 'Commercial';
+                child_row.property_category = 'Commercial';
+                child_row.property_manager = frm.doc.property_manager;
+                child_row.rent_type = frm.doc.rent_type;
+                child_row.property_group = frm.doc.property_group;
 
                 row_number++;
             }
