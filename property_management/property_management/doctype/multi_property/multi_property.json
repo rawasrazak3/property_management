@@ -17,6 +17,9 @@
   "rooms_in_floor",
   "property_governorates",
   "wilayat",
+  "property_owner",
+  "size",
+  "property_group",
   "column_break_fksq",
   "naming_series",
   "date",
@@ -27,6 +30,8 @@
   "available_for_use",
   "purchase_date",
   "property_manager",
+  "rent_type",
+  "property_status",
   "section_break_kpwp",
   "floor_details",
   "section_break_glwi",
@@ -193,6 +198,35 @@
    "hidden": 1,
    "label": "Naming Series",
    "options": "MP-.YY.-.#####."
+  },
+  {
+   "fieldname": "property_owner",
+   "fieldtype": "Link",
+   "label": "Property Owner",
+   "options": "Property Owner"
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Data",
+   "label": "Size"
+  },
+  {
+   "fieldname": "rent_type",
+   "fieldtype": "Select",
+   "label": "Rent Type",
+   "options": "\nMonthly\nQuarterly\nHalf-yearly\nYearly"
+  },
+  {
+   "fieldname": "property_group",
+   "fieldtype": "Link",
+   "label": "Property Group",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "property_status",
+   "fieldtype": "Select",
+   "label": "Property Status",
+   "options": "\nRent/Lease\nBooked\nAvailable\nClosed"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -207,7 +241,7 @@
    "link_fieldname": "custom_multi_property_against"
   }
  ],
- "modified": "2024-11-28 10:12:25.742329",
+ "modified": "2024-12-20 10:26:52.922772",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Multi Property",

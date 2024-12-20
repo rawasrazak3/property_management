@@ -18,8 +18,50 @@ class MultiProperty(Document):
     def on_submit(self):
         self.create_items_and_assets()
 
+    # def create_items_and_assets(self):
+    #     #check if item is already exist
+    #     for row in self.multi_property_table:
+    #         item_doc = frappe.get_doc({
+    #             "doctype": "Item",
+    #             "item_code": row.item_code,
+    #             "item_name": row.item_name,
+    #             "item_group": row.property_group,
+    #             "is_stock_item": 0,
+    #             "is_fixed_asset": 1,
+    #             "asset_category": row.property_category,
+    #             "stock_uom": "Square Meter",
+    #             # "custom_multi_property_against": self.name
+    #         })
+    #         item_doc.insert(ignore_permissions=True)
+
+    #         asset_doc = frappe.get_doc({
+    #             "doctype": "Asset",
+    #             "asset_name": f" {row.item_code}",
+    #             "gfa_sqft": row.size,
+    #             "gross_purchase_amount": row.gross_amount,
+    #             "item_code": row.item_code,
+    #             "custom_wilayat": self.wilayat,
+    #             "location": self.property_governorates,
+    #             "available_for_use_date": row.available_for_use_date,
+    #             "purchase_date": self.purchase_date,
+    #             "custom_property_type": "Rent",
+    #             "property_manager": row.property_manager,
+    #             "rent_type": row.rent_type,
+    #             "is_existing_asset": 1,
+    #             "property_status": row.property_status,
+    #             "custom_against_property": self.property,
+    #             # "custom_multi_property_against": self.name
+    #         })
+    #         asset_doc.insert(ignore_permissions=True)
+
     def create_items_and_assets(self):
         for row in self.multi_property_table:
+            # Check if the item already exists
+            existing_item = frappe.db.exists("Item", {"item_code": row.item_code})
+            if existing_item:
+                frappe.throw(f"Property '{row.item_code}' already exists.")
+            
+            # Create a new item
             item_doc = frappe.get_doc({
                 "doctype": "Item",
                 "item_code": row.item_code,
@@ -31,11 +73,12 @@ class MultiProperty(Document):
                 "stock_uom": "Square Meter",
                 "custom_multi_property_against": self.name
             })
-            item_doc.insert(ignore_permissions=True)
+            item_doc.save(ignore_permissions=True)
 
+            # Create a new asset
             asset_doc = frappe.get_doc({
                 "doctype": "Asset",
-                "asset_name": f"{row.name_prefix} - {row.item_code}",
+                "asset_name": f"{row.item_code}",
                 "gfa_sqft": row.size,
                 "gross_purchase_amount": row.gross_amount,
                 "item_code": row.item_code,
@@ -51,7 +94,7 @@ class MultiProperty(Document):
                 "custom_against_property": self.property,
                 "custom_multi_property_against": self.name
             })
-            asset_doc.insert(ignore_permissions=True)
+            asset_doc.save(ignore_permissions=True)
 
     @frappe.whitelist()
     def split_property(self):
