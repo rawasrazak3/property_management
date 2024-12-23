@@ -90,7 +90,7 @@ class MultiProperty(Document):
                 "property_manager": row.property_manager,
                 "rent_type": row.rent_type,
                 "is_existing_asset": 1,
-                "property_status": row.property_status,
+                # "property_status": row.property_status,
                 "custom_against_property": self.property,
                 "custom_multi_property_against": self.name
             })
