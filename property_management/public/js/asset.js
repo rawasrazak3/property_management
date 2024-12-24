@@ -288,7 +288,7 @@ frappe.ui.form.on('Asset', {
         frm.add_custom_button(__("Available"), function() {
             frm.set_value('property_status', "Available");
             frm.save();
-            if (frm.doc.docstatus == 1) {
+            if (frm.doc.docstatus == 1 ) {
                 frm.save('Update');
             }
         },__("Property Status"));
@@ -314,7 +314,7 @@ frappe.ui.form.on('Asset', {
             }
         },__("Property Status"));
 
-        if (frm.doc.docstatus == 1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status==="Available") {
+        if (frm.doc.docstatus == 1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status=="Available") {
             frm.page.set_inner_btn_group_as_primary(__("Create"));
             frm.add_custom_button(__("Tenancy"), function() {
                     frappe.route_options = {
@@ -569,7 +569,7 @@ function open_bulk_asset_split_dialog(frm) {
 
 frappe.ui.form.on('Asset', {
     refresh: function (frm) {
-        if(frm.doc.docstatus=1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status==="Available"){
+        if(frm.doc.docstatus===1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status=="Available"){
             frm.add_custom_button(__('Multi Property'), function () {
                 // Redirect to the Multi Property doctype with pre-filled data
                 frappe.new_doc('Multi Property', {
@@ -632,13 +632,13 @@ function calculate_row_contribution(frm, row) {
     row.contribution = grossAmount > 0 ? (row.amount / grossAmount) * 100 : 0;
 }
 
-// function calculate_shareholder_amounts(frm) {
-//     let grossAmount = frm.doc.gross_purchase_amount || 0;
-//     frm.doc.custom_shareholder_table.forEach(row => {
-//         calculate_row_amount(frm, row);  // Calculate each row's amount based on contribution
-//     });
-//     frm.refresh_field("custom_shareholder_table");
-// }
+function calculate_shareholder_amounts(frm) {
+    let grossAmount = frm.doc.gross_purchase_amount || 0;
+    frm.doc.custom_shareholder_table.forEach(row => {
+        calculate_row_amount(frm, row);  // Calculate each row's amount based on contribution
+    });
+    frm.refresh_field("custom_shareholder_table");
+}
 
 function validate_total_contribution(frm) {
     let totalContribution = 0;

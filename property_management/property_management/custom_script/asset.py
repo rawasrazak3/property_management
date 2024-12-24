@@ -342,6 +342,7 @@ def create_maintenance_journal_entry(self, method=None):
         })
         journal_entry.insert()
         journal_entry.submit()
+        frappe.db.commit()
 
         # Update the journal_entry_id field in the Asset document
         self.db_set('custom_ref_journal_entry_id', journal_entry.name)
