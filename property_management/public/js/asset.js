@@ -655,14 +655,6 @@ function validate_total_contribution(frm) {
 
 ///////////////////////////////////////
 
-frappe.ui.form.on('Asset', {
-    refresh: function(frm) {
-        frm.add_custom_button(__('Shareholder Exit'), function() {
-            show_shareholder_exit_dialog(frm);
-        });
-    }
-});
-
 function show_shareholder_exit_dialog(frm) {
     let shareholders = frm.doc.custom_shareholder_table.map(row => ({
         label: row.shareholder,
@@ -711,14 +703,6 @@ function show_shareholder_exit_dialog(frm) {
 }
 
 ////////////////////////////////////////////////////
-
-frappe.ui.form.on('Asset', {
-    refresh: function(frm) {
-        frm.add_custom_button(__('Profit Split2'), () => {
-            open_profit_split_dialog(frm);
-        });
-    }
-});
 // frappe.ui.form.on('Asset', {
 //     refresh: function(frm) {
 //         // Show button only if asset status is "Sold"
