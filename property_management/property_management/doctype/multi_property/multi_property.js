@@ -55,62 +55,130 @@ frappe.ui.form.on('Multi Property', {
         let size_per_unit = frm.doc.qty / frm.doc.split_quantity;
         let row_number = 1;
 
-        function getFloorNumber(floorNoString) {
-            if (floorNoString.toLowerCase() === "ground floor") {
-                return 0; // Assign 0 for the ground floor
-            }
-            let match = floorNoString.match(/\d+/); // Extract numeric part
-            return match ? parseInt(match[0], 10) : 0; // Default to 0 if no number is found
+    // Function to get floor number (0 for ground floor)
+    function getFloorNumber(floorNoString) {
+        if (floorNoString.toLowerCase() === "ground floor") {
+            return "0"; // Assign "Ground Floor" for the ground floor
+        }
+        let match = floorNoString.match(/\d+/); // Extract numeric part
+        return match ? parseInt(match[0], 10) : 0; // Return numeric floor number
+    }
+
+    // Loop through floor_details to populate the table
+    (frm.doc.floor_details || []).forEach(floor => {
+        let floorNo = getFloorNumber(floor.floor_no); // Get the formatted floor number
+        let roomNumber = 1; // Start room number for each floor
+
+        // Add residential units
+        for (let i = 1; i <= (floor.total_resident_unit || 0); i++) {
+            if (row_number > frm.doc.split_quantity) break;
+
+            let child_row = frm.add_child('multi_property_table');
+            let roomNo = `${floorNo}${roomNumber}`; // Room No with floor and room number
+
+            child_row.size = frm.doc.size;
+            child_row.gross_amount = frm.doc.unit_price;
+            child_row.item_code = `${frm.doc.item_code}-Room No ${roomNo}`;
+            child_row.item_name = `${frm.doc.item_code}-Room No ${roomNo}`;
+            child_row.floor_no = floor.floor_no === "Ground Floor" ? 'Ground Floor' : floorNo; // Assign formatted floor number
+            child_row.unit_type = 'Resident';
+            child_row.property_category = 'Residential';
+            child_row.property_manager = frm.doc.property_manager;
+            child_row.rent_type = frm.doc.rent_type;
+            child_row.property_group = frm.doc.property_group;
+            child_row.property_status = frm.doc.property_status;
+            child_row.available_for_use_date = frm.doc.available_for_use_date;
+
+            roomNumber++; // Increment room number for the next unit
+            row_number++; // Increment row number
         }
 
-        // Loop through floor_details to populate the table
-        (frm.doc.floor_details || []).forEach(floor => {
-            let floorNo = getFloorNumber(floor.floor_no);
-            // Add resident units
-            for (let i = 1; i <= (floor.total_resident_unit || 0); i++) {
-                if (row_number > frm.doc.split_quantity) break;
+        // Add commercial units
+        for (let i = 1; i <= (floor.total_commercial_unit || 0); i++) {
+            if (row_number > frm.doc.split_quantity) break;
 
-                let child_row = frm.add_child('multi_property_table');
-                // child_row.name_prefix = `${prefix}-${String(row_number).padStart(3, '0')}`;
-                child_row.size = frm.doc.size;
-                child_row.gross_amount = frm.doc.unit_price;
-                child_row.item_code = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-R${floorNo}${String(i).padStart(1)}`;
-                child_row.item_name = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-R${floorNo}${String(i).padStart(1)}`;
-                child_row.floor_no = floor.floor_no;
-                child_row.unit_type = 'Resident';
-                child_row.property_category = 'Residential';
-                child_row.property_manager = frm.doc.property_manager;
-                child_row.rent_type = frm.doc.rent_type;
-                child_row.property_group = frm.doc.property_group;
-                child_row.property_status = frm.doc.property_status;
-                child_row.available_for_use_date = frm.doc.available_for_use_date;
+            let child_row = frm.add_child('multi_property_table');
+            let roomNo = `${String(floorNo)}${roomNumber}`; // Room No with floor and room number
 
-                row_number++;
-            }
+            child_row.size = frm.doc.size;
+            child_row.gross_amount = frm.doc.unit_price;
+            child_row.item_code = `${frm.doc.item_code}-Room No ${roomNo}`;
+            child_row.item_name = `${frm.doc.item_code}-Room No ${roomNo}`;
+            child_row.floor_no = floor.floor_no === "Ground Floor" ? 'Ground Floor' : floorNo; // Assign formatted floor number
+            child_row.unit_type = 'Commercial';
+            child_row.property_category = 'Commercial';
+            child_row.property_manager = frm.doc.property_manager;
+            child_row.rent_type = frm.doc.rent_type;
+            child_row.property_group = frm.doc.property_group;
+            child_row.property_status = frm.doc.property_status;
+            child_row.available_for_use_date = frm.doc.available_for_use_date;
 
-            // Add commercial units
-            for (let i = 1; i <= (floor.total_commercial_unit || 0); i++) {
-                if (row_number > frm.doc.split_quantity) break;
+            roomNumber++; // Increment room number for the next unit
+            row_number++; // Increment row number
+        }
+    });
 
-                let child_row = frm.add_child('multi_property_table');
-                // child_row.name_prefix = `${prefix}-${String(row_number).padStart(3, '0')}`;
-                child_row.size = frm.doc.size;
-                child_row.gross_amount = frm.doc.unit_price;
-                child_row.item_code = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-C${floorNo}${String(i).padStart(1)}`;
-                child_row.item_name = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-C${floorNo}${String(i).padStart(1)}`;
-                child_row.floor_no = floor.floor_no;
-                child_row.unit_type = 'Commercial';
-                child_row.property_category = 'Commercial';
-                child_row.property_manager = frm.doc.property_manager;
-                child_row.rent_type = frm.doc.rent_type;
-                child_row.property_group = frm.doc.property_group;
+    // Refresh the field and notify the user
+    frm.refresh_field('multi_property_table');
+    frappe.msgprint(__('Property split successfully based on floor details.'));
 
-                row_number++;
-            }
-        });
 
-        frm.refresh_field('multi_property_table');
-        frappe.msgprint(__('Property split successfully based on floor details.'));
+        // function getFloorNumber(floorNoString) {
+        //     if (floorNoString.toLowerCase() === "ground floor") {
+        //         return 0; // Assign 0 for the ground floor
+        //     }
+        //     let match = floorNoString.match(/\d+/); // Extract numeric part
+        //     return match ? parseInt(match[0], 10) : 0; // Default to 0 if no number is found
+        // }
+
+        // // Loop through floor_details to populate the table
+        // (frm.doc.floor_details || []).forEach(floor => {
+        //     let floorNo = getFloorNumber(floor.floor_no);
+        //     // Add resident units
+        //     for (let i = 1; i <= (floor.total_resident_unit || 0); i++) {
+        //         if (row_number > frm.doc.split_quantity) break;
+
+        //         let child_row = frm.add_child('multi_property_table');
+        //         // child_row.name_prefix = `${prefix}-${String(row_number).padStart(3, '0')}`;
+        //         child_row.size = frm.doc.size;
+        //         child_row.gross_amount = frm.doc.unit_price;
+        //         child_row.item_code = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-R${floorNo}${String(i).padStart(1)}`;
+        //         child_row.item_name = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-R${floorNo}${String(i).padStart(1)}`;
+        //         child_row.floor_no = floor.floor_no;
+        //         child_row.unit_type = 'Resident';
+        //         child_row.property_category = 'Residential';
+        //         child_row.property_manager = frm.doc.property_manager;
+        //         child_row.rent_type = frm.doc.rent_type;
+        //         child_row.property_group = frm.doc.property_group;
+        //         child_row.property_status = frm.doc.property_status;
+        //         child_row.available_for_use_date = frm.doc.available_for_use_date;
+
+        //         row_number++;
+        //     }
+
+        //     // Add commercial units
+        //     for (let i = 1; i <= (floor.total_commercial_unit || 0); i++) {
+        //         if (row_number > frm.doc.split_quantity) break;
+
+        //         let child_row = frm.add_child('multi_property_table');
+        //         // child_row.name_prefix = `${prefix}-${String(row_number).padStart(3, '0')}`;
+        //         child_row.size = frm.doc.size;
+        //         child_row.gross_amount = frm.doc.unit_price;
+        //         child_row.item_code = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-C${floorNo}${String(i).padStart(1)}`;
+        //         child_row.item_name = `${frm.doc.item_code}-${String(floor.floor_no).padStart(2, '0')}-C${floorNo}${String(i).padStart(1)}`;
+        //         child_row.floor_no = floor.floor_no;
+        //         child_row.unit_type = 'Commercial';
+        //         child_row.property_category = 'Commercial';
+        //         child_row.property_manager = frm.doc.property_manager;
+        //         child_row.rent_type = frm.doc.rent_type;
+        //         child_row.property_group = frm.doc.property_group;
+
+        //         row_number++;
+        //     }
+        // });
+
+        // frm.refresh_field('multi_property_table');
+        // frappe.msgprint(__('Property split successfully based on floor details.'));
     },
 
     // New functionality: clear and reinitialize floor details based on `no_of_floors`
