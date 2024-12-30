@@ -43,7 +43,9 @@ fixtures = [
                     "Asset-custom_tenants",
                     "Asset-custom_ref_journal_entry_id",
                     "Asset-custom_mode_of_payments",
-                    "Tenancy-custom_status"
+                    "Tenancy-custom_status",
+                    "Journal Entry-custom_expense_property",
+                    
                     
 				]
 			]

@@ -158,8 +158,6 @@ def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment)
     return je_doc.as_dict()  # Return the document data as a dictionary
 
 
-
-
 # Custom script for Expense Property DocType
 
 ###################################################################
@@ -242,7 +240,7 @@ class ExpenseProperty(Document):
         je.user_remark = f"Journal Entry for Expense Property {self.name}"
         je.voucher_type = "Journal Entry"
         je.cheque_date = self.posting_date
-
+        je.custom_expense_property = self.name
         # Step 2: Add entries from Expense Property Expense child table
         for expense_item in self.expense_account:
             je.append("accounts", {
@@ -251,7 +249,7 @@ class ExpenseProperty(Document):
                 "credit_in_account_currency": 0,
                 "user_remark": expense_item.description
             })
-
+        
         # Step 3: Fetch Mode of Payment Account for the specified Company
         mode_of_payment_account = frappe.db.get_value("Mode of Payment Account", 
                                                       {"parent": self.mode_of_payment, "company": self.company},
@@ -265,6 +263,58 @@ class ExpenseProperty(Document):
             "account": mode_of_payment_account,
             "debit_in_account_currency": 0,
             "credit_in_account_currency": total_debit,
+            "user_remark": f"Payment via {self.mode_of_payment}"
+        })
+
+        # Step 5: Insert and submit the Journal Entry
+        je.insert()
+        je.submit()
+
+        # Part 1: Update Asset gross_purchase_amount and custom_total_expenses
+        for item in self.land_property:
+            # Get the asset linked to this property row
+            asset = frappe.get_doc("Asset", item.property)
+            if asset:
+                # Calculate the new gross purchase amount
+                new_gross_purchase_amount = item.gross_amount + item.allocated_expense_amount
+                # Update the asset's gross_purchase_amount field
+                asset.db_set('gross_purchase_amount', new_gross_purchase_amount)
+                
+                # Update the asset's custom_total_expenses field
+                updated_total_expenses = (asset.custom_total_expenses or 0) + item.allocated_expense_amount
+                asset.db_set('custom_total_expenses', updated_total_expenses)
+
+        # Part 2: Create the Journal Entry
+        je = frappe.new_doc("Journal Entry")
+        je.posting_date = self.posting_date
+        je.company = self.company
+        je.cheque_no = self.name  # Use the Expense Property ID as cheque_no
+        je.user_remark = f"Journal Entry for Expense Property {self.name}"
+        je.voucher_type = "Journal Entry"
+        je.cheque_date = self.posting_date
+
+        # Step 2: Add entries from Expense Property Expense child table
+        for expense_item in self.expense_account:
+            je.append("accounts", {
+                "account": expense_item.expense_account,
+                "credit_in_account_currency": expense_item.amount,
+                "debit_in_account_currency": 0,
+                "user_remark": expense_item.description
+            })
+        je.custom_expense_property = self.name
+        # Step 3: Fetch fixed asset Account for the specified asset
+        fixed_asset_account = frappe.db.get_value("Asset Category Account", 
+                                                      {"parent": asset.asset_category, "company_name": self.company},
+                                                      "fixed_asset_account")
+        if not fixed_asset_account:
+            frappe.throw(f"No account found in asset category for company {self.company}.")
+
+        # Step 4: Add the fixed asset account entry (as a debit entry)
+        total_debit = sum([item.amount for item in self.expense_account])
+        je.append("accounts", {
+            "account": fixed_asset_account,
+            "credit_in_account_currency": 0,
+            "debit_in_account_currency": total_debit,
             "user_remark": f"Payment via {self.mode_of_payment}"
         })
 
