@@ -27,9 +27,11 @@ frappe.ui.form.on('Expense Property', {
                 args: {
                     doctype: 'Asset',
                     filters: {
-                        split_from: frm.doc.property  // Match against the selected property ID
+                        split_from: frm.doc.property,  // Match against the selected property ID
+                        status:['!=','Sold']
                     },
-                    fields: ['name', 'gfa_sqft', 'gross_purchase_amount']  // Fields to fetch
+                    fields: ['name', 'gfa_sqft', 'gross_purchase_amount'],  // Fields to fetch
+                    limit_page_length: 100
                 },
                 callback: function(r) {
                     // Clear existing rows in the child table
@@ -118,18 +120,38 @@ frappe.ui.form.on('Expense Property', {
     }
 });
 
+// frappe.ui.form.on('Expense Property', {
+//     before_submit: function(frm) {
+//         let total_allocated_expense = 0;
+//         frm.doc.land_property.forEach(function(row) {
+//             total_allocated_expense += row.allocated_expense_amount;
+//         });
+
+//         if (total_allocated_expense !== frm.doc.total_expense_amount) {
+//             frappe.throw(__('Total Allocated Expense Amount must be equal to Total Expense Amount'));
+//         }
+//     }
+// });
+
 frappe.ui.form.on('Expense Property', {
-    before_submit: function(frm) {
+    before_submit: function (frm) {
         let total_allocated_expense = 0;
-        frm.doc.land_property.forEach(function(row) {
+
+        // Calculate the total allocated expense
+        frm.doc.land_property.forEach(function (row) {
             total_allocated_expense += row.allocated_expense_amount;
         });
 
-        if (total_allocated_expense !== frm.doc.total_expense_amount) {
-            frappe.throw(__('Total Allocated Expense Amount must be equal to Total Expense Amount'));
+        // Define a tolerance for small decimal differences
+        const tolerance = 0.09;
+
+        // Validation with tolerance
+        if (Math.abs(total_allocated_expense - frm.doc.total_expense_amount) > tolerance) {
+            frappe.throw(__('Total Allocated Expense Amount must be approximately equal to Total Expense Amount'));
         }
     }
 });
+
 
   
 // frappe.ui.form.on('Expense Property', {

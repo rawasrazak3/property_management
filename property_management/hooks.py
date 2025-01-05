@@ -199,7 +199,10 @@ doc_events = {
             "property_management.property_management.doctype.tenancy_termination.tenancy_termination.create_invoice_on_tenency_exit",
             "property_management.property_management.doctype.tenancy_termination.tenancy_termination.cancel_and_delete_after_termination"
 		]
-	} 
+	},
+    "Property Shareholder": {
+        "before_save": "property_management.property_management.doctype.property_shareholder.property_shareholder.update_property_shareholders"	
+	},
 
 }
 

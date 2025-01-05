@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-01-02 09:37:19.625107",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "gross_purchase_amount",
+  "actual_property_amount",
+  "total_expenses",
+  "naming_series",
+  "shareholder"
+ ],
+ "fields": [
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "link_filters": "[[\"Asset\",\"custom_property_type\",\"=\",\"Land\"]]",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "gross_purchase_amount",
+   "fieldtype": "Currency",
+   "label": "Gross Rent Amount"
+  },
+  {
+   "fetch_from": "property.custom_actual_property_amount",
+   "fieldname": "actual_property_amount",
+   "fieldtype": "Currency",
+   "label": "Actual Property Amount"
+  },
+  {
+   "fetch_from": "property.custom_total_expenses",
+   "fieldname": "total_expenses",
+   "fieldtype": "Currency",
+   "label": "Total Expenses"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "PS-.YY.-",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shareholder",
+   "fieldtype": "Table",
+   "label": "Shareholder",
+   "options": "Shareholder Property"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-02 13:13:41.198540",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Property Shareholder",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
