@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "property",
+  "company",
   "gross_purchase_amount",
   "actual_property_amount",
   "total_expenses",
@@ -50,11 +51,17 @@
    "fieldtype": "Table",
    "label": "Shareholder",
    "options": "Shareholder Property"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-02 13:13:41.198540",
+ "modified": "2025-01-06 10:12:35.388651",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Property Shareholder",
