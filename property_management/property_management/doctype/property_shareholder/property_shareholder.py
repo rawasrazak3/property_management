@@ -42,10 +42,18 @@ def update_property_shareholders(doc, method):
 def append_shareholders_to_asset(asset_name, shareholder_entries):
     # Fetch the Asset document
     asset = frappe.get_doc('Asset', asset_name)
-
-    # Append shareholder data to the child table
     for entry in shareholder_entries:
-        asset.append('custom_shareholder_table', entry)
+        # Check if the entry already exists in the child table
+        is_duplicate = any(
+            row.shareholder == entry['shareholder']
+            and row.contribution == entry['contribution']
+            and row.amount == entry['amount']
+            for row in asset.custom_shareholder_table
+        )
+
+        # Append only if the entry is not a duplicate
+        if not is_duplicate:
+            asset.append('custom_shareholder_table', entry)
 
     # Save the updated document
     asset.save()

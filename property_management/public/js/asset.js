@@ -467,6 +467,105 @@ frappe.ui.form.on('Asset', {
 //     dialog.show();
 // }
 
+// function open_bulk_asset_split_dialog(frm) {
+//     const unit_price = frm.doc.gross_purchase_amount / frm.doc.asset_quantity;
+
+//     const dialog = new frappe.ui.Dialog({
+//         title: 'Bulk Asset Split',
+//         fields: [
+//             {fieldname: 'item_code', label: 'Item', fieldtype: 'Data', default: frm.doc.item_code, read_only: 1},
+//             {fieldname: 'gross_purchase_amount', label: 'Gross Purchase Amount', fieldtype: 'Currency', default: frm.doc.gross_purchase_amount, read_only: 1},
+//             {fieldname: 'asset_quantity', label: 'Asset Quantity', fieldtype: 'Float', default: frm.doc.asset_quantity, read_only: 1},
+//             {fieldname: 'unit_price', label: 'Unit Price', fieldtype: 'Currency', default: unit_price, read_only: 1},
+//             {
+//                 fieldname: 'name_prefix',
+//                 label: 'Name Prefix',
+//                 fieldtype: 'Data',
+//                 description: 'Prefix for new asset names'
+//             },
+//             {
+//                 fieldname: 'number_of_splits',
+//                 label: 'Number of Splits',
+//                 fieldtype: 'Int',
+//                 description: 'Enter the number of rows for splitting the asset'
+//             },
+//             {
+//                 fieldname: 'split_details',
+//                 label: 'Split Details',
+//                 fieldtype: 'Table',
+//                 fields: [
+//                     {fieldname: 'name_prefix', label: 'Name Prefix', fieldtype: 'Data', in_list_view: 1},
+//                     {fieldname: 'quantity_to_split', label: 'Quantity to Split', fieldtype: 'Float', in_list_view: 1, reqd: 1},
+//                     {fieldname: 'gross_amount', label: 'Gross Amount', fieldtype: 'Currency', in_list_view: 1, read_only: 1}
+//                 ],
+//                 data: [],
+//                 get_data: () => dialog.get_value('split_details')
+//             }
+//         ],
+//         primary_action_label: 'Submit',
+//         primary_action: (values) => {
+//             // Disable the Submit button to prevent multiple clicks
+//             dialog.get_primary_btn().prop('disabled', true);
+
+//             frappe.call({
+//                 method: 'property_management.property_management.custom_script.asset.bulk_asset_split',
+//                 args: {
+//                     asset_name: frm.doc.name,
+//                     split_details: JSON.stringify(values.split_details)
+//                 },
+//                 callback: function(response) {
+//                     frappe.msgprint(__('Bulk Asset Split completed successfully.'));
+//                     dialog.hide(); // Close the dialog
+//                     frm.reload_doc(); // Reload the document to reflect changes
+//                 },
+//                 error: function() {
+//                     // Re-enable the Submit button if an error occurs
+//                     dialog.get_primary_btn().prop('disabled', false);
+//                 }
+//             });
+//         }
+//     });
+
+//     // Auto-generate split details based on number of splits
+//     dialog.fields_dict.number_of_splits.$input.on('change', function() {
+//         const number_of_splits = dialog.get_value('number_of_splits');
+//         const main_name_prefix = dialog.get_value('name_prefix');
+//         const split_details = [];
+
+//         if (number_of_splits && number_of_splits > 0) {
+//             const split_quantity = frm.doc.asset_quantity / number_of_splits;
+
+//             for (let i = 0; i < number_of_splits; i++) {
+//                 split_details.push({
+//                     name_prefix: `${main_name_prefix} ${i + 1}`, // Generate name prefix based on main input
+//                     quantity_to_split: split_quantity,
+//                     gross_amount: split_quantity * unit_price
+//                 });
+//             }
+
+//             dialog.fields_dict.split_details.grid.df.data = split_details;
+//             dialog.fields_dict.split_details.grid.refresh();
+//         }
+//     });
+
+//     // Update gross amount when quantity changes
+//     dialog.fields_dict.split_details.grid.wrapper.on('change', 'input[data-fieldname="quantity_to_split"]', function(e) {
+//         const unit_price = frm.doc.gross_purchase_amount / frm.doc.asset_quantity;
+//         const split_details = dialog.get_value('split_details');
+
+//         split_details.forEach(row => {
+//             if (row.quantity_to_split) {
+//                 row.gross_amount = row.quantity_to_split * unit_price;
+//             } else {
+//                 row.gross_amount = 0;
+//             }
+//         });
+
+//         dialog.fields_dict.split_details.grid.refresh();
+//     });
+
+//     dialog.show();
+// }
 function open_bulk_asset_split_dialog(frm) {
     const unit_price = frm.doc.gross_purchase_amount / frm.doc.asset_quantity;
 
@@ -487,7 +586,7 @@ function open_bulk_asset_split_dialog(frm) {
                 fieldname: 'number_of_splits',
                 label: 'Number of Splits',
                 fieldtype: 'Int',
-                description: 'Enter the number of rows for splitting the asset'
+                description: 'Enter the number of rows for splitting the asset (excluding the main property)'
             },
             {
                 fieldname: 'split_details',
@@ -533,9 +632,10 @@ function open_bulk_asset_split_dialog(frm) {
         const split_details = [];
 
         if (number_of_splits && number_of_splits > 0) {
-            const split_quantity = frm.doc.asset_quantity / number_of_splits;
+            const adjusted_splits = number_of_splits; // Exclude the last property
+            const split_quantity = frm.doc.asset_quantity / (adjusted_splits + 1);
 
-            for (let i = 0; i < number_of_splits; i++) {
+            for (let i = 0; i < adjusted_splits; i++) {
                 split_details.push({
                     name_prefix: `${main_name_prefix} ${i + 1}`, // Generate name prefix based on main input
                     quantity_to_split: split_quantity,
@@ -550,7 +650,6 @@ function open_bulk_asset_split_dialog(frm) {
 
     // Update gross amount when quantity changes
     dialog.fields_dict.split_details.grid.wrapper.on('change', 'input[data-fieldname="quantity_to_split"]', function(e) {
-        const unit_price = frm.doc.gross_purchase_amount / frm.doc.asset_quantity;
         const split_details = dialog.get_value('split_details');
 
         split_details.forEach(row => {
@@ -566,6 +665,7 @@ function open_bulk_asset_split_dialog(frm) {
 
     dialog.show();
 }
+
 
 frappe.ui.form.on('Asset', {
     refresh: function (frm) {
@@ -590,35 +690,35 @@ frappe.ui.form.on('Asset', {
 });
 
 //////////////////////////////////
-frappe.ui.form.on('Asset', {
-    refresh: function(frm) {
-        calculate_shareholder_amounts(frm);
-    },
-    // gross_purchase_amount: function(frm) {
-    //     calculate_shareholder_amounts(frm);
-    // },
-    update_before_submit: function(frm) {
-        validate_total_contribution(frm);
-    },
-    before_submit: function(frm) {
-        validate_total_contribution(frm);
-    }
-});
+// frappe.ui.form.on('Asset', {
+//     refresh: function(frm) {
+//         calculate_shareholder_amounts(frm);
+//     },
+//     // gross_purchase_amount: function(frm) {
+//     //     calculate_shareholder_amounts(frm);
+//     // },
+//     update_before_submit: function(frm) {
+//         validate_total_contribution(frm);
+//     },
+//     before_submit: function(frm) {
+//         validate_total_contribution(frm);
+//     }
+// });
 
-frappe.ui.form.on('Shareholder Property', {
-    contribution: function(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-        calculate_row_amount(frm, row);
-        frm.refresh_field("custom_shareholder_table");
-        validate_total_contribution(frm);  // Validate after updating a row
-    },
-    amount: function(frm, cdt, cdn) {
-        let row = locals[cdt][cdn];
-        calculate_row_contribution(frm, row);
-        frm.refresh_field("custom_shareholder_table");
-        validate_total_contribution(frm);  // Validate after updating a row
-    }
-});
+// frappe.ui.form.on('Shareholder Property', {
+//     contribution: function(frm, cdt, cdn) {
+//         let row = locals[cdt][cdn];
+//         calculate_row_amount(frm, row);
+//         frm.refresh_field("custom_shareholder_table");
+//         validate_total_contribution(frm);  // Validate after updating a row
+//     },
+//     amount: function(frm, cdt, cdn) {
+//         let row = locals[cdt][cdn];
+//         calculate_row_contribution(frm, row);
+//         frm.refresh_field("custom_shareholder_table");
+//         validate_total_contribution(frm);  // Validate after updating a row
+//     }
+// });
 
 // Calculate amount based on contribution
 function calculate_row_amount(frm, row) {
