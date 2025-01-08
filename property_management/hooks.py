@@ -184,7 +184,11 @@ doc_events = {
 		"on_change": "property_management.property_management.doctype.landlord.landlord.create_landlord_customer"
 	},
     "Sales Invoice": {
-		"on_submit": "property_management.property_management.custom_script.sales_invoice.create_payment_entry_from_sales_invoice"
+		"on_submit": [
+            "property_management.property_management.custom_script.sales_invoice.create_payment_entry_from_sales_invoice",
+            "property_management.property_management.custom_script.sales_invoice.on_submit_sales_invoice"
+		]
+    
 	},
     "Journal Entry": {
 		"on_submit": [
