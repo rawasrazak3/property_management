@@ -8,6 +8,9 @@
 // });
 frappe.ui.form.on('Property Shareholder', {
     refresh: function(frm) {
+        // frm.add_custom_button(__('Shareholder Exit'), function() {
+        //     show_shareholder_exit_dialog(frm);
+        // });
         calculate_shareholder_amounts(frm);
     },
     // gross_purchase_amount: function(frm) {
@@ -85,82 +88,82 @@ function validate_total_contribution(frm) {
     //     frappe.throw(__('The total contribution must be exactly 100%. Current total: ') + totalContribution + '%');
     // }
 }
-frappe.ui.form.on('Property Shareholder', {
-    after_save: function(frm) {
-        // Get the main property selected in the current document
-        let main_property = frm.doc.property;
-        if (!main_property) {
-            frappe.msgprint(__('Please select a main property.'));
-            return;
-        }
+// frappe.ui.form.on('Property Shareholder', {
+//     after_save: function(frm) {
+//         // Get the main property selected in the current document
+//         let main_property = frm.doc.property;
+//         if (!main_property) {
+//             frappe.msgprint(__('Please select a main property.'));
+//             return;
+//         }
 
-        // Fetch all properties where "split_from" matches the main property
-        frappe.call({
-            method: 'frappe.client.get_list',
-            args: {
-                doctype: 'Asset', // Assuming "Property" is stored in Asset
-                filters: { split_from: main_property },
-                fields: ['name']
-            },
-            callback: function(response) {
-                let properties_to_update = response.message || [];
-                let shareholder_data = frm.doc.shareholder || [];
+//         // Fetch all properties where "split_from" matches the main property
+//         frappe.call({
+//             method: 'frappe.client.get_list',
+//             args: {
+//                 doctype: 'Asset', // Assuming "Property" is stored in Asset
+//                 filters: { split_from: main_property },
+//                 fields: ['name']
+//             },
+//             callback: function(response) {
+//                 let properties_to_update = response.message || [];
+//                 let shareholder_data = frm.doc.shareholder || [];
 
-                // Prepare child table data
-                let shareholder_entries = shareholder_data.map(row => {
-                    return {
-                        shareholder_name: row.shareholder_name,
-                        contribution: row.contribution,
-                        amount: row.amount,
-                        is_shareholder_exit:row.is_shareholder_exit,
-                        no_expense_included: row.no_expense_included
-                    };
-                });
+//                 // Prepare child table data
+//                 let shareholder_entries = shareholder_data.map(row => {
+//                     return {
+//                         shareholder_name: row.shareholder_name,
+//                         contribution: row.contribution,
+//                         amount: row.amount,
+//                         is_shareholder_exit:row.is_shareholder_exit,
+//                         no_expense_included: row.no_expense_included
+//                     };
+//                 });
 
-                // Update the main property
-                update_property_shareholders(main_property, shareholder_entries);
+//                 // Update the main property
+//                 update_property_shareholders(main_property, shareholder_entries);
 
-                // Update the properties split from the main property
-                properties_to_update.forEach(property => {
-                    update_property_shareholders(property.name, shareholder_entries);
-                });
-            }
-        });
-    }
-});
+//                 // Update the properties split from the main property
+//                 properties_to_update.forEach(property => {
+//                     update_property_shareholders(property.name, shareholder_entries);
+//                 });
+//             }
+//         });
+//     }
+// });
 
-// Function to append shareholders to a property's "shareholder" child table
-function update_property_shareholders(property_name, shareholder_entries) {
-    frappe.call({
-        method: 'frappe.client.get',
-        args: {
-            doctype: 'Asset', // Assuming "Property" is stored in Asset
-            name: property_name
-        },
-        callback: function(response) {
-            let property = response.message;
-            if (property) {
-                let existing_shareholders = property.custom_shareholder_table || [];
-                existing_shareholders.push(...shareholder_entries);
+// // Function to append shareholders to a property's "shareholder" child table
+// function update_property_shareholders(property_name, shareholder_entries) {
+//     frappe.call({
+//         method: 'frappe.client.get',
+//         args: {
+//             doctype: 'Asset', // Assuming "Property" is stored in Asset
+//             name: property_name
+//         },
+//         callback: function(response) {
+//             let property = response.message;
+//             if (property) {
+//                 let existing_shareholders = property.custom_shareholder_table || [];
+//                 existing_shareholders.push(...shareholder_entries);
 
-                // Save the updated property
-                frappe.call({
-                    method: 'frappe.client.save',
-                    args: {
-                        doc: {
-                            doctype: 'Asset',
-                            name: property.name,
-                            shareholder: existing_shareholders
-                        }
-                    },
-                    callback: function() {
-                        frappe.msgprint(__('Shareholder details updated for property: ' + property_name));
-                    }
-                });
-            }
-        }
-    });
-}
+//                 // Save the updated property
+//                 frappe.call({
+//                     method: 'frappe.client.save',
+//                     args: {
+//                         doc: {
+//                             doctype: 'Asset',
+//                             name: property.name,
+//                             shareholder: existing_shareholders
+//                         }
+//                     },
+//                     callback: function() {
+//                         frappe.msgprint(__('Shareholder details updated for property: ' + property_name));
+//                     }
+//                 });
+//             }
+//         }
+//     });
+// }
 frappe.ui.form.on('Shareholder Property', {
     create_journal_entry_1: function (frm, cdt, cdn) {
         const row = locals[cdt][cdn];
@@ -190,7 +193,8 @@ frappe.ui.form.on('Shareholder Property', {
                 mode_of_payment: row.mode_of_payment,
                 shareholder: row.shareholder,
                 shareholder_account: row.shareholder_account,
-                amount: row.amount
+                amount: row.amount,
+                project: frm.doc.project
             },
             callback: function (response) {
                 if (response.message) {
@@ -203,3 +207,50 @@ frappe.ui.form.on('Shareholder Property', {
         });
     }
 });
+
+function show_shareholder_exit_dialog(frm) {
+    let shareholders = frm.doc.shareholder.map(row => ({
+        label: row.shareholder,
+        value: row.shareholder
+    }));
+
+    // Show the dialog
+    let dialog = new frappe.ui.Dialog({
+        title: __('Shareholder Exit'),
+        fields: [
+            {
+                label: 'Shareholder',
+                fieldname: 'shareholder',
+                fieldtype: 'Select',
+                options: shareholders,
+                reqd: 1
+            },
+            {
+                label: 'Mode of Payment',
+                fieldname: 'mode_of_payment',
+                fieldtype: 'Link',
+                options: 'Mode of Payment',
+                reqd: 1
+            }
+        ],
+        primary_action_label: __('Continue'),
+        primary_action(values) {
+            dialog.hide();
+            frappe.call({
+                method: "property_management.property_management.custom_script.asset.create_shareholder_exit_journal_entry",
+                args: {
+                    asset: frm.doc.name,
+                    shareholder: values.shareholder,
+                    mode_of_payment: values.mode_of_payment
+                },
+                callback: function(response) {
+                    if (response.message) {
+                        frappe.set_route("Form", "Journal Entry", response.message);  // Redirect to the Journal Entry
+                    }
+                }
+            });
+        }
+    });
+
+    dialog.show();
+}

@@ -875,7 +875,8 @@ frappe.ui.form.on('Shareholder Property', {
                 mode_of_payment: row.mode_of_payment,
                 shareholder: row.shareholder,
                 shareholder_account: row.shareholder_account,
-                amount: row.amount
+                amount: row.amount,
+                project: frm.doc.custom_project
             },
             callback: function (response) {
                 if (response.message) {

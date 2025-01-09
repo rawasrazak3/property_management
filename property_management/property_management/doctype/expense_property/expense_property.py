@@ -309,13 +309,15 @@ class ExpenseProperty(Document):
         if not fixed_asset_account:
             frappe.throw(f"No account found in asset category for company {self.company}.")
 
+        project = frappe.db.get_value("Asset",asset,"custom_project")
         # Step 4: Add the fixed asset account entry (as a debit entry)
         total_debit = sum([item.amount for item in self.expense_account])
         jv.append("accounts", {
             "account": fixed_asset_account,
             "credit_in_account_currency": 0,
             "debit_in_account_currency": total_debit,
-            "user_remark": f"Payment via {self.mode_of_payment}"
+            "user_remark": f"Payment via {self.mode_of_payment}",
+            "project": project
         })
 
         # Step 5: Insert and submit the Journal Entry

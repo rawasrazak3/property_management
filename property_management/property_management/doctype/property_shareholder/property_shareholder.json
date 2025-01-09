@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "property",
+  "project",
   "company",
   "gross_purchase_amount",
   "actual_property_amount",
@@ -57,11 +58,18 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company"
+  },
+  {
+   "fetch_from": "property.custom_project",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-06 10:12:35.388651",
+ "modified": "2025-01-08 17:47:14.783870",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Property Shareholder",

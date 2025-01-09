@@ -174,7 +174,7 @@ def create_journal_entry(asset_id, mode_of_payment):
     return journal_entry.name
 
 @frappe.whitelist()
-def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, shareholder, shareholder_account, amount):
+def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, shareholder, shareholder_account, amount,project=None):
     # Validate mode_of_payment
     if not mode_of_payment:
         frappe.throw("Mode of Payment is required.")
@@ -192,6 +192,13 @@ def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, sha
 
     if not mode_of_payment_account:
         frappe.throw("No matching account found for the Mode of Payment in the specified company.")
+
+    # Determine project if not provided
+    if not project:
+        # Fetch project from related data or provide a default value
+        project = frappe.db.get_value("Asset", asset_name, "custom_project")
+        if not project:
+            frappe.throw("Project is required but could not be determined.")
 
     # Create Journal Entry
     journal_entry = frappe.get_doc({
@@ -212,7 +219,8 @@ def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, sha
                 "party_type": "Shareholder",
                 "party": shareholder,
                 "reference_type": "Asset",
-                "reference_name": asset_name
+                "reference_name": asset_name,
+                "project": project
             }
         ],
         "user_remark": "Shareholder initial deposit"
