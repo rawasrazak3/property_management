@@ -49,10 +49,11 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
     # Fetch income account from Sales Invoice items
     income_account = None
     for item in doc.items:
+        if item.asset:
+            prop = item.asset
         if item.income_account:
             income_account = item.income_account
             break
-
     if not income_account:
         frappe.throw("Income Account not found in Sales Invoice Items.")
     
@@ -97,7 +98,7 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
     shareholders = frappe.get_all(
         "Shareholder Property",
         filters={"parent": asset_name, "parenttype": "Asset"},
-        fields=["shareholder", "shareholder_account", "contribution"]
+        fields=["shareholder", "shareholder_account", "contribution","amount"]
     )
 
     if not shareholders:
@@ -114,10 +115,14 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
         "credit_in_account_currency": 0,
         "project":project_name
     })
-
+    # asset_doc = frappe.get_doc("Asset", asset_name)
     # Credit shareholder accounts
     for shareholder in shareholders:
         share_amount = (credit_amount * shareholder.contribution) / 100
+        # amount = shareholder.get("amount")
+        # updated_contribution = (amount + share_amount)
+        # frappe.db.set_value("Shareholder Property", shareholder.shareholder, "amount", updated_contribution)
+        # asset_doc.save(ignore_permissions= True)
         journal_entry_entries.append({
             "account": shareholder.shareholder_account,  # Fix account key
             "debit_in_account_currency": 0,
@@ -138,3 +143,5 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
     })
     journal_entry.insert(ignore_permissions=True)
     journal_entry.save()
+
+    frappe.db.set_value("Asset", prop, "custom_profit", credit_amount)

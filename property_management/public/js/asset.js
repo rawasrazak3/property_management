@@ -285,34 +285,36 @@ frappe.ui.form.on('Asset', {
     refresh(frm) {
         console.log("Test ::::::::::::::::::::::")
         frm.set_df_property('depreciation_schedule_sb', 'hide', 1)
-        frm.add_custom_button(__("Available"), function() {
-            frm.set_value('property_status', "Available");
-            frm.save();
-            if (frm.doc.docstatus == 1 ) {
-                frm.save('Update');
-            }
-        },__("Property Status"));
-        frm.add_custom_button(__("Rent/Lease"), function() {
-            frm.set_value('property_status', "Rent/Lease");
-            frm.save();
-            if (frm.doc.docstatus == 1) {
-                frm.save('Update');
-            }
-        },__("Property Status"));
-        frm.add_custom_button(__("Booked"), function() {
-            frm.set_value('property_status', "Booked");
-            frm.save();
-            if (frm.doc.docstatus == 1) {
-                frm.save('Update');
-            }
-        },__("Property Status"));
-        frm.add_custom_button(__("Closed"), function() {
-            frm.set_value('property_status', "Closed");
-            frm.save();
-            if (frm.doc.docstatus == 1) {
-                frm.save('Update');
-            }
-        },__("Property Status"));
+        if(frm.doc.custom_property_type==="Rent") {
+            frm.add_custom_button(__("Available"), function() {
+                frm.set_value('property_status', "Available");
+                frm.save();
+                if (frm.doc.docstatus == 1 ) {
+                    frm.save('Update');
+                }
+            },__("Property Status"));
+            frm.add_custom_button(__("Rent/Lease"), function() {
+                frm.set_value('property_status', "Rent/Lease");
+                frm.save();
+                if (frm.doc.docstatus == 1) {
+                    frm.save('Update');
+                }
+            },__("Property Status"));
+            frm.add_custom_button(__("Booked"), function() {
+                frm.set_value('property_status', "Booked");
+                frm.save();
+                if (frm.doc.docstatus == 1) {
+                    frm.save('Update');
+                }
+            },__("Property Status"));
+            frm.add_custom_button(__("Closed"), function() {
+                frm.set_value('property_status', "Closed");
+                frm.save();
+                if (frm.doc.docstatus == 1) {
+                    frm.save('Update');
+                }
+            },__("Property Status"));
+        }
 
         if (frm.doc.docstatus == 1&&frm.doc.custom_property_type==="Rent"&&frm.doc.property_status=="Available") {
             frm.page.set_inner_btn_group_as_primary(__("Create"));
@@ -321,6 +323,26 @@ frappe.ui.form.on('Asset', {
                         "asset": frm.doc.name
                     };
                     frappe.set_route("tenancy", "new-tenancy");
+            }, __("Create"));
+        }
+        if (frm.doc.docstatus === 1 && frm.doc.custom_property_type === "Land" && !frm.doc.split_from) {
+            // Set "Create" as the primary button group
+            frm.page.set_inner_btn_group_as_primary(__("Create"));
+
+            // Add "Property Shareholder" button
+            frm.add_custom_button(__("Property Shareholder"), function() {
+                frappe.route_options = {
+                    "asset": frm.doc.name
+                };
+                frappe.set_route("property-shareholder", "new-property-shareholder");
+            }, __("Create"));
+
+            // Add "Expense Property" button
+            frm.add_custom_button(__("Expense Property"), function() {
+                frappe.route_options = {
+                    "asset": frm.doc.name
+                };
+                frappe.set_route("expense-property", "new-expense-property");
             }, __("Create"));
         }
     }
