@@ -211,7 +211,8 @@ def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, sha
                 "account": mode_of_payment_account,
                 "debit_in_account_currency": float(amount),
                 "reference_type": "Asset",
-                "reference_name": asset_name
+                "reference_name": asset_name,
+                "project": project
             },
             {
                 "account": shareholder_account,
