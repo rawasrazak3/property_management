@@ -35,10 +35,10 @@
    "label": "Actual Property Amount"
   },
   {
-   "fetch_from": "property.custom_total_expenses",
    "fieldname": "total_expenses",
    "fieldtype": "Currency",
-   "label": "Total Expenses"
+   "label": "Total Expenses",
+   "read_only": 1
   },
   {
    "fieldname": "naming_series",
@@ -69,7 +69,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-08 17:47:14.783870",
+ "modified": "2025-01-20 10:12:36.854342",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Property Shareholder",

@@ -30,12 +30,40 @@ import json
 
 #     return {"status": "success", "message": "Bulk asset split completed successfully."}
 
+# @frappe.whitelist()
+# def bulk_asset_split(asset_name, split_details):
+#     split_details = json.loads(split_details)
+
+#     asset = frappe.get_doc("Asset", asset_name)
+#     remaining_qty = asset.asset_quantity
+
+#     for index, split in enumerate(split_details):
+#         quantity_to_split = flt(split.get("quantity_to_split"))
+#         row_name_prefix = split.get("name_prefix")
+
+#         if quantity_to_split > remaining_qty:
+#             frappe.throw(_("Row {0}: Quantity to split exceeds available quantity.").format(index + 1))
+
+#         # Use the name_prefix from the row
+#         new_asset_name = row_name_prefix
+
+#         # Perform the split and assign the new asset name
+#         new_asset = erpnext_split_asset(asset.name, quantity_to_split)
+#         new_asset.db_set("asset_name", new_asset_name)  # Set the custom name
+#         frappe.msgprint(_("Created new asset {0} with quantity {1}.").format(new_asset_name, quantity_to_split))
+
+#         remaining_qty -= quantity_to_split
+#         asset.db_set("asset_quantity", remaining_qty)
+
+#     return {"status": "success", "message": "Bulk asset split completed successfully."}
+
 @frappe.whitelist()
 def bulk_asset_split(asset_name, split_details):
     split_details = json.loads(split_details)
 
+    # Fetch the current asset
     asset = frappe.get_doc("Asset", asset_name)
-    remaining_qty = asset.asset_quantity
+    remaining_qty = asset.asset_quantity  # Replace with your field for quantity
 
     for index, split in enumerate(split_details):
         quantity_to_split = flt(split.get("quantity_to_split"))
@@ -44,14 +72,43 @@ def bulk_asset_split(asset_name, split_details):
         if quantity_to_split > remaining_qty:
             frappe.throw(_("Row {0}: Quantity to split exceeds available quantity.").format(index + 1))
 
-        # Use the name_prefix from the row
+        # Use the name_prefix from the row to name the new asset
         new_asset_name = row_name_prefix
 
-        # Perform the split and assign the new asset name
+        # Perform the split
         new_asset = erpnext_split_asset(asset.name, quantity_to_split)
         new_asset.db_set("asset_name", new_asset_name)  # Set the custom name
+
+        # Copy parent asset hierarchy and add current asset as parent
+        parent_hierarchy = [{"parent_asset": asset.name}]
+        if asset.get("parent_hierarchy"):
+            parent_hierarchy += asset.get("parent_hierarchy")
+
+        # Add parent hierarchy to child table
+        for parent in parent_hierarchy:
+            new_asset.append("custom_parent_heirarchy", {"parent_asset": parent["parent_asset"]})
+
+        # Copy shareholder table from the parent asset to the child asset
+        # if asset.get("custom_shareholder_table"):
+        #     for shareholder in asset.get("custom_shareholder_table"):
+        #         new_asset.append("custom_shareholder_table", {
+        #             "shareholder": shareholder.shareholder,
+        #             "shareholder_account": shareholder.shareholder_account,
+        #             "contribution": shareholder.contribution,
+        #             "amount": shareholder.amount,
+        #             "no_expense_included": shareholder.no_expense_included,
+        #             "actual_contribution": shareholder.actual_contribution,
+        #             "actual_amount": shareholder.actual_amount,
+        #             "is_shareholder_exit": shareholder.is_shareholder_exit
+        #         })
+
+        # Save the new asset with updated hierarchy
+        new_asset.save(ignore_permissions=True)
+
+        # Notify the user about the new asset creation
         frappe.msgprint(_("Created new asset {0} with quantity {1}.").format(new_asset_name, quantity_to_split))
 
+        # Update the remaining quantity of the original asset
         remaining_qty -= quantity_to_split
         asset.db_set("asset_quantity", remaining_qty)
 

@@ -46,7 +46,8 @@ fixtures = [
                     "Tenancy-custom_status",
                     "Journal Entry-custom_expense_property",
                     "Asset-custom_profit",
-                    "Contract-custom_vacate_date"
+                    "Contract-custom_vacate_date",
+                    "Asset-custom_parent_heirarchy"
                     
                     
 				]
@@ -209,9 +210,9 @@ doc_events = {
     "Property Shareholder": {
         "before_save": "property_management.property_management.doctype.property_shareholder.property_shareholder.update_property_shareholders"	
 	},
-    # "Sold Property Summary": {
-    #     "before_save": "property_management.property_management.doctype.sold_property_summary.sold_property_summary.after_save_sold_property_summary"
-	# }
+    "Sold Property Summary": {
+        "before_save": "property_management.property_management.doctype.sold_property_summary.sold_property_summary.after_save_sold_property_summary"
+	}
 
 }
 

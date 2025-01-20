@@ -1,0 +1,109 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:SP-{YY}-{#####}",
+ "creation": "2025-01-14 12:06:54.330508",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_hni3",
+  "amended_from",
+  "property",
+  "property_name",
+  "shareholder",
+  "shareholder_name",
+  "initial_contribution",
+  "contribution",
+  "sold_property_table",
+  "total_shareholder_profit"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_hni3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Sold Property Summary",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "sold_property_table",
+   "fieldtype": "Table",
+   "label": "Sold Property Table",
+   "options": "Sold Property Details"
+  },
+  {
+   "fieldname": "shareholder",
+   "fieldtype": "Link",
+   "label": "Shareholder",
+   "options": "Shareholder"
+  },
+  {
+   "fieldname": "total_shareholder_profit",
+   "fieldtype": "Currency",
+   "label": "Total Shareholder Profit",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "property.asset_name",
+   "fieldname": "property_name",
+   "fieldtype": "Data",
+   "label": "Property Name"
+  },
+  {
+   "fetch_from": "shareholder.title",
+   "fieldname": "shareholder_name",
+   "fieldtype": "Data",
+   "label": "Shareholder Name"
+  },
+  {
+   "fieldname": "initial_contribution",
+   "fieldtype": "Currency",
+   "label": "Initial Contribution"
+  },
+  {
+   "fieldname": "contribution",
+   "fieldtype": "Currency",
+   "label": "Contribution"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-01-19 15:02:28.788995",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Sold Property Summary",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
