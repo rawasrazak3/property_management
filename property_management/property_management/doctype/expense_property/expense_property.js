@@ -23,16 +23,21 @@ frappe.ui.form.on('Expense Property', {
         if (frm.doc.property) {
             // Fetch assets where custom_against_property matches the selected property
             frappe.call({
-                method: 'frappe.client.get_list',
+                method: 'property_management.property_management.doctype.expense_property.expense_property.fetch_assets_with_property_hierarchy',
                 args: {
-                    doctype: 'Asset',
-                    filters: {
-                        split_from: frm.doc.property,  // Match against the selected property ID
-                        status:['!=','Sold']
-                    },
-                    fields: ['name', 'gfa_sqft', 'gross_purchase_amount'],  // Fields to fetch
-                    limit_page_length: 100
+                    property_id: frm.doc.property,
+                    limit_page_length: 100 // Adjust the limit as needed
                 },
+                // method: 'frappe.client.get_list',
+                // args: {
+                //     doctype: 'Asset',
+                //     filters: {
+                //         split_from: frm.doc.property,  // Match against the selected property ID
+                //         status:['!=','Sold']
+                //     },
+                //     fields: ['name', 'gfa_sqft', 'gross_purchase_amount'],  // Fields to fetch
+                //     limit_page_length: 100
+                // },
                 callback: function(r) {
                     // Clear existing rows in the child table
                     frm.clear_table('land_property');

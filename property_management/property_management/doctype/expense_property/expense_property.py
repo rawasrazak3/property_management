@@ -15,6 +15,30 @@ def get_mode_of_payment_account(mode_of_payment):
     account = frappe.db.get_value("Mode of Payment Account", {"parent": mode_of_payment}, "default_account")
     return account
 
+# In your custom app's Python file
+@frappe.whitelist()
+def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
+    if not property_id:
+        return []
+
+    # Query to fetch assets where the property matches in the property_hierarchy child table
+    query = """
+        SELECT 
+            a.name, a.gfa_sqft, a.gross_purchase_amount
+        FROM 
+            `tabAsset` a
+        LEFT JOIN 
+            `tabParent Asset` ph ON ph.parent = a.name
+        WHERE 
+            a.status != 'Sold'
+            AND ph.parent_asset = %(property_id)s
+        LIMIT %(limit)s
+    """
+    return frappe.db.sql(
+        query, 
+        {"property_id": property_id, "limit": int(limit_page_length)}, 
+        as_dict=True
+    )
 
 # @frappe.whitelist()
 # def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment):
@@ -218,19 +242,67 @@ def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment)
 
 class ExpenseProperty(Document):
     def before_submit(self):
-        # Part 1: Update Asset gross_purchase_amount and custom_total_expenses
+        # Part 1: Update Asset fields (`gross_purchase_amount` and `custom_total_expenses`) and shareholder table
         for item in self.land_property:
             # Get the asset linked to this property row
             asset = frappe.get_doc("Asset", item.property)
-            if asset:
-                # Calculate the new gross purchase amount
+            if asset and asset.status != "Sold":  # Only update if the property is not sold
+                # Update `gross_purchase_amount`
                 new_gross_purchase_amount = item.gross_amount + item.allocated_expense_amount
-                # Update the asset's gross_purchase_amount field
-                asset.db_set('gross_purchase_amount', new_gross_purchase_amount)
-                
-                # Update the asset's custom_total_expenses field
+                asset.db_set("gross_purchase_amount", new_gross_purchase_amount)
+
+                # Update `custom_total_expenses`
                 updated_total_expenses = (asset.custom_total_expenses or 0) + item.allocated_expense_amount
-                asset.db_set('custom_total_expenses', updated_total_expenses)
+                asset.db_set("custom_total_expenses", updated_total_expenses)
+
+                # # Update Shareholder Child Table
+                # for shareholder in asset.custom_shareholder_table:
+                #     if not shareholder.no_expense_included:  # Only update if "No Expense Included" is unchecked
+                #         shareholder.amount = (shareholder.amount or 0) + self.total_expense_amount
+
+                # Save the updated Asset document
+                asset.save()
+
+        # Part 2: Update Property Shareholder DocType
+        # Fetch the Property Shareholder based on self.property
+        property_shareholder = frappe.get_doc("Property Shareholder", {"property": self.property})
+        if property_shareholder:
+            # Update gross_amount in Property Shareholder
+            new_gross_amount = (property_shareholder.gross_purchase_amount or 0) + self.total_expense_amount
+            property_shareholder.db_set("gross_purchase_amount", new_gross_amount)
+            new_expense = new_gross_amount - (property_shareholder.actual_property_amount or 0)
+            property_shareholder.db_set("total_expenses", new_expense)
+
+            # Update Shareholder fields in Property Shareholder DocType
+            total_contribution = 0
+            for shareholder in property_shareholder.shareholder:
+                if not shareholder.no_expense_included:  # Only update if "No Expense Included" is unchecked
+                    shareholder.amount = (shareholder.amount or 0) + self.total_expense_amount
+                    # Calculate contribution based on the updated gross amount
+                    shareholder.contribution = (shareholder.amount / new_gross_amount) * 100
+                    total_contribution += shareholder.contribution
+
+            # Adjust contribution for shareholders with "No Expense Included" checked
+            for shareholder in property_shareholder.shareholder:
+                if shareholder.no_expense_included:
+                    shareholder.contribution = 100 - total_contribution
+
+            # Save the updated Property Shareholder document
+            property_shareholder.save()
+    # def before_submit(self):
+    #     # Part 1: Update Asset gross_purchase_amount and custom_total_expenses
+    #     for item in self.land_property:
+    #         # Get the asset linked to this property row
+    #         asset = frappe.get_doc("Asset", item.property)
+    #         if asset:
+    #             # Calculate the new gross purchase amount
+    #             new_gross_purchase_amount = item.gross_amount + item.allocated_expense_amount
+    #             # Update the asset's gross_purchase_amount field
+    #             asset.db_set('gross_purchase_amount', new_gross_purchase_amount)
+                
+    #             # Update the asset's custom_total_expenses field
+    #             updated_total_expenses = (asset.custom_total_expenses or 0) + item.allocated_expense_amount
+    #             asset.db_set('custom_total_expenses', updated_total_expenses)
 
         # Part 2: Create the Journal Entry
         je = frappe.new_doc("Journal Entry")
