@@ -50,15 +50,16 @@ frappe.ui.form.on('Sold Property Summary', {
                         callback: function(r) {
                             if (r && r.message) {
                                 let asset = r.message;
+                                if (asset.status=== 'Sold'){
+                                    // Add the selected asset to the child table
+                                    let child = frm.add_child('sold_property_table');
+                                    child.property_name = asset.name;
+                                    child.profit = asset.custom_profit;
+                                    child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
 
-                                // Add the selected asset to the child table
-                                let child = frm.add_child('sold_property_table');
-                                child.property_name = asset.name;
-                                child.profit = asset.custom_profit;
-                                child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
-
-                                // Refresh the child table to show the changes
-                                frm.refresh_field('sold_property_table');
+                                    // Refresh the child table to show the changes
+                                    frm.refresh_field('sold_property_table');
+                                }
                             }
                         }
                     });

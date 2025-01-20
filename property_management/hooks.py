@@ -47,7 +47,8 @@ fixtures = [
                     "Journal Entry-custom_expense_property",
                     "Asset-custom_profit",
                     "Contract-custom_vacate_date",
-                    "Asset-custom_parent_heirarchy"
+                    "Asset-custom_parent_heirarchy",
+                    "Asset-custom_rent_amount_monthly"
                     
                     
 				]
