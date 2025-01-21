@@ -1,0 +1,108 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-25 15:54:17.700706",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "property_name",
+  "tenant",
+  "tenancy",
+  "tenant_schedule_id",
+  "schedule_date",
+  "outstanding_rent",
+  "reference_no",
+  "paid",
+  "payment_entry"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "columns": 1,
+   "fieldname": "tenant",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tenant",
+   "options": "Tenant"
+  },
+  {
+   "columns": 1,
+   "fieldname": "outstanding_rent",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Outstanding Rent"
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "paid",
+   "fieldtype": "Check",
+   "label": "Paid"
+  },
+  {
+   "columns": 1,
+   "fieldname": "tenancy",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tenancy",
+   "options": "Tenancy"
+  },
+  {
+   "columns": 1,
+   "fieldname": "tenant_schedule_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tenant Schedule ID",
+   "options": "Tenant Schedule"
+  },
+  {
+   "columns": 1,
+   "fieldname": "schedule_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Schedule Date"
+  },
+  {
+   "columns": 1,
+   "fieldname": "reference_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reference No"
+  },
+  {
+   "fieldname": "payment_entry",
+   "fieldtype": "Link",
+   "label": "Payment Entry",
+   "options": "Payment Entry"
+  },
+  {
+   "columns": 2,
+   "fieldname": "property_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property Name",
+   "options": "Asset"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-01-21 15:42:16.880748",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Tenancy Bulk Payment Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
