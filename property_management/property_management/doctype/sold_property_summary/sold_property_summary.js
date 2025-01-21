@@ -4,6 +4,32 @@
 frappe.ui.form.on('Sold Property Summary', {
     property: function (frm) {
         if (frm.doc.property) {
+            // Fetch the selected property's shareholders from the child table
+            frappe.call({
+                method: 'frappe.client.get',
+                args: {
+                    doctype: 'Asset',  // Fetch the Asset DocType
+                    name: frm.doc.property  // Use the selected property's name
+                },
+                callback: function (r) {
+                    if (r.message) {
+                        let property = r.message;
+
+                        // Apply a dynamic filter to the 'shareholder' field
+                        frm.set_query('shareholder', function () {
+                            return {
+                                filters: {
+                                    name: ['in', property.custom_shareholder_table.map(row => row.shareholder)]
+                                }
+                            };
+                        });
+
+                        frappe.msgprint(__('Shareholder options have been filtered based on the selected property.'));
+                    } else {
+                        frappe.msgprint(__('No property details found.'));
+                    }
+                }
+            });
             // Fetch assets where custom_against_property matches the selected property
             frappe.call({
                 method: 'property_management.property_management.doctype.sold_property_summary.sold_property_summary.fetch_assets_with_property_hierarchy',

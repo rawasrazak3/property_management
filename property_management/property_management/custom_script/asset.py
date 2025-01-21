@@ -63,54 +63,57 @@ def bulk_asset_split(asset_name, split_details):
 
     # Fetch the current asset
     asset = frappe.get_doc("Asset", asset_name)
-    remaining_qty = asset.asset_quantity  # Replace with your field for quantity
+    remaining_qty = flt(asset.asset_quantity, 3)
+
+    frappe.logger().info({
+        "message": "Initial Asset Details",
+        "asset_name": asset.name,
+        "total_asset_cost": asset.total_asset_cost,
+        "remaining_qty": remaining_qty
+    })
 
     for index, split in enumerate(split_details):
-        quantity_to_split = flt(split.get("quantity_to_split"))
+        quantity_to_split = flt(split.get("quantity_to_split"), 3)
         row_name_prefix = split.get("name_prefix")
 
         if quantity_to_split > remaining_qty:
             frappe.throw(_("Row {0}: Quantity to split exceeds available quantity.").format(index + 1))
 
-        # Use the name_prefix from the row to name the new asset
         new_asset_name = row_name_prefix
-
-        # Perform the split
         new_asset = erpnext_split_asset(asset.name, quantity_to_split)
         new_asset.db_set("asset_name", new_asset_name)  # Set the custom name
 
-        # Copy parent asset hierarchy and add current asset as parent
+        # Preserve the original Total Asset Cost
+        # new_asset.db_set("total_asset_cost", flt(asset.total_asset_cost, 3))
+
+        # Copy parent hierarchy
         parent_hierarchy = [{"parent_asset": asset.name}]
         if asset.get("parent_hierarchy"):
             parent_hierarchy += asset.get("parent_hierarchy")
 
-        # Add parent hierarchy to child table
         for parent in parent_hierarchy:
             new_asset.append("custom_parent_heirarchy", {"parent_asset": parent["parent_asset"]})
 
-        # Copy shareholder table from the parent asset to the child asset
-        # if asset.get("custom_shareholder_table"):
-        #     for shareholder in asset.get("custom_shareholder_table"):
-        #         new_asset.append("custom_shareholder_table", {
-        #             "shareholder": shareholder.shareholder,
-        #             "shareholder_account": shareholder.shareholder_account,
-        #             "contribution": shareholder.contribution,
-        #             "amount": shareholder.amount,
-        #             "no_expense_included": shareholder.no_expense_included,
-        #             "actual_contribution": shareholder.actual_contribution,
-        #             "actual_amount": shareholder.actual_amount,
-        #             "is_shareholder_exit": shareholder.is_shareholder_exit
-        #         })
-
-        # Save the new asset with updated hierarchy
+        
+        new_asset.flags.ignore_validate_update_after_submit = True
         new_asset.save(ignore_permissions=True)
+        # Save the new asset with required flags
+        # new_asset.db_set("total_asset_cost", flt(asset.total_asset_cost, 3))
+        # new_asset.db_set("asset_quantity", quantity_to_split)
 
-        # Notify the user about the new asset creation
+
         frappe.msgprint(_("Created new asset {0} with quantity {1}.").format(new_asset_name, quantity_to_split))
-
-        # Update the remaining quantity of the original asset
         remaining_qty -= quantity_to_split
-        asset.db_set("asset_quantity", remaining_qty)
+
+    # Update the original asset's quantity directly
+    asset.db_set("asset_quantity", flt(remaining_qty, 3))
+
+    frappe.logger().info({
+        "message": "Final Asset State",
+        "asset_name": asset.name,
+        "remaining_qty": remaining_qty,
+        "total_asset_cost": flt(asset.total_asset_cost, 3)
+    })
 
     return {"status": "success", "message": "Bulk asset split completed successfully."}
 

@@ -589,7 +589,7 @@ frappe.ui.form.on('Asset', {
 //     dialog.show();
 // }
 function open_bulk_asset_split_dialog(frm) {
-    const unit_price = frm.doc.gross_purchase_amount / frm.doc.asset_quantity;
+    const unit_price = flt(frm.doc.gross_purchase_amount / frm.doc.asset_quantity, 3);
 
     const dialog = new frappe.ui.Dialog({
         title: 'Bulk Asset Split',
@@ -652,16 +652,18 @@ function open_bulk_asset_split_dialog(frm) {
         const number_of_splits = dialog.get_value('number_of_splits');
         const main_name_prefix = dialog.get_value('name_prefix');
         const split_details = [];
+        const total_quantity = frm.doc.asset_quantity || 0;
 
         if (number_of_splits && number_of_splits > 0) {
             const adjusted_splits = number_of_splits; // Exclude the last property
-            const split_quantity = frm.doc.asset_quantity / (adjusted_splits + 1);
+            const split_quantity = flt(total_quantity / (adjusted_splits + 1), 3); 
+            // const split_quantity = frm.doc.asset_quantity / (adjusted_splits + 1);
 
             for (let i = 0; i < adjusted_splits; i++) {
                 split_details.push({
                     name_prefix: `${main_name_prefix} ${i + 1}`, // Generate name prefix based on main input
                     quantity_to_split: split_quantity,
-                    gross_amount: split_quantity * unit_price
+                    gross_amount: flt(split_quantity * unit_price, 3)
                 });
             }
 
@@ -676,7 +678,7 @@ function open_bulk_asset_split_dialog(frm) {
 
         split_details.forEach(row => {
             if (row.quantity_to_split) {
-                row.gross_amount = row.quantity_to_split * unit_price;
+                flt(row.quantity_to_split * unit_price, 3) || 0;
             } else {
                 row.gross_amount = 0;
             }
