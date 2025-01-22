@@ -11,6 +11,7 @@ class RentItem(Document):
 		
 	def create_item(self):
 		item= frappe.new_doc('Item')
+		item.custom_company = 'ABRAJ BOUSHER'
 		item.item_code = self.item_code
 		item.item_name = self.item_name
 		item.item_group = self.item_group

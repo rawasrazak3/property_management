@@ -48,7 +48,10 @@ fixtures = [
                     "Asset-custom_profit",
                     "Contract-custom_vacate_date",
                     "Asset-custom_parent_heirarchy",
-                    "Asset-custom_rent_amount_monthly"
+                    "Asset-custom_rent_amount_monthly",
+                    "Customer-custom_company",
+                    "Supplier-custom_company",
+                    "Item-custom_company"
                     
                     
 				]
