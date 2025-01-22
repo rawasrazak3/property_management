@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-25 15:46:07.428446",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_kwyo",
+  "from_date",
+  "get_details",
+  "main_property",
+  "column_break_pyot",
+  "to_date",
+  "section_break_mqyy",
+  "rent_table",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_kwyo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Tenancy Bulk Payment",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "fieldname": "column_break_pyot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "section_break_mqyy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "get_details",
+   "fieldtype": "Button",
+   "label": "Get Details"
+  },
+  {
+   "fieldname": "rent_table",
+   "fieldtype": "Table",
+   "label": "Rent Table",
+   "options": "Tenancy Bulk Payment Details"
+  },
+  {
+   "fieldname": "main_property",
+   "fieldtype": "Link",
+   "label": "Main Property",
+   "options": "Asset"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-12-31 11:13:57.353507",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Tenancy Bulk Payment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -11,6 +11,7 @@ class LandItem(Document):
 		
 	def create_item(self):
 		item= frappe.new_doc('Item')
+		item.custom_company = 'ALI HAIDER PORTFOLIO'
 		item.item_code = self.property_item_code
 		item.item_name = self.property_item_name
 		item.item_group = "Land for Sale"
