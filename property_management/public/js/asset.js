@@ -589,7 +589,7 @@ frappe.ui.form.on('Asset', {
 //     dialog.show();
 // }
 function open_bulk_asset_split_dialog(frm) {
-    const unit_price = flt(frm.doc.gross_purchase_amount / frm.doc.asset_quantity, 3);
+    const unit_price = frm.doc.gross_purchase_amount / frm.doc.asset_quantity;
 
     const dialog = new frappe.ui.Dialog({
         title: 'Bulk Asset Split',
@@ -678,7 +678,7 @@ function open_bulk_asset_split_dialog(frm) {
 
         split_details.forEach(row => {
             if (row.quantity_to_split) {
-                flt(row.quantity_to_split * unit_price, 3) || 0;
+                row.gross_amount = row.quantity_to_split * unit_price;
             } else {
                 row.gross_amount = 0;
             }
