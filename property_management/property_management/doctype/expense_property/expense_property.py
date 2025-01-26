@@ -267,13 +267,13 @@ class ExpenseProperty(Document):
 
         # Part 2: Update Property Shareholder DocType
         # Fetch the Property Shareholder based on self.property
-        property_shareholder = frappe.get_doc("Property Shareholder", {"property": self.property})
-        if property_shareholder:
-            # Update gross_amount in Property Shareholder
-            new_gross_amount = (property_shareholder.gross_purchase_amount or 0) + self.total_expense_amount
-            property_shareholder.db_set("gross_purchase_amount", new_gross_amount)
-            new_expense = new_gross_amount - (property_shareholder.actual_property_amount or 0)
-            property_shareholder.db_set("total_expenses", new_expense)
+        # property_shareholder = frappe.get_doc("Property Shareholder", {"property": self.property})
+        # if property_shareholder:
+        #     # Update gross_amount in Property Shareholder
+        #     new_gross_amount = (property_shareholder.gross_purchase_amount or 0) + self.total_expense_amount
+        #     property_shareholder.db_set("gross_purchase_amount", new_gross_amount)
+        #     new_expense = new_gross_amount - (property_shareholder.actual_property_amount or 0)
+        #     property_shareholder.db_set("total_expenses", new_expense)
 
             # # Update Shareholder fields in Property Shareholder DocType
             # total_contribution = 0
@@ -290,7 +290,7 @@ class ExpenseProperty(Document):
             #         shareholder.contribution = 100 - total_contribution
 
             # Save the updated Property Shareholder document
-            property_shareholder.save()
+            # property_shareholder.save()
     # def before_submit(self):
     #     # Part 1: Update Asset gross_purchase_amount and custom_total_expenses
     #     for item in self.land_property:
