@@ -15,6 +15,7 @@
   "initial_contribution",
   "contribution",
   "sold_property_table",
+  "total_profit",
   "total_shareholder_profit"
  ],
  "fields": [
@@ -77,12 +78,17 @@
    "fieldname": "contribution",
    "fieldtype": "Currency",
    "label": "Contribution"
+  },
+  {
+   "fieldname": "total_profit",
+   "fieldtype": "Currency",
+   "label": "Total Profit"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-19 15:02:28.788995",
+ "modified": "2025-01-23 13:02:07.768362",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Sold Property Summary",

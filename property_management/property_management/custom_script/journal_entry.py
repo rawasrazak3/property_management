@@ -1,6 +1,54 @@
 import frappe
 from frappe.utils import flt
 
+# @frappe.whitelist()
+# def update_shareholder_expenses(journal_entry, method=None):
+#     try:
+#         # Fetch the submitted Journal Entry
+#         je_doc = frappe.get_doc("Journal Entry", journal_entry)
+
+#         # Check if this Journal Entry is linked to an Expense Property
+#         if not je_doc.custom_is_expense_property:
+#             return  # Exit if not related to an Expense Property
+
+#         # Iterate over accounts in the Journal Entry
+#         for entry in je_doc.accounts:
+#             # Check if entry has reference_type as 'Asset' and a reference_name
+#             if entry.reference_type == "Asset" and entry.reference_name:
+#                 # Get the Property document by its reference_name
+#                 property_doc = frappe.get_doc("Asset", entry.reference_name)
+
+#                 # Check for the specific shareholder in the custom_shareholder_table
+#                 shareholder_found = False
+#                 for row in property_doc.custom_shareholder_table:
+#                     # Update only if the shareholder matches and there is a credit amount
+#                     if row.shareholder == entry.party and entry.credit_in_account_currency > 0:
+#                         # Calculate and add the expense amount to current and total expense
+#                         allocated_expense = flt(entry.credit_in_account_currency)
+#                         row.amount = flt(row.amount) + allocated_expense
+#                         row.total_expense = flt(row.total_expense) + allocated_expense
+#                         shareholder_found = True
+
+#                 # Recalculate contributions for all rows
+#                 total_amount = sum(flt(row.amount) for row in property_doc.custom_shareholder_table)
+
+#                 if total_amount > 0:
+#                     for row in property_doc.custom_shareholder_table:
+#                         row.contribution = (flt(row.amount) / total_amount) * 100
+
+#                 # Save the Property document if any shareholder was found and updated
+#                 if shareholder_found:
+#                     property_doc.save()
+
+#     except Exception as e:
+#         # Log the error without using the `level` argument
+#         frappe.logger("update_shareholder_expenses").error(f"Error updating shareholder expenses: {str(e)}")
+
+# # Trigger this function on Journal Entry submission
+# def on_submit_journal_entry(doc, method):
+#     if doc.voucher_type == "Journal Entry":
+#         update_shareholder_expenses(doc.name, method)
+
 @frappe.whitelist()
 def update_shareholder_expenses(journal_entry, method=None):
     try:
@@ -15,35 +63,82 @@ def update_shareholder_expenses(journal_entry, method=None):
         for entry in je_doc.accounts:
             # Check if entry has reference_type as 'Asset' and a reference_name
             if entry.reference_type == "Asset" and entry.reference_name:
-                # Get the Property document by its reference_name
-                property_doc = frappe.get_doc("Asset", entry.reference_name)
-
-                # Check for the specific shareholder in the custom_shareholder_table
-                shareholder_found = False
-                for row in property_doc.custom_shareholder_table:
-                    # Update only if the shareholder matches and there is a credit amount
-                    if row.shareholder == entry.party and entry.credit_in_account_currency > 0:
-                        # Calculate and add the expense amount to current and total expense
-                        allocated_expense = flt(entry.credit_in_account_currency)
-                        row.amount = flt(row.amount) + allocated_expense
-                        row.total_expense = flt(row.total_expense) + allocated_expense
-                        shareholder_found = True
-
-                # Recalculate contributions for all rows
-                total_amount = sum(flt(row.amount) for row in property_doc.custom_shareholder_table)
-
-                if total_amount > 0:
-                    for row in property_doc.custom_shareholder_table:
-                        row.contribution = (flt(row.amount) / total_amount) * 100
-
-                # Save the Property document if any shareholder was found and updated
-                if shareholder_found:
-                    property_doc.save()
+                # Update the main property and its sub-properties
+                update_main_and_sub_properties(entry.reference_name, entry)
 
     except Exception as e:
-        # Log the error without using the `level` argument
+        # Log the error
         frappe.logger("update_shareholder_expenses").error(f"Error updating shareholder expenses: {str(e)}")
 
+
+def update_main_and_sub_properties(main_property_name, entry):
+    """
+    Update the main property and its sub-properties based on the hierarchy.
+    """
+    # Fetch the main property document
+    main_property_doc = frappe.get_doc("Asset", main_property_name)
+
+    # Update the main property if its status is not "Sold"
+    if main_property_doc.status.lower() != "sold":
+        update_property(main_property_doc, entry)
+
+    # Fetch sub-properties linked to the main property
+    sub_properties = fetch_sub_properties(main_property_name)
+
+    for sub_property in sub_properties:
+        if sub_property["status"].lower() != "sold":
+            sub_property_doc = frappe.get_doc("Asset", sub_property["name"])
+            update_property(sub_property_doc, entry)
+
+
+def update_property(property_doc, entry):
+    """
+    Update the expenses and contributions for a single property.
+    """
+    # Update the expenses for shareholders in the property
+    shareholder_found = False
+    for row in property_doc.custom_shareholder_table:
+        # Update only if the shareholder matches and there is a credit amount
+        if row.shareholder == entry.party and entry.credit_in_account_currency > 0:
+            # Calculate and add the expense amount to current and total expense
+            allocated_expense = flt(entry.credit_in_account_currency)
+            row.amount = flt(row.amount) + allocated_expense
+            row.total_expense = flt(row.total_expense) + allocated_expense
+            shareholder_found = True
+
+    # Recalculate contributions for all rows
+    total_amount = sum(flt(row.amount) for row in property_doc.custom_shareholder_table)
+
+    if total_amount > 0:
+        for row in property_doc.custom_shareholder_table:
+            row.contribution = (flt(row.amount) / total_amount) * 100
+
+    # Save the Property document if any shareholder was found and updated
+    if shareholder_found:
+        property_doc.save()
+
+def fetch_sub_properties(main_property_name):
+    """
+    Fetch sub-properties where the 'parent_asset' field in the 'custom_parent_heirarchy' child table
+    matches the main property name.
+    """
+    query = """
+        SELECT parent AS name
+        FROM `tabParent Asset`
+        WHERE parent_asset = %s
+    """
+    sub_properties = frappe.db.sql(query, (main_property_name,), as_dict=True)
+
+    # Fetch Asset details for the resulting sub-properties
+    if sub_properties:
+        sub_property_names = [row["name"] for row in sub_properties]
+        assets = frappe.get_all(
+            "Asset",
+            filters={"name": ["in", sub_property_names]},
+            fields=["name", "status"]
+        )
+        return assets
+    return []
 # Trigger this function on Journal Entry submission
 def on_submit_journal_entry(doc, method):
     if doc.voucher_type == "Journal Entry":
