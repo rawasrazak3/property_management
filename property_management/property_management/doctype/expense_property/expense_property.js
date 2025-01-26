@@ -252,7 +252,8 @@ function show_mode_of_payment_dialog(frm) {
                 method: "property_management.property_management.doctype.expense_property.expense_property.create_journal_entry_with_mode_of_payment",
                 args: {
                     expense_property: frm.doc.name,
-                    mode_of_payment: values.mode_of_payment
+                    mode_of_payment: values.mode_of_payment,
+                    property : frm.doc.property
                 },
                 callback: function(response) {
                     if (response.message) {
@@ -274,7 +275,7 @@ function show_mode_of_payment_dialog(frm) {
                                 frappe.model.set_value(row.doctype, row.name, "party", account.party);
                                 frappe.model.set_value(row.doctype, row.name, "credit_in_account_currency", account.credit_in_account_currency);
                                 frappe.model.set_value(row.doctype, row.name, "debit_in_account_currency", account.debit_in_account_currency);
-
+                                frappe.model.set_value(row.doctype, row.name, "project", account.project);
                                 // Set reference_type as "Property" and reference_name as the specific property (asset) name
                                 frappe.model.set_value(row.doctype, row.name, "reference_type", "Asset");
                                 frappe.model.set_value(row.doctype, row.name, "reference_name", account.reference_name);

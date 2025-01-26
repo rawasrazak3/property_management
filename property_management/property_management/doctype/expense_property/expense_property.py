@@ -108,7 +108,7 @@ def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
 #     return je_doc.name  # Return the name of the created journal entry
 
 @frappe.whitelist()
-def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment):
+def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment,property):
     # Fetch the account for the selected mode of payment
     mode_of_payment_account = frappe.db.get_value("Mode of Payment Account", {"parent": mode_of_payment}, "default_account")
     if not mode_of_payment_account:
@@ -148,7 +148,8 @@ def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment)
                     "party": shareholder,
                     "credit_in_account_currency": 0,
                     "reference_type": "Asset",  # Set reference type as Property
-                    "reference_name": asset_row.property  # Set the specific property (asset) name
+                    "reference_name": property,  # Set the specific property (asset) name
+                    "project":asset_doc.custom_project
                 }
             journal_entries[shareholder]["credit_in_account_currency"] += allocation_amount
 
@@ -171,7 +172,8 @@ def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment)
                     "party": entry["party"],
                     "credit_in_account_currency": entry["credit_in_account_currency"],
                     "reference_type": entry["reference_type"],  # Set reference type as Property
-                    "reference_name": entry["reference_name"]   # Set the specific property (asset) name
+                    "reference_name": entry["reference_name"],   # Set the specific property (asset) name
+                    "project": entry["project"]
                 }
                 for entry in journal_entries.values()
             ]
@@ -273,19 +275,19 @@ class ExpenseProperty(Document):
             new_expense = new_gross_amount - (property_shareholder.actual_property_amount or 0)
             property_shareholder.db_set("total_expenses", new_expense)
 
-            # Update Shareholder fields in Property Shareholder DocType
-            total_contribution = 0
-            for shareholder in property_shareholder.shareholder:
-                if not shareholder.no_expense_included:  # Only update if "No Expense Included" is unchecked
-                    shareholder.amount = (shareholder.amount or 0) + self.total_expense_amount
-                    # Calculate contribution based on the updated gross amount
-                    shareholder.contribution = (shareholder.amount / new_gross_amount) * 100
-                    total_contribution += shareholder.contribution
+            # # Update Shareholder fields in Property Shareholder DocType
+            # total_contribution = 0
+            # for shareholder in property_shareholder.shareholder:
+            #     if not shareholder.no_expense_included:  # Only update if "No Expense Included" is unchecked
+            #         shareholder.amount = (shareholder.amount or 0) + self.total_expense_amount
+            #         # Calculate contribution based on the updated gross amount
+            #         shareholder.contribution = (shareholder.amount / new_gross_amount) * 100
+            #         total_contribution += shareholder.contribution
 
-            # Adjust contribution for shareholders with "No Expense Included" checked
-            for shareholder in property_shareholder.shareholder:
-                if shareholder.no_expense_included:
-                    shareholder.contribution = 100 - total_contribution
+            # # Adjust contribution for shareholders with "No Expense Included" checked
+            # for shareholder in property_shareholder.shareholder:
+            #     if shareholder.no_expense_included:
+            #         shareholder.contribution = 100 - total_contribution
 
             # Save the updated Property Shareholder document
             property_shareholder.save()
