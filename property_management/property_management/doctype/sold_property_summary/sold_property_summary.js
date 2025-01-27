@@ -154,7 +154,7 @@ frappe.ui.form.on('Sold Property Summary', {
                                     party: frm.doc.shareholder,
                                     party_type : 'Shareholder',
                                     account: shareholder_data.shareholder_account, // Replace with the correct account field
-                                    project: asset.project,
+                                    project: asset.custom_project,
                                     is_opening:'Yes'
                                 }, 
                                 'credit as opening_balance'
