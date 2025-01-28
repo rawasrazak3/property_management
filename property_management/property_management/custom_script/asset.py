@@ -209,8 +209,8 @@ def create_journal_entry(asset_id, mode_of_payment):
     # Add Credit Entry (Mode of Payment Account)
     journal_entry.append('accounts', {
         'account': mode_of_payment_account,
-        'credit_in_account_currency': grand_total,
-        'credit': grand_total
+        'credit_in_account_currency': asset_doc.custom_profit,
+        'credit': asset_doc.custom_profit
     })
 
     # Calculate debit entries based on shareholder contributions
@@ -218,7 +218,7 @@ def create_journal_entry(asset_id, mode_of_payment):
 
     for shareholder in asset_doc.custom_shareholder_table:
         # Calculate the amount based on the contribution percentage
-        contribution_amount = (grand_total * shareholder.contribution) / 100
+        contribution_amount = (asset_doc.custom_profit * shareholder.contribution) / 100
         journal_entry.append('accounts', {
             'account': shareholder.shareholder_account,
             'debit_in_account_currency': contribution_amount,
