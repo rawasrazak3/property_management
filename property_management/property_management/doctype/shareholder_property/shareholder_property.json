@@ -115,8 +115,7 @@
    "fieldname": "journal_entry",
    "fieldtype": "Link",
    "label": "Journal Entry",
-   "options": "Journal Entry",
-   "read_only": 1
+   "options": "Journal Entry"
   },
   {
    "allow_on_submit": 1,
@@ -128,7 +127,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-24 01:24:40.066363",
+ "modified": "2025-01-28 08:41:32.598155",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Shareholder Property",
