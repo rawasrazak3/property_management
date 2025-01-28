@@ -307,6 +307,7 @@ class ExpenseProperty(Document):
     #             asset.db_set('custom_total_expenses', updated_total_expenses)
 
         # Part 2: Create the Journal Entry
+        project = frappe.db.get_value("Asset",asset,"custom_project")
         je = frappe.new_doc("Journal Entry")
         je.posting_date = self.posting_date
         je.company = self.company
@@ -321,7 +322,8 @@ class ExpenseProperty(Document):
                 "account": expense_item.expense_account,
                 "debit_in_account_currency": expense_item.amount,
                 "credit_in_account_currency": 0,
-                "user_remark": expense_item.description
+                "user_remark": expense_item.description,
+                "project" : project
             })
         
         # Step 3: Fetch Mode of Payment Account for the specified Company
@@ -337,7 +339,8 @@ class ExpenseProperty(Document):
             "account": mode_of_payment_account,
             "debit_in_account_currency": 0,
             "credit_in_account_currency": total_debit,
-            "user_remark": f"Payment via {self.mode_of_payment}"
+            "user_remark": f"Payment via {self.mode_of_payment}",
+            "project" : project
         })
 
         # Step 5: Insert and submit the Journal Entry
@@ -373,7 +376,8 @@ class ExpenseProperty(Document):
                 "account": expense_item.expense_account,
                 "credit_in_account_currency": expense_item.amount,
                 "debit_in_account_currency": 0,
-                "user_remark": expense_item.description
+                "user_remark": expense_item.description,
+                "project" : project
             })
         jv.custom_expense_property = self.name
         # Step 3: Fetch fixed asset Account for the specified asset
