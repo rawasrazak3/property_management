@@ -19,7 +19,7 @@ frappe.ui.form.on('Property Shareholder', {
     update_before_submit: function(frm) {
         validate_total_contribution(frm);
     },
-    before_submit: function(frm) {
+    before_save: function(frm) {
         validate_total_contribution(frm);
     },
     property: function(frm) {
@@ -84,9 +84,9 @@ function validate_total_contribution(frm) {
         totalContribution += row.contribution || 0;
     });
 
-    // if (totalContribution !== 100 && frm.doc.custom_shareholder_table.length > 0) {
-    //     frappe.throw(__('The total contribution must be exactly 100%. Current total: ') + totalContribution + '%');
-    // }
+    if (totalContribution !== 100 && frm.doc.shareholder.length > 0) {
+        frappe.throw(__('The total contribution must be exactly 100%. Current total: ') + totalContribution + '%');
+    }
 }
 // frappe.ui.form.on('Property Shareholder', {
 //     after_save: function(frm) {

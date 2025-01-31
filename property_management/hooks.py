@@ -216,6 +216,9 @@ doc_events = {
 	},
     "Sold Property Summary": {
         "before_save": "property_management.property_management.doctype.sold_property_summary.sold_property_summary.after_save_sold_property_summary"
+	},
+    "Profit Pay": {
+        "before_save": "property_management.property_management.doctype.profit_pay.profit_pay.after_save_profit_pay"
 	}
 
 }
