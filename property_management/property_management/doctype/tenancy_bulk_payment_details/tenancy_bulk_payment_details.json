@@ -87,16 +87,15 @@
   {
    "columns": 2,
    "fieldname": "property_name",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Property Name",
-   "options": "Asset"
+   "label": "Property Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-21 15:42:16.880748",
+ "modified": "2025-02-05 10:03:27.883175",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Tenancy Bulk Payment Details",
