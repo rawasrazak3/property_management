@@ -31,6 +31,61 @@ def create_payment_entry_from_sales_invoice(doc, method):
         
         frappe.msgprint(f"Payment Entry {payment_entry.name} created for Supplier {doc.custom_supplier}.")
 
+def create_purchase_invoice_from_sales_invoice(doc, method):
+    if doc.custom_is_service_invoice:
+        # Filter items belonging to "Government Services"
+        service_items = [item for item in doc.items if item.item_group == "Government Services"]
+
+        if not service_items:
+            frappe.msgprint("No 'Government Services' items found in the Sales Invoice.")
+            return
+
+        # Create Purchase Invoice
+        purchase_invoice = frappe.new_doc("Purchase Invoice")
+        purchase_invoice.supplier = doc.custom_supplier
+        purchase_invoice.company = doc.company
+        purchase_invoice.posting_date = doc.posting_date
+
+        # Add filtered items to the Purchase Invoice
+        for item in service_items:
+            purchase_invoice.append("items", {
+                "item_code": item.item_code,
+                "item_name": item.item_name,
+                "description": item.description,
+                "qty": item.qty,
+                "rate": item.rate,
+                "amount": item.amount,
+                "uom": item.uom,
+                "stock_uom": item.stock_uom,
+                "conversion_factor": item.conversion_factor,
+                "expense_account": item.expense_account or frappe.get_value("Company", doc.company, "default_expense_account"),
+                "cost_center": item.cost_center or frappe.get_value("Company", doc.company, "cost_center")
+            })
+
+        # Set taxes and charges if any exist in the Sales Invoice
+        if doc.taxes:
+            for tax in doc.taxes:
+                purchase_invoice.append("taxes", {
+                    "charge_type": tax.charge_type,
+                    "account_head": tax.account_head,
+                    "description": tax.description,
+                    "rate": tax.rate,
+                    "tax_amount": tax.tax_amount
+                })
+
+        # Link to Sales Invoice
+        purchase_invoice.references = [{
+            "reference_doctype": "Sales Invoice",
+            "reference_name": doc.name
+        }]
+
+        # Insert and submit Purchase Invoice
+        purchase_invoice.insert(ignore_permissions=True)
+        purchase_invoice.submit()
+
+        frappe.msgprint(f"Purchase Invoice {purchase_invoice.name} created for Supplier {doc.custom_supplier}.")
+
+
 def on_submit_sales_invoice(doc, method):
     frappe.logger().debug(f"Sales Invoice {doc.name} submitted. Enqueuing journal entry creation.")
     # Enqueue journal entry creation after Sales Invoice submission
