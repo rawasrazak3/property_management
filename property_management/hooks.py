@@ -193,7 +193,8 @@ doc_events = {
     "Sales Invoice": {
 		"on_submit": [
             "property_management.property_management.custom_script.sales_invoice.create_payment_entry_from_sales_invoice",
-            "property_management.property_management.custom_script.sales_invoice.on_submit_sales_invoice"
+            "property_management.property_management.custom_script.sales_invoice.on_submit_sales_invoice",
+            "property_management.property_management.custom_script.sales_invoice.create_purchase_invoice_from_sales_invoice"
 		]
     
 	},

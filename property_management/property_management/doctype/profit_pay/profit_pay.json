@@ -18,7 +18,8 @@
   "sold_property_table",
   "total_profit",
   "total_shareholder_profit",
-  "total_contribution"
+  "total_contribution",
+  "journal_entry"
  ],
  "fields": [
   {
@@ -106,12 +107,19 @@
    "fieldname": "shareholder_account",
    "fieldtype": "Data",
    "label": "Shareholder Account"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 10:01:58.683884",
+ "modified": "2025-02-05 09:46:28.050946",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Profit Pay",
