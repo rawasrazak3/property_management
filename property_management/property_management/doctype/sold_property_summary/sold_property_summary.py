@@ -139,6 +139,45 @@ def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
 #     frappe.db.set_value("Sold Property Summary", doc.name, "total_shareholder_profit", total_profit)
 
 
+# @frappe.whitelist()
+# def after_save_sold_property_summary(doc, method):
+#     # Ensure all calculations are dynamic and save changes properly
+#     selected_shareholder = doc.shareholder
+#     main_property = doc.property
+#     total_profit = 0  # Initialize total profit
+#     total_profits = 0
+#     total_contribution = 0
+#     contribution = doc.contribution
+
+#     # Iterate through each row in the child table
+#     for asset in doc.sold_property_table:
+#         property_name = asset.property_name
+#         profit = asset.profit
+#         # Accumulate the total profit
+#         if profit:
+#             total_profits += profit
+
+#         # Fetch shareholder contribution for the specific property
+#         shareholder_contribution = frappe.db.get_value(
+#             "Shareholder Property",
+#             {"parent": property_name, "shareholder": selected_shareholder},
+#             "contribution"
+#         )
+
+#         # Calculate shareholder profit for the current property
+#         shareholder_profit = 0
+#         if shareholder_contribution:
+#             shareholder_profit = (profit * shareholder_contribution) / 100
+#             total_profit += shareholder_profit
+
+#         # Update the child row's shareholder_profit field
+#         asset.shareholder_profit = shareholder_profit
+
+#     # Update the total profit for the selected shareholder
+#     doc.total_shareholder_profit = total_profit
+#     doc.total_profit = total_profits
+#     doc.total_contribution = total_profit + contribution
+
 @frappe.whitelist()
 def after_save_sold_property_summary(doc, method):
     # Ensure all calculations are dynamic and save changes properly
@@ -147,15 +186,22 @@ def after_save_sold_property_summary(doc, method):
     total_profit = 0  # Initialize total profit
     total_profits = 0
     total_contribution = 0
+    total_selling_amount = 0  # Initialize total selling amount
     contribution = doc.contribution
 
     # Iterate through each row in the child table
     for asset in doc.sold_property_table:
         property_name = asset.property_name
         profit = asset.profit
-        # Accumulate the total profit
+        selling_amount = asset.selling_amount  # Assuming there is a field for selling amount
+        
+        # Accumulate total profit
         if profit:
             total_profits += profit
+
+        # Accumulate total selling amount
+        if selling_amount:
+            total_selling_amount += selling_amount
 
         # Fetch shareholder contribution for the specific property
         shareholder_contribution = frappe.db.get_value(
@@ -173,7 +219,21 @@ def after_save_sold_property_summary(doc, method):
         # Update the child row's shareholder_profit field
         asset.shareholder_profit = shareholder_profit
 
+    # Fetch opening entry from GL Entry for the main property
+    opening_entry = frappe.db.get_value(
+        "GL Entry",
+        {"account": "Temporary Opening - AHP", "is_opening":"Yes","project":doc.project},
+        "debit"  # Assuming the opening entry is stored as a debit value
+    )
+
+    # Add the opening entry amount to the total selling amount
+    if opening_entry:
+        total_selling_amount += opening_entry
+
     # Update the total profit for the selected shareholder
     doc.total_shareholder_profit = total_profit
     doc.total_profit = total_profits
     doc.total_contribution = total_profit + contribution
+    doc.total_selling_amount = total_selling_amount  # Save total selling amount
+
+    # doc.save()  # Ensure changes are saved
