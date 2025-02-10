@@ -187,7 +187,7 @@ def after_save_sold_property_summary(doc, method):
     total_profits = 0
     total_contribution = 0
     total_selling_amount = 0  # Initialize total selling amount
-    contribution = doc.contribution
+    contribution = doc.contribution or 0 
 
     # Iterate through each row in the child table
     for asset in doc.sold_property_table:
@@ -231,8 +231,8 @@ def after_save_sold_property_summary(doc, method):
         total_selling_amount += opening_entry
 
     # Update the total profit for the selected shareholder
-    doc.total_shareholder_profit = total_profit
-    doc.total_profit = total_profits
+    doc.total_shareholder_profit = total_profit or 0
+    doc.total_profit = total_profits or 0
     doc.total_contribution = total_profit + contribution
     doc.total_selling_amount = total_selling_amount  # Save total selling amount
 
