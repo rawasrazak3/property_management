@@ -10,11 +10,13 @@
   "amended_from",
   "property",
   "property_name",
+  "project",
   "shareholder",
   "shareholder_name",
   "initial_contribution",
   "contribution",
   "sold_property_table",
+  "total_selling_amount",
   "total_profit",
   "total_shareholder_profit",
   "total_contribution"
@@ -89,12 +91,24 @@
    "fieldname": "total_contribution",
    "fieldtype": "Currency",
    "label": "Total Contribution"
+  },
+  {
+   "fetch_from": "property.custom_project",
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "total_selling_amount",
+   "fieldtype": "Currency",
+   "label": "Total Sold Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-01-27 08:40:35.341133",
+ "modified": "2025-02-10 08:33:57.554906",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Sold Property Summary",
