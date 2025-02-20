@@ -8,6 +8,7 @@
  "field_order": [
   "property",
   "project",
+  "date",
   "company",
   "gross_purchase_amount",
   "actual_property_amount",
@@ -65,11 +66,16 @@
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-20 10:12:36.854342",
+ "modified": "2025-02-20 12:49:33.285444",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Property Shareholder",

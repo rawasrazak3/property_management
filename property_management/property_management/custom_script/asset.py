@@ -234,7 +234,7 @@ def create_journal_entry(asset_id, mode_of_payment):
     return journal_entry.name
 
 @frappe.whitelist()
-def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, shareholder, shareholder_account, amount,project=None):
+def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, shareholder, shareholder_account, amount,date,project=None):
     # Validate mode_of_payment
     if not mode_of_payment:
         frappe.throw("Mode of Payment is required.")
@@ -265,7 +265,7 @@ def create_shareholder_journal_entry_1(asset_name, company, mode_of_payment, sha
         "doctype": "Journal Entry",
         "voucher_type": "Journal Entry",
         "company": company,
-        "posting_date": nowdate(),
+        "posting_date": date,
         "accounts": [
             {
                 "account": mode_of_payment_account,

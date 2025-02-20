@@ -194,7 +194,8 @@ frappe.ui.form.on('Shareholder Property', {
                 shareholder: row.shareholder,
                 shareholder_account: row.shareholder_account,
                 amount: row.amount,
-                project: frm.doc.project
+                project: frm.doc.project,
+                date: frm.doc.date
             },
             callback: function (response) {
                 if (response.message) {
