@@ -10,6 +10,7 @@
   "amended_from",
   "property",
   "company",
+  "journal_entry",
   "column_break_oapy",
   "posting_date",
   "mode_of_payment",
@@ -101,12 +102,20 @@
    "label": "Naming Series",
    "options": "EP-.YY.-.####.",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval: doc.docstatus==1",
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-11-01 10:19:00.568785",
+ "modified": "2025-02-20 13:09:47.956512",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Expense Property",

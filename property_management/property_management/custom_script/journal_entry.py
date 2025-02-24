@@ -58,7 +58,10 @@ def update_shareholder_expenses(journal_entry, method=None):
         # Check if this Journal Entry is linked to an Expense Property
         if not je_doc.custom_is_expense_property:
             return  # Exit if not related to an Expense Property
-
+        if je_doc.custom_expense_property:
+            frappe.db.set_value("Expense Property", je_doc.custom_expense_property, "journal_entry", je_doc.name)
+            frappe.db.commit()
+            
         # Iterate over accounts in the Journal Entry
         for entry in je_doc.accounts:
             # Check if entry has reference_type as 'Asset' and a reference_name

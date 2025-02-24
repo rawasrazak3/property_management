@@ -224,7 +224,7 @@ frappe.ui.form.on('Expense Property', {
 
 frappe.ui.form.on('Expense Property', {
     refresh: function(frm) {
-        if (frm.doc.docstatus == 1){
+        if (frm.doc.docstatus == 1 && !frm.doc.journal_entry){
             frm.add_custom_button(__('Create Journal Entry'), function() {
                 show_mode_of_payment_dialog(frm);
             });
@@ -265,6 +265,8 @@ function show_mode_of_payment_dialog(frm) {
 
                             // Set custom_is_expense_property to true for Expense Property related entries
                             frappe.model.set_value(je_frm.doctype, je_frm.docname, "custom_is_expense_property", 1);
+
+                            frappe.model.set_value(je_frm.doctype, je_frm.docname, "custom_expense_property", response.message.custom_expense_property);
 
                             // Clear the accounts table and populate with data
                             je_frm.clear_table("accounts");
