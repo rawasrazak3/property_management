@@ -158,6 +158,7 @@ def create_journal_entry_with_mode_of_payment(expense_property, mode_of_payment,
         "doctype": "Journal Entry",
         "posting_date": frappe.utils.nowdate(),
         "custom_is_expense_property": 1,  # Mark as related to Expense Property
+        "custom_expense_property":expense_property,
         "accounts": [
             # Debit entry using the mode of payment account
             {
