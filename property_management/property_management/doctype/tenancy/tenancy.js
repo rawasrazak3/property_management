@@ -809,7 +809,9 @@ function createSalesInvoiceWithCommission(frm, cdt, cdn, callback) {
             commission: commission_amount, 
             one_time_commission: one_time_commission_amount, 
             tenancy_id: frm.doc.name,
-            child_row_name: row.name  
+            child_row_name: row.name,
+            prt: frm.doc.asset,
+            prt_name: frm.doc.asset_name,  
         },
         callback: function(response) {
             if (response.message) {

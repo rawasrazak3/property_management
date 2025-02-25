@@ -51,7 +51,11 @@ fixtures = [
                     "Asset-custom_rent_amount_monthly",
                     "Customer-custom_company",
                     "Supplier-custom_company",
-                    "Item-custom_company"
+                    "Item-custom_company",
+                    "Purchase Invoice-custom_property",
+                    "Purchase Invoice-custom_property_name",
+                    "Sales Invoice-custom_property",
+                    "Sales Invoice-custom_property_name"
                     
                     
 				]

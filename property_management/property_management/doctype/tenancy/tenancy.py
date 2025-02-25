@@ -152,8 +152,8 @@ def create_purchase_invoice(supplier, prt, prt_name, net_amount, custom_tenancy_
     # Create the Purchase Invoice
     doc = frappe.new_doc("Purchase Invoice")
     doc.supplier = supplier
-    doc.property = prt
-    doc.property_name = prt_name
+    doc.custom_property = prt
+    doc.custom_property_name = prt_name
     doc.custom_tenancy_id = custom_tenancy_id
     
     # Add items to the Purchase Invoice
@@ -252,7 +252,7 @@ def create_partial_paymententry(doc, invoice_name, party, posting_date, payment_
     return payment_entry.name
 
 @frappe.whitelist()
-def create_sales_invoice(customer, commission, one_time_commission, tenancy_id, child_row_name):
+def create_sales_invoice(customer, commission, one_time_commission, tenancy_id, child_row_name,prt,prt_name):
     # Ensure commission and one_time_commission are numeric
     commission = float(commission) if commission else 0
     one_time_commission = float(one_time_commission) if one_time_commission else 0
@@ -261,7 +261,9 @@ def create_sales_invoice(customer, commission, one_time_commission, tenancy_id, 
     invoice = frappe.get_doc({
         'doctype': 'Sales Invoice',
         'customer': customer,
-        'tenancy_reference': tenancy_id,  # Custom field in Sales Invoice for tenancy reference
+        'custom_property':prt,
+        'custom_property_name':prt_name,
+        'custom_tenancy_id': tenancy_id,  # Custom field in Sales Invoice for tenancy reference
         'items': [
             {
                 'item_code': 'Management Fees',  # The first item for commission
