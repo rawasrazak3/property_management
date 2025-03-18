@@ -31,60 +31,61 @@ def fetch_tax_data(template_name):
 
 @frappe.whitelist()
 def create_journal_entry(doc, method):
-    mode_of_payment_account = frappe.db.get_value(
-            "Mode of Payment Account",
-            {"parent": doc.mode_of_payment,"company":doc.company_name},
-            "default_account"
-        )
-        
-    if doc.mode_of_payment and not mode_of_payment_account:
-        frappe.throw(f"No default account found for Mode of Payment: {doc.mode_of_payment}")
+    if doc.amount_payable > 0 or doc.amount_receivable>0:
+        mode_of_payment_account = frappe.db.get_value(
+                "Mode of Payment Account",
+                {"parent": doc.mode_of_payment,"company":doc.company_name},
+                "default_account"
+            )
+            
+        if doc.mode_of_payment and not mode_of_payment_account:
+            frappe.throw(f"No default account found for Mode of Payment: {doc.mode_of_payment}")
 
-    #create journal entry
-    journal_entry = frappe.new_doc("Journal Entry")
-    journal_entry.posting_date = frappe.utils.nowdate()
-    journal_entry.company = doc.company_name
-    journal_entry.user_remark = f"Journal Entry for Tenancy Termination {doc.name}"
-    tenant_account = frappe.get_value('Company', doc.company_name, 'default_receivable_account') or "Debtors"
-    if doc.amount_payable > 0:
-        journal_entry.append("accounts", {
-            "account": mode_of_payment_account,  # Replace with the mode of payment's account
-            "credit_in_account_currency": doc.amount_payable,
-            "credit": doc.amount_payable,
-            'reference_type': 'Asset',
-            'reference_name': doc.property
-        })
-        journal_entry.append("accounts", {
-            "account": tenant_account,  # Replace with the customer's account
-            "debit_in_account_currency": doc.amount_payable,
-            "debit": doc.amount_payable,
-            'party_type': 'Customer',
-            'party': doc.tenant,
-            'reference_type': 'Asset',
-            'reference_name': doc.property
-        })
-    elif doc.amount_receivable > 0:
-        journal_entry.append("accounts", {
-            "account": mode_of_payment_account,  # Replace with the mode of payment's account
-            "debit_in_account_currency": doc.amount_receivable,
-            "debit": doc.amount_receivable,
-            'reference_type': 'Asset',
-            'reference_name': doc.property
-        })
-        journal_entry.append("accounts", {
-            "account": tenant_account,  # Replace with the customer's account
-            "credit_in_account_currency": doc.amount_receivable,
-            "credit": doc.amount_receivable,
-            'party_type': 'Customer',
-            'party': doc.tenant,
-            'reference_type': 'Asset',
-            'reference_name': doc.property
-        })
-    
-    journal_entry.save()
-    
-    # Set the Journal Entry ID in the tenancy termination
-    doc.journal_entry_id = journal_entry.name
+        #create journal entry
+        journal_entry = frappe.new_doc("Journal Entry")
+        journal_entry.posting_date = frappe.utils.nowdate()
+        journal_entry.company = doc.company_name
+        journal_entry.user_remark = f"Journal Entry for Tenancy Termination {doc.name}"
+        tenant_account = frappe.get_value('Company', doc.company_name, 'default_receivable_account') or "Debtors"
+        if doc.amount_payable > 0:
+            journal_entry.append("accounts", {
+                "account": mode_of_payment_account,  # Replace with the mode of payment's account
+                "credit_in_account_currency": doc.amount_payable,
+                "credit": doc.amount_payable,
+                'reference_type': 'Asset',
+                'reference_name': doc.property
+            })
+            journal_entry.append("accounts", {
+                "account": tenant_account,  # Replace with the customer's account
+                "debit_in_account_currency": doc.amount_payable,
+                "debit": doc.amount_payable,
+                'party_type': 'Customer',
+                'party': doc.tenant,
+                'reference_type': 'Asset',
+                'reference_name': doc.property
+            })
+        elif doc.amount_receivable > 0:
+            journal_entry.append("accounts", {
+                "account": mode_of_payment_account,  # Replace with the mode of payment's account
+                "debit_in_account_currency": doc.amount_receivable,
+                "debit": doc.amount_receivable,
+                'reference_type': 'Asset',
+                'reference_name': doc.property
+            })
+            journal_entry.append("accounts", {
+                "account": tenant_account,  # Replace with the customer's account
+                "credit_in_account_currency": doc.amount_receivable,
+                "credit": doc.amount_receivable,
+                'party_type': 'Customer',
+                'party': doc.tenant,
+                'reference_type': 'Asset',
+                'reference_name': doc.property
+            })
+        
+        journal_entry.save()
+        
+        # Set the Journal Entry ID in the tenancy termination
+        doc.journal_entry_id = journal_entry.name
 
 @frappe.whitelist()
 def manage_property_on_termination(doc, method):
@@ -232,3 +233,72 @@ def cancel_and_delete_after_termination(doc, method):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Tenancy Termination Error")
         return {"error": str(e)}
+
+
+# @frappe.whitelist()
+# def cancel_and_delete_after_termination(doc, method):
+#     try:
+#         tenancy = frappe.get_doc("Tenancy", doc.tenancy)
+#         tenancy_end_date = datetime.strptime(doc.tenancy_end_date, "%Y-%m-%d").date()
+
+#         # Step 1: Identify sales invoices and payment entries to cancel/delete
+#         invoices_to_cancel = []
+#         payment_entries_to_delete = []
+
+#         for schedule in tenancy.tenant_schedule:
+#             if schedule.invoice and schedule.schedule_date < tenancy_end_date:
+#                 # Find payment entries referencing the sales invoice
+#                 payment_entries = frappe.get_all(
+#                     "Payment Entry",
+#                     filters={"custom_invoice_ref": schedule.invoice},
+#                     fields=["name", "posting_date", "docstatus"]
+#                 )
+#                 for pe in payment_entries:
+#                     if pe["posting_date"] <= tenancy_end_date and pe["docstatus"] == 0:
+#                         # Mark the 'is_paid' checkbox as checked
+#                         schedule.is_paid = 1
+#                         schedule.db_update()
+                        
+
+#             if schedule.invoice and schedule.schedule_date > tenancy_end_date:
+#                 invoices_to_cancel.append(schedule.invoice)
+
+#                 # Find payment entries referencing the sales invoice
+#                 payment_entries = frappe.get_all(
+#                     "Payment Entry",
+#                     filters={"custom_invoice_ref": schedule.invoice},
+#                     fields=["name", "posting_date", "docstatus"]
+#                 )
+#                 for pe in payment_entries:
+#                     if pe["posting_date"] <= tenancy_end_date and pe["docstatus"] == 0:
+#                         # Mark the 'is_paid' checkbox as checked
+#                         schedule.is_paid = 1
+#                         schedule.db_update()
+#                     else:
+#                         payment_entries_to_delete.append(pe["name"])
+
+#                 # Remove the link to the sales invoice in the schedule
+#                 schedule.invoice = None
+#                 schedule.payment_entry = None
+#                 schedule.db_update()
+
+#         # Step 2: Cancel sales invoices
+#         for invoice_name in invoices_to_cancel:
+#             invoice = frappe.get_doc("Sales Invoice", invoice_name)
+#             if invoice.docstatus == 1:
+#                 invoice.cancel()
+
+#         # Step 3: Cancel and delete payment entries
+#         for payment_entry_name in payment_entries_to_delete:
+#             payment_entry = frappe.get_doc("Payment Entry", payment_entry_name)
+#             if payment_entry.docstatus == 1:
+#                 payment_entry.db_set("tenancy", None)
+#                 payment_entry.cancel()
+#             payment_entry.delete()
+
+#         frappe.db.commit()
+#         return {"message": "Sales invoices canceled and payment entries updated successfully."}
+
+#     except Exception as e:
+#         frappe.log_error(frappe.get_traceback(), "Tenancy Termination Error")
+#         return {"error": str(e)}
