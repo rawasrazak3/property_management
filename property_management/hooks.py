@@ -55,7 +55,8 @@ fixtures = [
                     "Purchase Invoice-custom_property",
                     "Purchase Invoice-custom_property_name",
                     "Sales Invoice-custom_property",
-                    "Sales Invoice-custom_property_name"
+                    "Sales Invoice-custom_property_name",
+                    "Purchase Invoice-custom_sales_invoice_id"
                     
                     
 				]

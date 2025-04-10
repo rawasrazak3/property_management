@@ -13,6 +13,7 @@ def create_purchase_invoice_and_payment_entry_from_sales_invoice(doc, method):
         purchase_invoice = frappe.new_doc("Purchase Invoice")
         purchase_invoice.supplier = doc.custom_supplier
         purchase_invoice.company = doc.company
+        purchase_invoice.set_posting_time = 1
         purchase_invoice.posting_date = doc.posting_date
 
         total_paid_amount = 0  # To store the total amount for payment entry
@@ -34,6 +35,7 @@ def create_purchase_invoice_and_payment_entry_from_sales_invoice(doc, method):
             })
             total_paid_amount += item.amount
 
+        purchase_invoice.custom_sales_invoice_id = doc.name
         # Set taxes and charges if any exist in the Sales Invoice
         if doc.taxes:
             for tax in doc.taxes:
