@@ -264,7 +264,7 @@ class ExpenseProperty(Document):
                 #         shareholder.amount = (shareholder.amount or 0) + self.total_expense_amount
 
                 # Save the updated Asset document
-                asset.save()
+                # asset.save()
 
         # Part 2: Update Property Shareholder DocType
         # Fetch the Property Shareholder based on self.property
