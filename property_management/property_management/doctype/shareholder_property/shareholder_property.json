@@ -13,6 +13,8 @@
   "create_journal_entry_1",
   "mode_of_payment",
   "journal_entry",
+  "partial_paid_amount",
+  "partial_entry",
   "column_break_nech",
   "contribution",
   "actual_contribution",
@@ -20,7 +22,22 @@
   "column_break_bwhi",
   "amount",
   "actual_amount",
-  "total_expense"
+  "total_expense",
+  "section_break_ndsr",
+  "journal_entry_1",
+  "journal_entry_2",
+  "journal_entry_3",
+  "journal_entry_4",
+  "column_break_mxsa",
+  "paid_amount_1",
+  "paid_amount_2",
+  "paid_amount_3",
+  "paid_amount_4",
+  "column_break_xyad",
+  "outstanding_1",
+  "outstanding_2",
+  "outstanding_3",
+  "outstanding_4"
  ],
  "fields": [
   {
@@ -63,6 +80,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "default": "0",
    "fieldname": "is_shareholder_exit",
    "fieldtype": "Check",
@@ -122,12 +140,123 @@
    "fieldname": "create_journal_entry_1",
    "fieldtype": "Button",
    "label": "Create Journal Entry"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "partial_paid_amount",
+   "fieldtype": "Currency",
+   "label": "Partial Paid Amount"
+  },
+  {
+   "fieldname": "partial_entry",
+   "fieldtype": "Button",
+   "label": "Partial Entry"
+  },
+  {
+   "fieldname": "section_break_ndsr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_entry_1",
+   "fieldtype": "Link",
+   "label": "Journal Entry 1",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_entry_2",
+   "fieldtype": "Link",
+   "label": "Journal Entry 2",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_entry_3",
+   "fieldtype": "Link",
+   "label": "Journal Entry 3",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_entry_4",
+   "fieldtype": "Link",
+   "label": "Journal Entry 4",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mxsa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "paid_amount_1",
+   "fieldtype": "Currency",
+   "label": "Paid Amount 1",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "paid_amount_2",
+   "fieldtype": "Currency",
+   "label": "Paid Amount 2",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "paid_amount_3",
+   "fieldtype": "Currency",
+   "label": "Paid Amount 3",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "paid_amount_4",
+   "fieldtype": "Currency",
+   "label": "Paid Amount 4",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xyad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "outstanding_1",
+   "fieldtype": "Currency",
+   "label": "Outstanding 1",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "outstanding_2",
+   "fieldtype": "Currency",
+   "label": "Outstanding 2",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "outstanding_3",
+   "fieldtype": "Currency",
+   "label": "Outstanding 3",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "outstanding_4",
+   "fieldtype": "Currency",
+   "label": "Outstanding 4",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-28 08:41:32.598155",
+ "modified": "2025-04-21 10:00:18.862976",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Shareholder Property",
