@@ -58,8 +58,18 @@ def update_shareholder_expenses(journal_entry, method=None):
         # Check if this Journal Entry is linked to an Expense Property
         if not je_doc.custom_is_expense_property:
             return  # Exit if not related to an Expense Property
+        # if je_doc.custom_expense_property:
+        #     frappe.db.set_value("Expense Property", je_doc.custom_expense_property, "journal_entry", je_doc.name)
+        #     frappe.db.commit()
         if je_doc.custom_expense_property:
-            frappe.db.set_value("Expense Property", je_doc.custom_expense_property, "journal_entry", je_doc.name)
+            # Insert a row into the child table manually
+            frappe.get_doc({
+                "doctype": "Journal",  # replace with the actual child table DocType name
+                "parent": je_doc.custom_expense_property,
+                "parenttype": "Expense Property",
+                "parentfield": "journal_table",  # the fieldname of the child table in Expense Property
+                "journal_entry": je_doc.name
+            }).insert(ignore_permissions=True)
             frappe.db.commit()
             
         # Iterate over accounts in the Journal Entry
