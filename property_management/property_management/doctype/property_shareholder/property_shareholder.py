@@ -113,7 +113,7 @@ def append_shareholders_to_asset(asset_name, shareholder_entries):
     asset.save()
 
 @frappe.whitelist()
-def create_partial_journal_entry(shareholder, shareholder_account,amount, property, docname,mode_of_payment,company,):
+def create_partial_journal_entry(shareholder, shareholder_account,amount, property, docname,mode_of_payment,company,asset,project,date):
     # Check if mode_of_payment account exists for the given company
     mode_of_payment_account = frappe.db.get_value(
         "Mode of Payment Account",
@@ -126,7 +126,7 @@ def create_partial_journal_entry(shareholder, shareholder_account,amount, proper
 
     je = frappe.new_doc("Journal Entry")
     je.voucher_type = "Journal Entry"
-    je.posting_date = frappe.utils.today()
+    je.posting_date = date
     je.user_remark = f"Partial payment for {shareholder} in property {property}"
 
     # Credit from company bank or cash account
@@ -134,16 +134,22 @@ def create_partial_journal_entry(shareholder, shareholder_account,amount, proper
 
     je.append("accounts", {
         "account": mode_of_payment_account,
-        "credit_in_account_currency": amount
+        "debit_in_account_currency": amount,
+        "reference_type": "Asset",
+        "reference_name": asset,
+        "project": project
     })
 
     # Debit to shareholder
     # shareholder_account = frappe.db.get_value("Shareholder", shareholder, "account")
     je.append("accounts", {
         "account": shareholder_account,
-        "debit_in_account_currency": amount,
+        "credit_in_account_currency": amount,
         "party_type":"Shareholder",
-        "party":shareholder
+        "party":shareholder,
+        "reference_type": "Asset",
+        "reference_name": asset,
+        "project": project
     })
 
     je.insert(ignore_permissions=True)
