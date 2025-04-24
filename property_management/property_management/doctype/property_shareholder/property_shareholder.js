@@ -227,19 +227,19 @@ function handle_partial_journal_payment(frm, cdt, cdn, partial_paid_amount) {
 
     if (!row.journal_entry_1) {
         create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_1', 'paid_amount_1', 'outstanding_1', partial_paid_amount, function() {
-            frm.save('Update');
+            frm.save();
         });
     } else if (!row.journal_entry_2) {
         create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_2', 'paid_amount_2', 'outstanding_2', partial_paid_amount, function() {
-            frm.save('Update');
+            frm.save();
         });
     } else if (!row.journal_entry_3) {
         create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_3', 'paid_amount_3', 'outstanding_3', partial_paid_amount, function() {
-            frm.save('Update');
+            frm.save();
         });
     } else if (!row.journal_entry_4) {
         create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_4', 'paid_amount_4', 'outstanding_4', partial_paid_amount, function() {
-            frm.save('Update');
+            frm.save();
         });
     } else {
         frappe.msgprint(__('All four partial journal entries have already been made.'));
@@ -258,7 +258,10 @@ function create_partial_journal_entry(frm, cdt, cdn, journal_field, paid_field, 
             property: frm.doc.property,
             docname: frm.doc.name,
             company: frm.doc.company,
-            mode_of_payment: row.mode_of_payment
+            mode_of_payment: row.mode_of_payment,
+            asset: frm.doc.property,
+            project: frm.doc.project,
+            date : frm.doc.date
 
         },
         callback: function(r) {
