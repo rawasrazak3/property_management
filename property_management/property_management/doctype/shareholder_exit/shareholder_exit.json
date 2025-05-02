@@ -1,0 +1,164 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-25 09:37:15.457487",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ladr",
+  "property",
+  "project",
+  "company",
+  "amount",
+  "shareholder_account",
+  "column_break_hc6c",
+  "shareholder",
+  "share_amount",
+  "mode_of_payment",
+  "outstanding_amount",
+  "exit_amount",
+  "create_journal",
+  "section_break_igeg",
+  "mode_of_payment2",
+  "transfer_to_main",
+  "partial_payments",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ladr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Asset"
+  },
+  {
+   "fetch_from": "property.custom_project",
+   "fieldname": "project",
+   "fieldtype": "Data",
+   "label": "Project",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "property.custom_actual_property_amount",
+   "fieldname": "amount",
+   "fieldtype": "Float",
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_hc6c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_if_empty": 1,
+   "fieldname": "shareholder",
+   "fieldtype": "Link",
+   "label": "Shareholder",
+   "options": "Shareholder"
+  },
+  {
+   "fieldname": "share_amount",
+   "fieldtype": "Data",
+   "label": "Share Amount ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "exit_amount",
+   "fieldtype": "Float",
+   "label": "Exit Amount"
+  },
+  {
+   "fieldname": "create_journal",
+   "fieldtype": "Button",
+   "label": "Create Journal"
+  },
+  {
+   "fieldname": "section_break_igeg",
+   "fieldtype": "Section Break",
+   "label": "Transfer To Main"
+  },
+  {
+   "fieldname": "transfer_to_main",
+   "fieldtype": "Button",
+   "label": "Transfer To Main"
+  },
+  {
+   "fieldname": "partial_payments",
+   "fieldtype": "Table",
+   "label": "Partial Payments",
+   "options": "Partial Payment Table"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Shareholder Exit",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "property.company",
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mode_of_payment2",
+   "fieldtype": "Link",
+   "label": "Mode Of Payment",
+   "options": "Mode of Payment"
+  },
+  {
+   "fieldname": "mode_of_payment",
+   "fieldtype": "Link",
+   "label": "Mode Of Payment",
+   "options": "Mode of Payment"
+  },
+  {
+   "fetch_from": "shareholder.custom_shareholder_account",
+   "fieldname": "shareholder_account",
+   "fieldtype": "Data",
+   "label": "Shareholder Account",
+   "read_only": 1
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "HTML",
+   "label": "Outstanding Amount",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-04-30 10:54:08.595939",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Shareholder Exit",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

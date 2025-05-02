@@ -3,7 +3,17 @@
 
 // frappe.ui.form.on("Property Shareholder", {
 // 	refresh(frm) {
-
+    frappe.ui.form.on('Property Shareholder', {
+        refresh: function(frm) {
+            // Add the custom button
+            frm.add_custom_button('Shareholder Exit', () => {
+                // Redirect to new Shareholder Exit form with pre-filled property
+                frappe.new_doc('Shareholder Exit', {
+                    property: frm.doc.property
+                });
+            });
+        }
+    });                           
 // 	},
 // });
 frappe.ui.form.on('Property Shareholder', {
