@@ -1,11 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2025-04-25 09:37:15.457487",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_ladr",
+  "naming_series",
   "property",
   "project",
   "company",
@@ -15,14 +17,18 @@
   "shareholder",
   "share_amount",
   "mode_of_payment",
+  "exit_date",
   "outstanding_amount",
   "exit_amount",
   "create_journal",
   "section_break_igeg",
   "mode_of_payment2",
+  "transfer_date",
   "transfer_to_main",
   "partial_payments",
-  "amended_from"
+  "amended_from",
+  "section_break_lhjq",
+  "transfer_table"
  ],
  "fields": [
   {
@@ -54,6 +60,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fetch_if_empty": 1,
    "fieldname": "shareholder",
    "fieldtype": "Link",
@@ -67,6 +74,7 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "exit_amount",
    "fieldtype": "Float",
    "label": "Exit Amount"
@@ -87,6 +95,7 @@
    "label": "Transfer To Main"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "partial_payments",
    "fieldtype": "Table",
    "label": "Partial Payments",
@@ -110,12 +119,14 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "mode_of_payment2",
    "fieldtype": "Link",
    "label": "Mode Of Payment",
    "options": "Mode of Payment"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "mode_of_payment",
    "fieldtype": "Link",
    "label": "Mode Of Payment",
@@ -133,15 +144,44 @@
    "fieldtype": "HTML",
    "label": "Outstanding Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming series",
+   "options": "SE-.YYYY.-"
+  },
+  {
+   "fieldname": "exit_date",
+   "fieldtype": "Date",
+   "label": "Exit Date"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "transfer_date",
+   "fieldtype": "Date",
+   "label": "Transfer Date"
+  },
+  {
+   "fieldname": "section_break_lhjq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "transfer_table",
+   "fieldtype": "Table",
+   "label": "Transfer table",
+   "options": "Transfer Table"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-30 10:54:08.595939",
+ "modified": "2025-05-09 09:41:07.257461",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Shareholder Exit",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
