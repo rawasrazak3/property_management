@@ -1,0 +1,37 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-06 10:52:49.871778",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "transfer_journal",
+  "transfer_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "transfer_journal",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Transfer journal"
+  },
+  {
+   "fieldname": "transfer_amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Transfer Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-05-06 11:49:17.388068",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Transfer Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
