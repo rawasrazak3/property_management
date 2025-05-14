@@ -11,6 +11,7 @@
   "property",
   "company",
   "journal_entry",
+  "journal_table",
   "column_break_oapy",
   "posting_date",
   "mode_of_payment",
@@ -108,14 +109,21 @@
    "depends_on": "eval: doc.docstatus==1",
    "fieldname": "journal_entry",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Journal Entry",
    "options": "Journal Entry"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "journal_table",
+   "fieldtype": "Table",
+   "options": "Journal"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-02-20 13:09:47.956512",
+ "modified": "2025-04-21 11:28:18.082840",
  "modified_by": "Administrator",
  "module": "Property Management",
  "name": "Expense Property",

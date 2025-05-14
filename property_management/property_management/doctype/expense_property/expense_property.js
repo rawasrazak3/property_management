@@ -224,7 +224,7 @@ frappe.ui.form.on('Expense Property', {
 
 frappe.ui.form.on('Expense Property', {
     refresh: function(frm) {
-        if (frm.doc.docstatus == 1 && !frm.doc.journal_entry){
+        if (frm.doc.docstatus == 1){
             frm.add_custom_button(__('Create Journal Entry'), function() {
                 show_mode_of_payment_dialog(frm);
             });

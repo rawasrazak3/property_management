@@ -114,6 +114,7 @@ def create_transfer_journal_entry(asset, mode_of_payment2, exit_amount, company,
         "accounts": [
             {
                 "account": shareholder.custom_shareholder_account,
+                "account": mode_of_payment_account,
                 "credit_in_account_currency": float(exit_amount),
                 "party_type": "Shareholder",
                 "party": shareholder_id,

@@ -216,8 +216,82 @@ frappe.ui.form.on('Shareholder Property', {
                 }
             }
         });
+    },
+    partial_entry: function(frm, cdt, cdn) {
+        console.log("button clicked");
+        var row = locals[cdt][cdn];
+        var partial_paid_amount = row.partial_paid_amount;
+    
+        if (!partial_paid_amount || partial_paid_amount <= 0) {
+            frappe.msgprint(__('Please enter a valid partial payment amount.'));
+            return;
+        }
+        handle_partial_journal_payment(frm, cdt, cdn, partial_paid_amount);
+        
     }
 });
+
+// Function to handle partial payments
+function handle_partial_journal_payment(frm, cdt, cdn, partial_paid_amount) {
+    var row = locals[cdt][cdn];
+
+    if (!row.journal_entry_1) {
+        create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_1', 'paid_amount_1', 'outstanding_1', partial_paid_amount, function() {
+            frm.save();
+        });
+    } else if (!row.journal_entry_2) {
+        create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_2', 'paid_amount_2', 'outstanding_2', partial_paid_amount, function() {
+            frm.save();
+        });
+    } else if (!row.journal_entry_3) {
+        create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_3', 'paid_amount_3', 'outstanding_3', partial_paid_amount, function() {
+            frm.save();
+        });
+    } else if (!row.journal_entry_4) {
+        create_partial_journal_entry(frm, cdt, cdn, 'journal_entry_4', 'paid_amount_4', 'outstanding_4', partial_paid_amount, function() {
+            frm.save();
+        });
+    } else {
+        frappe.msgprint(__('All four partial journal entries have already been made.'));
+    }
+}
+
+function create_partial_journal_entry(frm, cdt, cdn, journal_field, paid_field, outstanding_field, amount, callback) {
+    var row = locals[cdt][cdn];
+
+    frappe.call({
+        method: 'property_management.property_management.doctype.property_shareholder.property_shareholder.create_partial_journal_entry',
+        args: {
+            shareholder: row.shareholder,
+            shareholder_account: row.shareholder_account,
+            amount: amount,
+            property: frm.doc.property,
+            docname: frm.doc.name,
+            company: frm.doc.company,
+            mode_of_payment: row.mode_of_payment,
+            asset: frm.doc.property,
+            project: frm.doc.project,
+            date : frm.doc.date
+
+        },
+        callback: function(r) {
+            if (r.message) {
+                frappe.model.set_value(cdt, cdn, journal_field, r.message);
+                frappe.model.set_value(cdt, cdn, paid_field, amount);
+
+                var total = row.amount;
+                var previous_outstanding = row[outstanding_field.replace(/\d$/, (n) => n - 1)] || total;
+                var new_outstanding = previous_outstanding - amount;
+
+                frappe.model.set_value(cdt, cdn, outstanding_field, new_outstanding);
+
+                if (callback) callback();
+            } else {
+                frappe.msgprint(__('Failed to create partial journal entry.'));
+            }
+        }
+    });
+}
 
 function show_shareholder_exit_dialog(frm) {
     let shareholders = frm.doc.shareholder.map(row => ({
