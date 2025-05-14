@@ -113,17 +113,17 @@ def create_transfer_journal_entry(asset, mode_of_payment2, exit_amount, company,
         "posting_date": date,  # ✅ uses transfer_date
         "accounts": [
             {
-                "account": mode_of_payment_account,
+                "account": shareholder.custom_shareholder_account,
                 "credit_in_account_currency": float(exit_amount),
+                "party_type": "Shareholder",
+                "party": shareholder_id,
                 "reference_type": "Asset",
                 "reference_name": asset,
                 "project": project
             },
             {
-                "account": shareholder.custom_shareholder_account,
+                "account": mode_of_payment_account,
                 "debit_in_account_currency": float(exit_amount),
-                "party_type": "Shareholder",
-                "party": shareholder_id,
                 "reference_type": "Asset",
                 "reference_name": asset,
                 "project": project
