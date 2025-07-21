@@ -13,10 +13,11 @@ def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
     if not property_id:
         return []
 
-    # Query to fetch assets where the property matches in the property_hierarchy child table
+    # Step 1: Fetch sold assets with the parent property relationship
     query = """
         SELECT 
-            a.name, a.gfa_sqft, a.gross_purchase_amount , a.custom_profit,a.asset_name
+            a.name AS asset_name, a.gfa_sqft, a.gross_purchase_amount, a.custom_profit, a.asset_name AS asset_title,
+            a.custom_sales_invoice_id AS sales_invoice
         FROM 
             `tabAsset` a
         LEFT JOIN 
@@ -26,11 +27,51 @@ def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
             AND ph.parent_asset = %(property_id)s
         LIMIT %(limit)s
     """
-    return frappe.db.sql(
-        query, 
-        {"property_id": property_id, "limit": int(limit_page_length)}, 
-        as_dict=True
-    )
+    assets = frappe.db.sql(query, {"property_id": property_id, "limit": int(limit_page_length)}, as_dict=True)
+
+    for asset in assets:
+        sales_invoice = asset.get("sales_invoice")
+        if sales_invoice:
+            # Step 2: Get debit amount from GL Entry for Debtors - AHP
+            debit_amount = frappe.db.get_value(
+                "GL Entry",
+                {
+                    "voucher_type": "Sales Invoice",
+                    "voucher_no": sales_invoice,
+                    "account": "Debtors - AHP"
+                },
+                "debit"
+            )
+            asset["debit_amount"] = debit_amount or 0.0
+        else:
+            asset["debit_amount"] = 0.0
+
+    return assets
+
+# @frappe.whitelist()
+# def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
+#     if not property_id:
+#         return []
+
+#     # Query to fetch assets where the property matches in the property_hierarchy child table
+#     query = """
+#         SELECT 
+#             a.name, a.gfa_sqft, a.gross_purchase_amount , a.custom_profit,a.asset_name
+#         FROM 
+#             `tabAsset` a
+#         LEFT JOIN 
+#             `tabParent Asset` ph ON ph.parent = a.name
+#         WHERE 
+#             a.status = 'Sold'
+#             AND ph.parent_asset = %(property_id)s
+#         LIMIT %(limit)s
+#     """
+#     return frappe.db.sql(
+#         query, 
+#         {"property_id": property_id, "limit": int(limit_page_length)}, 
+#         as_dict=True
+#     )
+
 # @frappe.whitelist()
 # def after_save_sold_property_summary(doc, method):
 #     # Ensure the 'main_property' field is available in the Sold Property Summary DocType

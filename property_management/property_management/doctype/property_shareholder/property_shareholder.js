@@ -88,14 +88,26 @@ function calculate_row_contribution(frm, row) {
 //     frm.refresh_field("custom_shareholder_table");
 // }
 
+// function validate_total_contribution(frm) {
+//     let totalContribution = 0;
+//     frm.doc.shareholder.forEach(row => {
+//         totalContribution += row.contribution || 0;
+//     });
+
+//     if (totalContribution !== 100 && frm.doc.shareholder.length > 0) {
+//         frappe.throw(__('The total contribution must be exactly 100%. Current total: ') + totalContribution + '%');
+//     }
+// }
 function validate_total_contribution(frm) {
     let totalContribution = 0;
     frm.doc.shareholder.forEach(row => {
         totalContribution += row.contribution || 0;
     });
 
-    if (totalContribution !== 100 && frm.doc.shareholder.length > 0) {
-        frappe.throw(__('The total contribution must be exactly 100%. Current total: ') + totalContribution + '%');
+    const EPSILON = 0.001; // allows 0.999 or 100.001
+
+    if (Math.abs(totalContribution - 100) > EPSILON && frm.doc.shareholder.length > 0) {
+        frappe.throw(__('The total contribution must be exactly 100%. Current total: ') + totalContribution.toFixed(4) + '%');
     }
 }
 // frappe.ui.form.on('Property Shareholder', {
