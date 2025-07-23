@@ -63,18 +63,19 @@ def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
         selling_amount = 0
 
         if sales_invoice_id:
-            # Fetch GL Entry for Debtors-MH
-            gl_entry = frappe.db.get_value(
-                "GL Entry",
-                {
-                    "voucher_no": sales_invoice_id,
-                    "account": "Debtors-MH",  # Ensure account name is correct
-                    "voucher_type": "Sales Invoice"
-                },
-                "debit"
-            )
-            if gl_entry:
-                selling_amount = gl_entry
+            # get correct receivable account from Sales Invoice
+            debit_account = frappe.db.get_value("Sales Invoice", sales_invoice_id, "debit_to")
+            if debit_account:
+                # use that dynamic account to fetch debit from GL Entry
+                selling_amount = frappe.db.get_value(
+                    "GL Entry",
+                    {
+                        "voucher_no": sales_invoice_id,
+                        "account": debit_account,
+                        "voucher_type": "Sales Invoice"
+                    },
+                    "debit"
+                ) or 0
 
         asset["selling_amount"] = selling_amount
 
@@ -127,21 +128,46 @@ def fetch_assets(property_id, limit_page_length=100):
         selling_amount = 0
 
         if sales_invoice_id:
-            gl_entry = frappe.db.get_value(
-                "GL Entry",
-                {
-                    "voucher_no": sales_invoice_id,
-                    "account": "Debtors-MH",
-                    "voucher_type": "Sales Invoice"
-                },
-                "debit"
-            )
-            if gl_entry:
-                selling_amount = gl_entry
-
+            # get correct receivable account from Sales Invoice
+            debit_account = frappe.db.get_value("Sales Invoice", sales_invoice_id, "debit_to")
+            if debit_account:
+                # use that dynamic account to fetch debit from GL Entry
+                selling_amount = frappe.db.get_value(
+                    "GL Entry",
+                    {
+                        "voucher_no": sales_invoice_id,
+                        "account": debit_account,
+                        "voucher_type": "Sales Invoice"
+                    },
+                    "debit"
+                ) or 0
         asset["selling_amount"] = selling_amount
 
     return assets
+
+    # for asset in assets:
+    #     sales_invoice_id = asset.get("custom_sales_invoice_id")
+    #     print("------sales invoice ------",sales_invoice_id)
+    #     selling_amount = 0
+
+    #     if sales_invoice_id:
+    #         gl_entry = frappe.db.get_value(
+    #             "GL Entry",
+    #             {
+    #                 "voucher_no": sales_invoice_id,
+    #                 "account": "Debtors-MH",
+    #                 "voucher_type": "Sales Invoice"
+    #             },
+    #             "debit"
+    #         )
+    #         print("-------------------------sell amnt",gl_entry)
+    #         if gl_entry:
+    #             print("-------------------------sell amnt",gl_entry)
+    #             selling_amount = gl_entry
+
+    #     asset["selling_amount"] = selling_amount
+
+    # return assets
 
 @frappe.whitelist()
 def after_save_profit_pay(doc, method):

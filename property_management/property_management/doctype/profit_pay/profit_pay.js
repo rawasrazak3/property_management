@@ -225,7 +225,7 @@ frappe.ui.form.on("Profit Pay", {
                                         child.property = assets.asset_name;
                                         child.profit = assets.custom_profit;
                                         // child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
-                                        child.selling_amount = assets.debit_amount || 0.0;
+                                        child.selling_amount = assets.selling_amount || 0.0;
             
                                         // Refresh the child table to show the changes
                                         frm.refresh_field('sold_property_table');
