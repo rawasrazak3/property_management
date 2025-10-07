@@ -9,15 +9,39 @@ from frappe.model.document import Document
 class ProfitPay(Document):
 	pass
 # In your custom app's Python file
+# @frappe.whitelist()
+# def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
+#     if not property_id:
+#         return []
+
+#     # Query to fetch assets where the property matches in the property_hierarchy child table
+#     query = """
+#         SELECT 
+#             a.name, a.gfa_sqft, a.gross_purchase_amount , a.custom_profit,a.asset_name
+#         FROM 
+#             `tabAsset` a
+#         LEFT JOIN 
+#             `tabParent Asset` ph ON ph.parent = a.name
+#         WHERE 
+#             a.status = 'Sold'
+#             AND ph.parent_asset = %(property_id)s
+#         LIMIT %(limit)s
+#     """
+#     return frappe.db.sql(
+#         query, 
+#         {"property_id": property_id, "limit": int(limit_page_length)}, 
+#         as_dict=True
+#     )
+
 @frappe.whitelist()
 def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
     if not property_id:
         return []
 
-    # Query to fetch assets where the property matches in the property_hierarchy child table
     query = """
         SELECT 
-            a.name, a.gfa_sqft, a.gross_purchase_amount , a.custom_profit,a.asset_name
+            a.name, a.gfa_sqft, a.gross_purchase_amount, a.custom_profit,
+            a.asset_name, a.custom_sales_invoice_id
         FROM 
             `tabAsset` a
         LEFT JOIN 
@@ -27,32 +51,123 @@ def fetch_assets_with_property_hierarchy(property_id, limit_page_length=100):
             AND ph.parent_asset = %(property_id)s
         LIMIT %(limit)s
     """
-    return frappe.db.sql(
+
+    assets = frappe.db.sql(
         query, 
         {"property_id": property_id, "limit": int(limit_page_length)}, 
         as_dict=True
     )
 
+    for asset in assets:
+        sales_invoice_id = asset.get("custom_sales_invoice_id")
+        selling_amount = 0
+
+        if sales_invoice_id:
+            # get correct receivable account from Sales Invoice
+            debit_account = frappe.db.get_value("Sales Invoice", sales_invoice_id, "debit_to")
+            if debit_account:
+                # use that dynamic account to fetch debit from GL Entry
+                selling_amount = frappe.db.get_value(
+                    "GL Entry",
+                    {
+                        "voucher_no": sales_invoice_id,
+                        "account": debit_account,
+                        "voucher_type": "Sales Invoice"
+                    },
+                    "debit"
+                ) or 0
+
+        asset["selling_amount"] = selling_amount
+
+    return assets
+
+# @frappe.whitelist()
+# def fetch_assets(property_id, limit_page_length=100):
+#     if not property_id:
+#         return []
+
+#     # Query to fetch assets where the property matches in the property_hierarchy child table
+#     query = """
+#         SELECT 
+#             a.name, a.gfa_sqft, a.gross_purchase_amount , a.custom_profit,a.asset_name
+#         FROM 
+#             `tabAsset` a
+#         WHERE 
+#             a.name = %(property_id)s
+#         LIMIT %(limit)s
+#     """
+#     return frappe.db.sql(
+#         query, 
+#         {"property_id": property_id, "limit": int(limit_page_length)}, 
+#         as_dict=True
+#     )
 @frappe.whitelist()
 def fetch_assets(property_id, limit_page_length=100):
     if not property_id:
         return []
 
-    # Query to fetch assets where the property matches in the property_hierarchy child table
     query = """
         SELECT 
-            a.name, a.gfa_sqft, a.gross_purchase_amount , a.custom_profit,a.asset_name
+            a.name, a.gfa_sqft, a.gross_purchase_amount, a.custom_profit,
+            a.asset_name, a.custom_sales_invoice_id
         FROM 
             `tabAsset` a
         WHERE 
             a.name = %(property_id)s
         LIMIT %(limit)s
     """
-    return frappe.db.sql(
+
+    assets = frappe.db.sql(
         query, 
         {"property_id": property_id, "limit": int(limit_page_length)}, 
         as_dict=True
     )
+
+    for asset in assets:
+        sales_invoice_id = asset.get("custom_sales_invoice_id")
+        selling_amount = 0
+
+        if sales_invoice_id:
+            # get correct receivable account from Sales Invoice
+            debit_account = frappe.db.get_value("Sales Invoice", sales_invoice_id, "debit_to")
+            if debit_account:
+                # use that dynamic account to fetch debit from GL Entry
+                selling_amount = frappe.db.get_value(
+                    "GL Entry",
+                    {
+                        "voucher_no": sales_invoice_id,
+                        "account": debit_account,
+                        "voucher_type": "Sales Invoice"
+                    },
+                    "debit"
+                ) or 0
+        asset["selling_amount"] = selling_amount
+
+    return assets
+
+    # for asset in assets:
+    #     sales_invoice_id = asset.get("custom_sales_invoice_id")
+    #     print("------sales invoice ------",sales_invoice_id)
+    #     selling_amount = 0
+
+    #     if sales_invoice_id:
+    #         gl_entry = frappe.db.get_value(
+    #             "GL Entry",
+    #             {
+    #                 "voucher_no": sales_invoice_id,
+    #                 "account": "Debtors-MH",
+    #                 "voucher_type": "Sales Invoice"
+    #             },
+    #             "debit"
+    #         )
+    #         print("-------------------------sell amnt",gl_entry)
+    #         if gl_entry:
+    #             print("-------------------------sell amnt",gl_entry)
+    #             selling_amount = gl_entry
+
+    #     asset["selling_amount"] = selling_amount
+
+    # return assets
 
 @frappe.whitelist()
 def after_save_profit_pay(doc, method):

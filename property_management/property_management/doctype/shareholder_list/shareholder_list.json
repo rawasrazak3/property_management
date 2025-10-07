@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-10-01 19:21:28.495390",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "shareholder",
+  "shareholder_name",
+  "contribution",
+  "amount",
+  "initial_contribution",
+  "initial_amount",
+  "profit",
+  "profit_paid"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "shareholder",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Shareholder",
+   "options": "Shareholder"
+  },
+  {
+   "columns": 1,
+   "fieldname": "contribution",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Contribution"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "fieldname": "shareholder_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Shareholder Name"
+  },
+  {
+   "columns": 1,
+   "fieldname": "initial_contribution",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Initial Contribution"
+  },
+  {
+   "columns": 1,
+   "fieldname": "initial_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Initial Amount"
+  },
+  {
+   "columns": 1,
+   "fieldname": "profit",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Profit"
+  },
+  {
+   "columns": 1,
+   "fieldname": "profit_paid",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Profit Paid"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-10-03 16:32:51.636737",
+ "modified_by": "Administrator",
+ "module": "Property Management",
+ "name": "Shareholder List",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

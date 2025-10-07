@@ -218,7 +218,7 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
 
     credit_amount = gl_entry[0].get("credit", 0)
     debit_amount = gl_entry[0].get("debit", 0)
-
+    amount = credit_amount - debit_amount
     # Fetch property name from item table
     property_name = next(
         (item.item_name for item in doc.items if item.item_name), None
@@ -239,7 +239,7 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
     # Extract the Asset name and project name
     asset_name = asset[0].get("name")
     project_name = asset[0].get("custom_project")
-
+    frappe.db.set_value("Sales Invoice", doc.name, "custom_property", prop)
     # Fetch shareholder details for the property
     shareholders = frappe.get_all(
         "Shareholder Property",
@@ -253,20 +253,20 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
     # Prepare journal entry accounts
     journal_entry_entries = []
 
-    if credit_amount > 0:
+    if amount > 0:
         # Handle profit (credit case)
         # Debit income account
         journal_entry_entries.append({
             "account": income_account,
-            "debit": credit_amount,
-            'debit_in_account_currency': credit_amount,
+            "debit": amount,
+            'debit_in_account_currency': amount,
             "credit_in_account_currency": 0,
             "project": project_name
         })
 
         # Credit shareholder accounts
         for shareholder in shareholders:
-            share_amount = (credit_amount * shareholder.contribution) / 100
+            share_amount = (amount * shareholder.contribution) / 100
             journal_entry_entries.append({
                 "account": shareholder.shareholder_account,
                 "debit_in_account_currency": 0,
@@ -276,22 +276,23 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
                 "party": shareholder.shareholder,
                 "project": project_name
             })
-        frappe.db.set_value("Asset", prop, "custom_profit", credit_amount)
+        frappe.db.set_value("Asset", prop, "custom_profit", amount)
+        frappe.db.set_value("Asset",prop,"custom_sales_invoice_id",doc.name)
 
-    elif debit_amount > 0:
+    elif amount < 0:
         # Handle loss (debit case)
         # Credit income account
         journal_entry_entries.append({
             "account": income_account,
-            "credit": debit_amount,
-            'credit_in_account_currency': debit_amount,
+            "credit": amount,
+            'credit_in_account_currency': amount,
             "debit_in_account_currency": 0,
             "project": project_name
         })
 
         # Debit shareholder accounts
         for shareholder in shareholders:
-            share_amount = (debit_amount * shareholder.contribution) / 100
+            share_amount = (amount * shareholder.contribution) / 100
             journal_entry_entries.append({
                 "account": shareholder.shareholder_account,
                 "debit": share_amount,
@@ -301,7 +302,8 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
                 "party": shareholder.shareholder,
                 "project": project_name
             })
-        frappe.db.set_value("Asset", prop, "custom_profit", -debit_amount)  # Negative for loss
+        frappe.db.set_value("Asset", prop, "custom_profit", amount)  # Negative for loss
+        frappe.db.set_value("Asset",prop,"custom_sales_invoice_id",doc.name)
 
     else:
         frappe.throw("Neither profit nor loss detected in the GL Entry.")

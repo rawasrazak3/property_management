@@ -55,40 +55,92 @@ frappe.ui.form.on('Sold Property Summary', {
 
                     // Add fetched assets to the child table, if any
                     if (r.message && r.message.length > 0) {
-                        r.message.forEach(asset => {
+                        r.message.forEach(assets => {
                             let child = frm.add_child('sold_property_table');
-                            child.property_name = asset.name;
-                            child.property = asset.asset_name;
-                            child.profit = asset.custom_profit;
-                            child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
+                            child.property_name = assets.name;
+                            child.property = assets.asset_name;
+                            child.profit = assets.custom_profit;
+                            // child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
+                            child.selling_amount = assets.debit_amount || 0.0;
+
                         });
                     }
 
                     // Fetch the selected asset's details and add it to the child table
+                    // frappe.call({
+                    //     method: 'frappe.client.get',
+                    //     args: {
+                    //         doctype: 'Asset',
+                    //             name: frm.doc.property,  // Match against the selected property ID
+                            
+                    //         // name: frm.doc.property  // Fetch the selected property asset details
+                    //     },
+                    //     callback: function(r) {
+                    //         if (r && r.message) {
+                    //             let asset = r.message;
+                    //             if (asset.status=== 'Sold'){
+                    //                 // Add the selected asset to the child table
+                    //                 let child = frm.add_child('sold_property_table');
+                    //                 child.property_name = asset.name;
+                    //                 child.profit = asset.custom_profit;
+                    //                 child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
+
+                    //                 // Refresh the child table to show the changes
+                    //                 frm.refresh_field('sold_property_table');
+                    //             }
+                    //         }
+                    //     }
+                    // });
                     frappe.call({
                         method: 'frappe.client.get',
                         args: {
                             doctype: 'Asset',
-                                name: frm.doc.property,  // Match against the selected property ID
-                            
-                            // name: frm.doc.property  // Fetch the selected property asset details
+                            name: frm.doc.property,  // selected property asset ID
                         },
                         callback: function(r) {
                             if (r && r.message) {
                                 let asset = r.message;
-                                if (asset.status=== 'Sold'){
-                                    // Add the selected asset to the child table
-                                    let child = frm.add_child('sold_property_table');
-                                    child.property_name = asset.name;
-                                    child.profit = asset.custom_profit;
-                                    child.selling_amount = asset.gross_purchase_amount + asset.custom_profit;
-
-                                    // Refresh the child table to show the changes
-                                    frm.refresh_field('sold_property_table');
+                                if (asset.status === 'Sold') {
+                                    // Step 1: Get the custom_sales_invoice_id
+                                    let sales_invoice_id = asset.custom_sales_invoice_id;
+                    
+                                    if (sales_invoice_id) {
+                                        // Step 2: Call server to get GL Entry for Debtors-MH account
+                                        frappe.call({
+                                            method: 'frappe.client.get_list',
+                                            args: {
+                                                doctype: 'GL Entry',
+                                                filters: {
+                                                    voucher_no: sales_invoice_id,
+                                                    account: 'Debtors - AHP'  // or use full account name if needed
+                                                },
+                                                fields: ['debit'],
+                                                limit_page_length: 1
+                                            },
+                                            callback: function(glr) {
+                                                let selling_amount = 0;
+                                                if (glr.message && glr.message.length > 0) {
+                                                    console.log("selling amount",glr.message[0].debit);
+                                                    selling_amount = glr.message[0].debit;
+                                                }
+                    
+                                                // Step 3: Add to child table
+                                                let child = frm.add_child('sold_property_table');
+                                                child.property_name = asset.name;
+                                                child.profit = asset.custom_profit;
+                                                child.selling_amount = selling_amount;
+                    
+                                                frm.refresh_field('sold_property_table');
+                                            }
+                                        });
+                                    } else {
+                                        frappe.msgprint(__('Sales Invoice not linked to property (custom_sales_invoice_id missing).'));
+                                    }
                                 }
                             }
                         }
                     });
+                    
                 }
             });
         }
