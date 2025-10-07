@@ -14,5 +14,37 @@
   "property_type": "Text",
   "row_name": null,
   "value": "\nACC-SINV-.YYYY.-\nACC-SINV-RET-.YYYY.-\nTAX-SINV-.YYYY.-"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Journal Entry",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "custom_sales_invoice_",
+  "is_system_generated": 0,
+  "modified": "2025-10-07 09:28:20.424098",
+  "module": "Property Management",
+  "name": "Journal Entry-custom_sales_invoice_-allow_on_submit",
+  "property": "allow_on_submit",
+  "property_type": "check",
+  "row_name": null,
+  "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Sales Invoice",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "disable_rounded_total",
+  "is_system_generated": 0,
+  "modified": "2025-10-07 09:25:27.507172",
+  "module": "Property Management",
+  "name": "Sales Invoice-disable_rounded_total-default",
+  "property": "default",
+  "property_type": null,
+  "row_name": null,
+  "value": "1"
  }
 ]

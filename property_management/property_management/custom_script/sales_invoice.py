@@ -314,7 +314,8 @@ def create_journal_entry_from_sales_invoice(sales_invoice):
         "voucher_type": "Journal Entry",
         "posting_date": doc.posting_date,
         "accounts": journal_entry_entries,
-        "user_remark": f"Split income/loss from Sales Invoice {doc.name}"
+        "user_remark": f"Split income/loss from Sales Invoice {doc.name}",
+        "custom_sales_invoice_": doc.name
     })
     journal_entry.insert(ignore_permissions=True)
     journal_entry.submit()
