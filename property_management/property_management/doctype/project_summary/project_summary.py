@@ -13,12 +13,18 @@ class ProjectSummary(Document):
 		self.update_paid_profit()
 
 	def calculate_totals(self):
-		# ---- 1. Calculate Total Profit from Property Splits ----
+		# ---- 1. Calculate Total Profit and total selling price from Property Splits  AND Land value from Buying + Expense----
 		total_profit = 0
+		total_selling_amount = 0
+		purchase = self.purchase_amount
+		expense = self.total_expense
 		for row in self.property_splits:
 			total_profit += row.profit or 0
+			total_selling_amount += row.selling_price or 0
 
 		self.total_profit = total_profit   # store in a parent field (make sure you have one)
+		self.total_selling_price = total_selling_amount
+		self.total_land_value = purchase + expense
 
 		# ---- 2. Distribute Profit to Shareholders based on contribution % ----
 		for sh in self.shareholder_details:
