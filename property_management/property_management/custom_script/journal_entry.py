@@ -266,3 +266,79 @@ def update_shareholder_exit(journal_entry, method=None):
 def on_submit_journal_entry(doc, method):
     if doc.voucher_type == "Journal Entry":
         update_shareholder_exit(doc.name, method)
+
+
+@frappe.whitelist()
+def reverse_shareholder_expenses(journal_entry=None, method=None):
+    """Reverse the shareholder expense and contribution updates made during JE cancellation."""
+    try:
+        # Detect whether it's being called as an event hook or manually
+        if hasattr(journal_entry, "doctype"):
+            # Called automatically by Frappe on_cancel (journal_entry is actually the doc)
+            je_doc = journal_entry
+        else:
+            # Called manually, e.g., reverse_shareholder_expenses(doc.name)
+            je_doc = frappe.get_doc("Journal Entry", journal_entry)
+
+        # Only reverse if this JE is linked to an Expense Property
+        if not getattr(je_doc, "custom_is_expense_property", None):
+            return
+
+        # Iterate over accounts in the Journal Entry
+        for entry in je_doc.accounts:
+            if (
+                entry.reference_type == "Asset"
+                and entry.reference_name
+                and entry.credit_in_account_currency > 0
+            ):
+                reverse_main_and_sub_properties(entry.reference_name, entry)
+
+    except Exception as e:
+        frappe.log_error(
+            message=f"Error reversing shareholder expenses for JE {getattr(journal_entry, 'name', journal_entry)}: {frappe.get_traceback()}",
+            title="Reverse Shareholder Expenses Error"
+        )
+
+
+
+def reverse_main_and_sub_properties(main_property_name, entry):
+    """Reverse expenses for main and sub-properties based on hierarchy."""
+    main_property_doc = frappe.get_doc("Asset", main_property_name)
+    main_status = (main_property_doc.status or "").strip().lower()
+
+    # Reverse main property
+    if main_status != "sold":
+        reverse_property(main_property_doc, entry)
+
+    # Reverse sub-properties
+    sub_properties = fetch_sub_properties(main_property_name)
+    for sub_property in sub_properties:
+        sub_status = (sub_property.get("status") or "").strip().lower()
+        if sub_status != "sold":
+            sub_property_doc = frappe.get_doc("Asset", sub_property["name"])
+            sub_property_doc.reload()
+            reverse_property(sub_property_doc, entry)
+
+
+
+def reverse_property(property_doc, entry):
+    """Reverse expense updates for a single property."""
+    shareholder_found = False
+    for row in property_doc.custom_shareholder_table:
+        if row.shareholder == entry.party and entry.credit_in_account_currency > 0:
+            allocated_expense = flt(entry.credit_in_account_currency)
+            row.amount = max(0, flt(row.amount) - allocated_expense)
+            row.total_expense = max(0, flt(row.total_expense) - allocated_expense)
+            shareholder_found = True
+
+    # Recalculate contribution percentages
+    total_amount = sum(flt(row.amount) for row in property_doc.custom_shareholder_table)
+    if total_amount > 0:
+        for row in property_doc.custom_shareholder_table:
+            row.contribution = (flt(row.amount) / total_amount) * 100
+    else:
+        for row in property_doc.custom_shareholder_table:
+            row.contribution = 0
+
+    if shareholder_found:
+        property_doc.save()

@@ -3,6 +3,30 @@ from frappe import _
 from frappe.utils import nowdate, flt
 from erpnext.assets.doctype.asset.asset import split_asset as erpnext_split_asset
 import json
+# from erpnext.assets.doctype.asset import asset as erpnext_asset
+from erpnext.assets.doctype.asset.asset import (
+      split_asset,
+    create_new_asset_after_split,
+    update_existing_asset,
+)
+# from erpnext.assets.doctype.asset.asset import add_asset_activity, add_reference_in_jv_on_split
+# from frappe.utils.data import get_link_to_form
+
+@frappe.whitelist()
+def custom_split_asset(asset_name, split_qty):      
+        asset = frappe.get_doc("Asset", asset_name)
+        # split_qty = cint(split_qty)
+
+        if split_qty >= asset.asset_quantity:
+            frappe.throw(_("Split qty cannot be grater than or equal to asset qty"))
+
+        remaining_qty = asset.asset_quantity - split_qty
+
+        new_asset = create_new_asset_after_split(asset, split_qty)
+        update_existing_asset(asset, remaining_qty, new_asset.name)
+
+        return new_asset
+
 
 # @frappe.whitelist()
 # def bulk_asset_split(asset_name, name_prefix, split_details):
@@ -80,7 +104,7 @@ def bulk_asset_split(asset_name, split_details):
             frappe.throw(_("Row {0}: Quantity to split exceeds available quantity.").format(index + 1))
 
         new_asset_name = row_name_prefix
-        new_asset = erpnext_split_asset(asset.name, quantity_to_split)
+        new_asset = custom_split_asset(asset.name, quantity_to_split)
         new_asset.db_set("asset_name", new_asset_name)  # Set the custom name
 
         # Preserve the original Total Asset Cost
@@ -416,3 +440,80 @@ def create_maintenance_journal_entry(self, method=None):
         # Update the journal_entry_id field in the Asset document
         self.db_set('custom_ref_journal_entry_id', journal_entry.name)
 
+@frappe.whitelist()
+def cancel_linked_journals(self, method=None):
+		"""Cancel and unlink all Journal Entries and Payment Ledger Entries linked to this Property."""
+		property_name = self.name
+		cancelled_journals = []
+		cancelled_ledgers = []
+
+		# --------------------------------------------------------------------
+		# 🧾 Step 1: Cancel Journal Entries linked via reference_name
+		# --------------------------------------------------------------------
+		journal_accounts = frappe.get_all(
+			"Journal Entry Account",
+			filters={"reference_name": property_name},
+			fields=["parent"]
+		)
+
+		for acc in journal_accounts:
+			try:
+				je = frappe.get_doc("Journal Entry", acc.parent)
+
+				# Cancel only submitted entries
+				if je.docstatus == 1:
+					je.cancel()
+					cancelled_journals.append(je.name)
+
+				# Unlink property references in child table
+				for row in je.accounts:
+					if row.reference_name == property_name:
+						row.reference_name = None
+						row.reference_type = None
+				je.save(ignore_permissions=True)
+
+			except Exception as e:
+				frappe.log_error(f"Error cancelling Journal Entry {acc.parent}: {str(e)}", "Property Cancel Error")
+
+		# --------------------------------------------------------------------
+		# 💳 Step 2: Cancel Payment Ledger Entries where against_voucher_no = property
+		# --------------------------------------------------------------------
+		payment_ledgers = frappe.get_all(
+			"Payment Ledger Entry",
+			filters={"against_voucher_no": property_name},
+			fields=["name"]
+		)
+
+		for ple in payment_ledgers:
+			try:
+				doc = frappe.get_doc("Payment Ledger Entry", ple.name)
+
+				# If it's submitted, cancel it
+				if doc.docstatus == 1:
+					doc.cancel()
+					cancelled_ledgers.append(doc.name)
+
+				# Clear property reference fields (if any exist)
+				if hasattr(doc, "against_voucher_no"):
+					doc.against_voucher_no = None
+				if hasattr(doc, "against_voucher_type"):
+					doc.against_voucher_type = None
+
+				doc.save(ignore_permissions=True)
+
+			except Exception as e:
+				frappe.log_error(f"Error cancelling Payment Ledger Entry {ple.name}: {str(e)}", "Property Cancel Error")
+
+		# --------------------------------------------------------------------
+		# ✅ Step 3: Show Summary
+		# --------------------------------------------------------------------
+		msg = []
+		if cancelled_journals:
+			msg.append(f"Cancelled Journal Entries: {', '.join(cancelled_journals)}")
+		if cancelled_ledgers:
+			msg.append(f"Cancelled Payment Ledger Entries: {', '.join(cancelled_ledgers)}")
+
+		if msg:
+			frappe.msgprint("<br>".join(msg))
+		else:
+			frappe.msgprint(f"No linked accounting entries found for Property <b>{property_name}</b>.")

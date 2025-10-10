@@ -178,7 +178,8 @@ doc_events = {
             "property_management.api.crud_event.rent_item",
         	"property_management.property_management.custom_script.asset.submit_asset_with_advance"
         ],
-        "on_update_after_submit":"property_management.property_management.custom_script.asset.create_maintenance_journal_entry"
+        "on_update_after_submit":"property_management.property_management.custom_script.asset.create_maintenance_journal_entry",
+        "on_cancel":"property_management.property_management.custom_script.asset.cancel_linked_journals"
         
 	},
 
@@ -210,7 +211,8 @@ doc_events = {
 		"on_submit": [
 			"property_management.property_management.custom_script.journal_entry.update_shareholder_expenses",
 			"property_management.property_management.custom_script.journal_entry.update_shareholder_exit"
-		]
+		],
+        "on_cancel": "property_management.property_management.custom_script.journal_entry.reverse_shareholder_expenses"
 	},
     "Tenancy Termination":{
         "before_submit" : [
@@ -264,6 +266,9 @@ doc_events = {
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "property_management.event.get_events"
 # }
+override_whitelisted_methods = {
+    "erpnext.assets.doctype.asset.asset.split_asset": "property_management.property_management.property_management.custom_script.asset.custom_split_asset"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

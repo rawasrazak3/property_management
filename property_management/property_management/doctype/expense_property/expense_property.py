@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import flt, nowdate
-
+from property_management.property_management.custom_script.journal_entry import reverse_shareholder_expenses
 
 class ExpenseProperty(Document):
 	pass
@@ -402,3 +402,39 @@ class ExpenseProperty(Document):
         # Step 5: Insert and submit the Journal Entry
         jv.insert()
         jv.submit()
+
+    def on_cancel(self):
+        """Reverse all effects made during submission or manual journal creation."""
+        # ---- 1️⃣ Restore Asset values ----
+        for item in self.land_property:
+            asset = frappe.get_doc("Asset", item.property)
+            if asset:
+                restored_gross = (asset.gross_purchase_amount or 0) - (item.allocated_expense_amount or 0)
+                restored_expenses = (asset.custom_total_expenses or 0) - (item.allocated_expense_amount or 0)
+                asset.db_set("gross_purchase_amount", restored_gross)
+                asset.db_set("custom_total_expenses", restored_expenses)
+
+        # ---- 2️⃣ Cancel all linked Journal Entries ----
+        linked_journal_entries = frappe.get_all(
+            "Journal Entry",
+            filters={"custom_expense_property": self.name, "docstatus": 1},
+            fields=["name"]
+        )
+
+        for je in linked_journal_entries:
+            try:
+                doc = frappe.get_doc("Journal Entry", je.name)
+                # ✅ Only reverse if the JE was created by Expense Property flow
+                if getattr(doc, "custom_is_expense_property", 0):
+                    # Reverse the shareholder expense effects first
+                    reverse_shareholder_expenses(doc)
+                
+                # Then cancel the journal entry
+                doc.cancel()
+            except Exception as e:
+                frappe.log_error(
+                    message=f"Failed to cancel Journal Entry {je.name} for Expense Property {self.name}: {str(e)}",
+                    title="Expense Property Cancel Error"
+                )
+
+        frappe.msgprint("All linked Journal Entries cancelled and shareholder expenses reversed successfully.")
