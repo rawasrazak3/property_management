@@ -215,7 +215,7 @@ def create_purchase_payment_entry(doc, supplier, paid_from, purchase_invoice, sc
     return payment_entry.name
 
 @frappe.whitelist()
-def create_partial_paymententry(doc, invoice_name, party, posting_date, payment_amount, paid_amount, received_amount, reference_no, paid_to, schedule_date, invoice_ref):
+def create_partial_paymententry(doc, invoice_name, party, posting_date, payment_amount, paid_amount, received_amount, reference_no, paid_to,mode_of_payment, schedule_date, invoice_ref):
     if invoice_name:
         # Step 1: Insert the Payment Entry without references
         payment_entry = frappe.get_doc(dict(
@@ -231,7 +231,8 @@ def create_partial_paymententry(doc, invoice_name, party, posting_date, payment_
             payment_amount = abs(float(payment_amount)),
             paid_amount = abs(float(paid_amount)),
             received_amount = abs(float(received_amount)),
-            paid_to = paid_to
+            paid_to = paid_to,
+            mode_of_payment = mode_of_payment
         ))
         payment_entry.insert()
         frappe.db.commit()
