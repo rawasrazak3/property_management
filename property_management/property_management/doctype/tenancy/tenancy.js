@@ -313,18 +313,38 @@ function submit_existing_payment_entry(frm, cdt, cdn, callback) {
             },
             callback: function(r) {
                 if (r && r.message) {
-                    // Submit the payment entry after refreshing the document
+                    var pe_doc = r.message;
+
+                    // ---Update the key fields before submission ---
+                    // Use safe checks so undefined values don't overwrite existing fields
+                    if (row.mode_of_payment) pe_doc.mode_of_payment = row.mode_of_payment;
+                    if (row.is_paid_account) pe_doc.paid_to = row.is_paid_account;      // Adjust field name as per your setup
+                    if (row.posting_date) pe_doc.posting_date = row.posting_date;
+
+                    // --- Save and then submit the updated document ---
                     frappe.call({
-                        method: 'frappe.client.submit',
+                        method: 'frappe.client.save',
                         args: {
-                            doc: r.message  // Submitting the latest version of the Payment Entry document
+                            doc: pe_doc
                         },
-                        callback: function(response) {
-                            if (response.message) {
-                                frappe.msgprint(`Payment entry ${row.payment_entry} submitted successfully.`);
-                                if (callback) callback();  // Proceed to the next step if a callback is provided
+                        callback: function(save_res) {
+                            if (save_res && save_res.message) {
+                                frappe.call({
+                                    method: 'frappe.client.submit',
+                                    args: {
+                                        doc: save_res.message
+                                    },
+                                    callback: function(submit_res) {
+                                        if (submit_res.message) {
+                                            frappe.msgprint(`Payment Entry ${row.payment_entry} updated and submitted successfully.`);
+                                            if (callback) callback();
+                                        } else {
+                                            frappe.msgprint('Failed to submit the payment entry.');
+                                        }
+                                    }
+                                });
                             } else {
-                                frappe.msgprint('Failed to submit the payment entry.');
+                                frappe.msgprint('Failed to update the payment entry before submission.');
                             }
                         }
                     });
@@ -682,24 +702,33 @@ function handle_partial_payment(frm, cdt, cdn, partial_paid_amount) {
         // First partial payment
         create_partial_paymententry(frm, cdt, cdn, 'payment_entry_1', 'paid_amount_1', 'outstanding_1', partial_paid_amount, function() {
             frm.save('Update');
-            if (frm.doc.asset_owner == "Supplier") {
-                create_sales_payment_and_purchase(frm, cdt, cdn);
-            }
+            // After saving, check if full amount is paid
+            check_and_create_sales_purchase(frm, cdt, cdn);
+
+            // if (frm.doc.asset_owner == "Supplier") {
+            //     create_sales_payment_and_purchase(frm, cdt, cdn);
+            // }
         });
     } else if (!row.payment_entry_2) {
         // Second partial payment
         create_partial_paymententry(frm, cdt, cdn, 'payment_entry_2', 'paid_amount_2', 'outstanding_2', partial_paid_amount, function() {
             frm.save('Update');
+            // After saving, check if full amount is paid
+            check_and_create_sales_purchase(frm, cdt, cdn);
         });
     } else if (!row.payment_entry_3) {
         // Third partial payment
         create_partial_paymententry(frm, cdt, cdn, 'payment_entry_3', 'paid_amount_3', 'outstanding_3', partial_paid_amount, function() {
             frm.save('Update');
+            // After saving, check if full amount is paid
+            check_and_create_sales_purchase(frm, cdt, cdn);
         });
     } else if (!row.payment_entry_4) {
         // Fourth partial payment
         create_partial_paymententry(frm, cdt, cdn, 'payment_entry_4', 'paid_amount_4', 'outstanding_4', partial_paid_amount, function() {
             frm.save('Update');
+            // After saving, check if full amount is paid
+            check_and_create_sales_purchase(frm, cdt, cdn);
         });
     } else {
         frappe.msgprint(__('All four partial payments have already been made.'));
@@ -712,6 +741,8 @@ function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_am
     var row = locals[cdt][cdn];
     var invoice_name = row.invoice; 
     var schedule_date = row.schedule_date;
+    var posting_date = row.payment_date;
+    var mop = row.mode_of_payment_partial;
 
     // Fetch default bank account (paid_to)
     frappe.call({
@@ -740,7 +771,8 @@ function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_am
                         invoice_name: row.invoice,
                         doc: frm.doc.name,
                         schedule_date: schedule_date,
-                        posting_date: schedule_date,
+                        posting_date: posting_date,
+                        mode_of_payment : mop,
                         invoice_ref: row.invoice
                     },
                     callback: function(response) {
@@ -768,6 +800,31 @@ function create_partial_paymententry(frm, cdt, cdn, payment_entry_field, paid_am
             }
         }
     });
+}
+
+//New function to check total paid and create invoices if full payment received
+function check_and_create_sales_purchase(frm, cdt, cdn) {
+    var row = locals[cdt][cdn];
+
+    // Calculate total paid from all partials
+    var total_paid = (
+        flt(row.paid_amount_1) +
+        flt(row.paid_amount_2) +
+        flt(row.paid_amount_3) +
+        flt(row.paid_amount_4)
+    );
+
+    var invoice_total = flt(row.invoice_amount);
+    var remaining = invoice_total - total_paid;
+
+    if (total_paid >= invoice_total && frm.doc.asset_owner == "Supplier") {
+        frappe.msgprint(__('Full payment received. Creating Sales and Purchase Invoices...'));
+        // if (frm.doc.asset_owner == "Supplier") {
+        create_sales_payment_and_purchase(frm, cdt, cdn);
+        // }
+    } else {
+        frappe.msgprint(__('Partial payment recorded. Remaining amount: ') + remaining);
+    }
 }
 
 
