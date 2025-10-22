@@ -16,8 +16,8 @@ class ProjectSummary(Document):
 		# ---- 1. Calculate Total Profit and total selling price from Property Splits  AND Land value from Buying + Expense----
 		total_profit = 0
 		total_selling_amount = 0
-		purchase = self.purchase_amount
-		expense = self.total_expense
+		purchase = self.purchase_amount or 0
+		expense = self.total_expense or 0
 		for row in self.property_splits:
 			total_profit += row.profit or 0
 			total_selling_amount += row.selling_price or 0
