@@ -140,6 +140,7 @@ def manage_property_on_termination(doc, method):
         "parking": property_doc.parking,
         "facing": property_doc.facing,
         "rent_type": property_doc.rent_type,
+        "custom_multi_property_against": property_doc.custom_multi_property_against
         # "calculate_depreciation": property_doc.calculate_depreciation,
         
         # Add more fields as necessary from the original Property DocType
