@@ -335,7 +335,7 @@ def submit_asset_with_advance(self, method=None):
         # Prepare the Journal Entry
         journal_entry = frappe.new_doc('Journal Entry')
         journal_entry.voucher_type = 'Journal Entry'
-        journal_entry.posting_date = frappe.utils.nowdate()
+        journal_entry.posting_date = self.custom_deposit_date
         journal_entry.company = self.company
         journal_entry.user_remark = f'Advance Payment for Asset: {self.name}'
 
@@ -413,7 +413,7 @@ def create_maintenance_journal_entry(self, method=None):
         # Create Journal Entry
         journal_entry = frappe.get_doc({
             "doctype": "Journal Entry",
-            "posting_date": nowdate(),
+            "posting_date": self.custom_maintenance_date,
             "company": self.company,
             "accounts": [
                 {
