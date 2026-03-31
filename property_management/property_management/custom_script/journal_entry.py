@@ -321,18 +321,74 @@ def reverse_main_and_sub_properties(main_property_name, entry):
 
 
 
+# def reverse_property(property_doc, entry):
+#     """Reverse expense updates for a single property."""
+#     shareholder_found = False
+#     for row in property_doc.custom_shareholder_table:
+#         if row.shareholder == entry.party and entry.credit_in_account_currency > 0:
+#             allocated_expense = flt(entry.credit_in_account_currency)
+#             row.amount = max(0, flt(row.amount) - allocated_expense)
+#             row.total_expense = max(0, flt(row.total_expense) - allocated_expense)
+#             shareholder_found = True
+
+#     # Recalculate contribution percentages
+#     total_amount = sum(flt(row.amount) for row in property_doc.custom_shareholder_table)
+#     if total_amount > 0:
+#         for row in property_doc.custom_shareholder_table:
+#             row.contribution = (flt(row.amount) / total_amount) * 100
+#     else:
+#         for row in property_doc.custom_shareholder_table:
+#             row.contribution = 0
+
+#     if shareholder_found:
+#         property_doc.save()
+
+
 def reverse_property(property_doc, entry):
     """Reverse expense updates for a single property."""
     shareholder_found = False
+    allocated_expense = flt(entry.credit_in_account_currency)
+
+    # 1. Reverse Shareholder Table
+    # for row in property_doc.custom_shareholder_table:
+    #     if row.shareholder == entry.party and allocated_expense > 0:
+    #         row.amount = max(0, flt(row.amount) - allocated_expense)
+    #         row.total_expense = max(0, flt(row.total_expense) - allocated_expense)
+    #         shareholder_found = True
+
+
+    remaining_expense = allocated_expense
+
     for row in property_doc.custom_shareholder_table:
-        if row.shareholder == entry.party and entry.credit_in_account_currency > 0:
-            allocated_expense = flt(entry.credit_in_account_currency)
-            row.amount = max(0, flt(row.amount) - allocated_expense)
-            row.total_expense = max(0, flt(row.total_expense) - allocated_expense)
+        if flt(row.total_expense) > 0 and remaining_expense > 0:
+            deduct = min(flt(row.total_expense), remaining_expense)
+
+            row.amount = max(0, flt(row.amount) - deduct)
+            row.total_expense = max(0, flt(row.total_expense) - deduct)
+
+            remaining_expense -= deduct
             shareholder_found = True
 
-    # Recalculate contribution percentages
+            if remaining_expense <= 0:
+                break
+            
+    # 2. Reverse Purchase Details
+    if hasattr(property_doc, "purchase_details"):
+        for pd in property_doc.purchase_details:
+            # If you want to match specific invoice, you can add condition:
+            # if pd.purchase_invoice == entry.reference_name:
+
+            pd.custom_total_expenses = max(
+                0, flt(pd.custom_total_expenses) - allocated_expense
+            )
+
+            pd.gross_purchase_amount = max(
+                0, flt(pd.gross_purchase_amount) - allocated_expense
+            )
+
+    # 3. Recalculate Contribution
     total_amount = sum(flt(row.amount) for row in property_doc.custom_shareholder_table)
+
     if total_amount > 0:
         for row in property_doc.custom_shareholder_table:
             row.contribution = (flt(row.amount) / total_amount) * 100
@@ -340,5 +396,7 @@ def reverse_property(property_doc, entry):
         for row in property_doc.custom_shareholder_table:
             row.contribution = 0
 
+    # 4. Save
     if shareholder_found:
         property_doc.save()
+        

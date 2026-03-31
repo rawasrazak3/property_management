@@ -206,8 +206,8 @@ doc_events = {
             "property_management.property_management.custom_script.sales_invoice.on_submit_sales_invoice",
             # "property_management.property_management.custom_script.sales_invoice.create_purchase_invoice_from_sales_invoice",
             "property_management.property_management.custom_script.sales_invoice.create_purchase_invoice_and_payment_entry_from_sales_invoice"
-		]
-    
+		],
+         "on_cancel" : "property_management.property_management.custom_script.sales_invoice.on_cancel_sales_invoice"
 	},
     "Journal Entry": {
 		"on_submit": [
