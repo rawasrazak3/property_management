@@ -399,4 +399,3 @@ def reverse_property(property_doc, entry):
     # 4. Save
     if shareholder_found:
         property_doc.save()
-        
