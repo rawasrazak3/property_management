@@ -394,8 +394,18 @@ def create_purchase_invoice_and_payment_entry_from_sales_invoice(doc, method):
         payment_entry.party_type = "Supplier"
         payment_entry.party = doc.custom_supplier
         payment_entry.company = doc.company
-        payment_entry.paid_amount = total_paid_amount
-        payment_entry.received_amount = total_paid_amount
+        # payment_entry.paid_amount = total_paid_amount
+        # payment_entry.received_amount = total_paid_amount
+        
+        # Fetch actual outstanding amount from Purchase Invoice
+        outstanding_amount = frappe.db.get_value(
+            "Purchase Invoice",
+            purchase_invoice.name,
+            "outstanding_amount"
+        )
+        payment_entry.paid_amount = outstanding_amount
+        payment_entry.received_amount = outstanding_amount
+
         payment_entry.mode_of_payment = doc.custom_mode_of_payment
         payment_entry.paid_from = mode_of_payment_account  # Payment from account based on Mode of Payment
         payment_entry.paid_to = frappe.get_value("Company", doc.company, "default_payable_account")  # Payable account
@@ -407,9 +417,11 @@ def create_purchase_invoice_and_payment_entry_from_sales_invoice(doc, method):
         payment_entry.append("references", {
             "reference_doctype": "Purchase Invoice",
             "reference_name": purchase_invoice.name,
-            "total_amount": total_paid_amount,
-            "outstanding_amount": total_paid_amount,
-            "allocated_amount": total_paid_amount
+            # "total_amount": total_paid_amount,
+            # "outstanding_amount": total_paid_amount,
+            # "allocated_amount": total_paid_amount
+            "allocated_amount": outstanding_amount
+
         })
 
         # Insert and submit Payment Entry
