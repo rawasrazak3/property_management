@@ -394,6 +394,10 @@ def create_purchase_invoice_and_payment_entry_from_sales_invoice(doc, method):
         payment_entry.party_type = "Supplier"
         payment_entry.party = doc.custom_supplier
         payment_entry.company = doc.company
+        payment_entry.set_posting_time = 1
+        payment_entry.posting_date = doc.posting_date
+        payment_entry.custom_schedule_date = doc.posting_date  # your custom field
+        payment_entry.custom_invoice_ref = doc.posting_date
         # payment_entry.paid_amount = total_paid_amount
         # payment_entry.received_amount = total_paid_amount
         
